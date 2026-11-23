@@ -12,16 +12,22 @@ on:
 
 jobs:
   claude:
+    # 公開リポジトリのため、リポジトリのオーナー本人だけが起動できるようにする。
+    # (既定の write 権限チェックに加えた二重の防御。許可ユーザーを増やす場合はここを変更する)
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      github.actor == github.repository_owner &&
+      (
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      )
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write # ブランチ作成と push に必要
+      pull-requests: write # PR の作成とコメントに必要
+      issues: write # Issue へのコメントに必要
       id-token: write
       actions: read # Required for Claude to read CI results on PRs
     steps:
@@ -29,6 +35,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      # .claude/skills/ は .gitignore 対象のため、コミット済みの自作スキル (.apm/skills/) を復元する
+      - name: Restore project skills
+        run: |
+          mkdir -p .claude/skills
+          cp -r .apm/skills/. .claude/skills/
 
       - name: Run Claude Code
         id: claude
@@ -43,8 +55,12 @@ jobs:
           # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           # prompt: 'Update the pull request description to include a summary of changes.'
 
-          # Optional: Add claude_args to customize behavior and configuration
+          # モデルと最大ターン数はリポジトリ変数 (Settings > Secrets and variables > Actions > Variables) で変更できる。
+          #   CLAUDE_MODEL     : 使用するモデル ID。未設定なら claude-sonnet-5-5
+          #   CLAUDE_MAX_TURNS : 1回の実行で許可する最大ターン数。未設定なら 30
+          # 既定では PR を自動作成せずリンクを返すだけなので、gh pr create を許可する。
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
-
+          claude_args: |
+            --model ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5-5' }}
+            --max-turns ${{ vars.CLAUDE_MAX_TURNS || '30' }}
+            --allowedTools "Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr diff:*)"

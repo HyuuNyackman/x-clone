@@ -2,26 +2,24 @@ name: Claude Code Review
 
 on:
   pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    # synchronize を含めない: push のたびに利用枠を消費しないため。
+    # 追加のレビューは PR に `@claude` とコメントして手動で依頼する。
+    types: [opened, ready_for_review, reopened]
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # 公開リポジトリのため、オーナー本人の PR だけをレビューする。
+    # fork からの PR は Secrets が渡らず、第三者に利用枠を使わせないためにも除外する。
+    if: |
+      github.actor == github.repository_owner &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false
 
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write # レビューコメントの投稿に必要
       issues: read
       id-token: write
 
@@ -31,15 +29,26 @@ jobs:
         with:
           fetch-depth: 1
 
+      # .claude/skills/ は .gitignore 対象のため、コミット済みの自作スキル (.apm/skills/) を復元する
+      - name: Restore project skills
+        run: |
+          mkdir -p .claude/skills
+          cp -r .apm/skills/. .claude/skills/
+
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allow_fork_prs: 'false'
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
           prompt: '/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
+          # モデルと最大ターン数はリポジトリ変数 (Settings > Secrets and variables > Actions > Variables) で変更できる。
+          #   CLAUDE_MODEL     : 使用するモデル ID。未設定なら claude-sonnet-5-5
+          #   CLAUDE_MAX_TURNS : 1回の実行で許可する最大ターン数。未設定なら 30
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-
+          claude_args: |
+            --model ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5-5' }}
+            --max-turns ${{ vars.CLAUDE_MAX_TURNS || '30' }}
+            --allowedTools "mcp__github_inline_comment__create_inline_comment"
