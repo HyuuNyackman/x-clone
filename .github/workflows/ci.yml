@@ -1,25 +1,34 @@
 name: CI
 
+# 入口。どのイベントでどのワークフローを呼ぶかだけを書き、中身は _*.yml に置く。
+#   _check.yml              lint / typecheck / format
+#   _cloudflare-deploy.yml  Cloudflare への公開と撤去 (PR の Preview、削除、本番デプロイ)
+# どのジョブが動くかは _cloudflare-deploy.yml の中で決める。
+
 on:
   push:
     branches: [main, develop]
   pull_request:
+    # closed は Preview の削除のために受ける
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm format:check
+    # PR を閉じたときは検査しない
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
+    uses: ./.github/workflows/_check.yml
+
+  cloudflare:
+    needs: check
+    # PR を閉じたときは check が skip されるが、Preview の削除は行う。
+    # check が失敗したときだけ止める。
+    if: ${{ !cancelled() && !failure() }}
+    uses: ./.github/workflows/_cloudflare-deploy.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      pull-requests: write # Preview URL のコメント投稿に必要
