@@ -18,11 +18,14 @@ pnpm deploy:web            # expo export -p web → wrangler deploy
 
 ### 自動デプロイ
 
-`develop` への push で `.github/workflows/deploy.yml` が動く。使うには次を設定する。
+`.github/workflows/ci.yml` が入口で、検査に成功したあと `_cloudflare-deploy.yml` を呼んで次を行う。
 
-- Secrets に `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を登録する
+- `develop` への push: 本番の URL にデプロイする
+- `develop` 向けの PR: Preview を公開し、URL を PR にコメントする(PR を閉じると削除する)
 
-方式の判断は [ADR-0005](docs/adr/0005-cloudflare-deploy-method.md) を参照。
+使うには、Secrets に `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を登録する。Preview の URL は公開されている。
+
+判断は [ADR-0005](docs/adr/0005-cloudflare-deploy-method.md) と [ADR-0008](docs/adr/0008-pr-preview-and-reusable-workflows.md) を参照。
 
 ### ホーム画面に追加する(PWA)
 

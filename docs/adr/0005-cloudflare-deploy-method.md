@@ -40,13 +40,13 @@ Expo のドキュメントには Cloudflare の手順がなく、Cloudflare 側�
 
 ### Positive
 
-- デプロイの設定 (`wrangler.jsonc`、`deploy.yml`) がリポジトリに残る。
+- デプロイの設定 (`wrangler.jsonc`、`_cloudflare-deploy.yml` の `deploy` ジョブ) がリポジトリに残る。
 - `pnpm deploy:web` で手元からも同じ手順でデプロイできる。
 
 ### Negative
 
 - API トークンを GitHub Secrets に置く必要がある。
-- PR ごとのプレビューはない (`develop` への push のみ)。
+- 当初は PR ごとのプレビューがなかった (`develop` への push のみ)。後から [ADR-0008](0008-pr-preview-and-reusable-workflows.md) で追加した。
 
 ### Risks
 
