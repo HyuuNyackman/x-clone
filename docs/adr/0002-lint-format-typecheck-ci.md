@@ -15,7 +15,7 @@
 - **typecheck**: `tsc --noEmit`。
 - `package.json` に `lint` / `typecheck` / `format` / `format:check` を置く。
 - GitHub Actions の `CI` を、`main` と `develop` への push と、すべての PR で実行する。順に lint、typecheck、format:check を走らせる。
-- `package.json` に `packageManager` がないので、pnpm のバージョンは `pnpm/action-setup` の `version: 10` で指定する。Node は `.node-version` から読む。
+- pnpm のバージョンは `package.json` の `packageManager` で固定し、`pnpm/action-setup` はそれを読む。Node は `.node-version` から読む。
 
 ## Alternatives Considered
 
