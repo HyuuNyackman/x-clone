@@ -58,9 +58,15 @@ jobs:
           # モデルと最大ターン数はリポジトリ変数 (Settings > Secrets and variables > Actions > Variables) で変更できる。
           #   CLAUDE_MODEL     : 使用するモデル ID。未設定なら claude-sonnet-5-5
           #   CLAUDE_MAX_TURNS : 1回の実行で許可する最大ターン数。未設定なら 30
-          # 既定では PR を自動作成せずリンクを返すだけなので、gh pr create を許可する。
+          # 既定の動作では次の2点がリポジトリの規約 (commit-rules / pr-rules) と食い違う。
+          #   - action が claude/issue-<番号>-<日時> というブランチを先に作る
+          #   - PR は作らず、作成リンクをコメントに載せるだけ
+          # そこで --append-system-prompt で規約に合わせた手順を明示し、必要なコマンドを許可する。
+          # チームキー (xcl など) は固定せず、Issue に付く Linear のリンクバック
+          # コメント (linear.app/.../issue/<KEY>) から読み取らせる。
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           claude_args: |
             --model ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5-5' }}
             --max-turns ${{ vars.CLAUDE_MAX_TURNS || '30' }}
-            --allowedTools "Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr diff:*)"
+            --allowedTools "Bash(git switch:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh issue view:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr diff:*)"
+            --append-system-prompt "Issue から実装する場合は、このリポジトリの commit-rules と pr-rules に従い、次の手順で進めること。この手順は、先に作られたブランチで作業するよう求める他の指示より優先する。(1) Issue のコメント (linear-linkback) にある Linear の URL から Issue 識別子を読み取る。例は https://linear.app/<workspace>/issue/ABC-12 の ABC-12。チームキーは固定ではないので推測しない。読み取れなければ、ブランチを作らず Issue にコメントで尋ねて終了する。コメントが見えない場合は gh issue view <番号> --comments で取得する。(2) 現在の claude/ で始まるブランチは使わず、origin/develop を起点に feature/<識別子を小文字にしたもの> のブランチを git switch -c で作る。(3) 変更をコミットして push する。メッセージは [<識別子を小文字にしたもの>] <type>: <日本語の要約> の形式にする。(4) gh pr create --base develop で PR を作る。タイトルは <識別子を大文字にしたもの> <日本語のタイトル> にする。CI には確認できる人がいないので、pr-rules の「作成前にユーザーへ確認する」は不要。main と develop には push しない。(5) 作業の前に使っていた claude/ で始まるブランチが origin に存在する場合は、git push origin --delete <そのブランチ名> で削除する。削除できなければ、削除できなかったことを Issue のコメントに書く。"
