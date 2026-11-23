@@ -1,0 +1,26 @@
+name: x-clone
+version: 1.0.0
+description: APM project for x-clone
+author: HyuuNyackman
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > 'apm config set target'
+# > auto-detect from filesystem.
+# Accepted values: agent-skills, antigravity, claude, codex, copilot, cursor, gemini, grok-bot, grok-build, hermes, kiro, opencode, windsurf
+targets:
+  - claude
+dependencies:
+  apm:
+    - expo/skills/plugins/expo/skills/expo-examples
+    - supabase/agent-skills/skills/supabase
+    - expo/skills/plugins/expo/skills/expo-overview
+    - expo/skills/plugins/expo/skills/expo-router
+    - expo/skills/plugins/expo/skills/expo-native-ui
+    - expo/skills/plugins/expo/skills/expo-data-fetching
+    - expo/skills/plugins/expo/skills/expo-design-system
+    - expo/skills/plugins/expo/skills/expo-project-structure
+    - vercel-labs/agent-skills/skills/react-native-skills
+    - cloudflare/skills/skills/wrangler
+    - cloudflare/skills/skills/frameworks-on-cloudflare
+  mcp: []
+includes: auto
+scripts: {}
