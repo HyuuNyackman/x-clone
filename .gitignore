@@ -89,3 +89,9 @@ CLAUDE.local.md
 *.tmp
 *.bak
 .cache/
+
+# APM dependencies
+apm_modules/
+
+# Claude skills (restored by `apm install`)
+.claude/skills/
