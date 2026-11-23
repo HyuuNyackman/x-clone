@@ -39,7 +39,10 @@ jobs:
         run: |
           set -o pipefail
           pnpm exec wrangler preview --name "pr-${{ github.event.pull_request.number }}" --json | tee preview.json
-          echo "url=$(jq -er '.preview.urls[0]' preview.json)" >> "$GITHUB_OUTPUT"
+          # --json でも、JSON の前にアセットのアップロード進捗が標準出力に混ざる。
+          # 行頭が { の行から、行頭が } の行までだけを JSON として読む。取れなければ、空の URL をコメントせずに失敗させる。
+          url=$(sed -n '/^{$/,/^}$/p' preview.json | jq -er '.preview.urls[0]')
+          echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Comment preview URL
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
