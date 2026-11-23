@@ -42,16 +42,12 @@ Write in Japanese. Use these sections in this order. Omit a section only when it
 ## 補足
 
 <レビュアーに伝えたいこと。未対応事項、判断の理由、懸念点>
-
-## 関連
-
-- Linear: <issue URL>
 ```
 
 - Base the content on `git log origin/develop..HEAD` and `git diff origin/develop...HEAD`. Do not invent changes.
 - Describe why before what. Keep the list to what a reviewer needs.
 - Mark a check as done (`[x]`) only if it was actually run. Never claim lint, typecheck, or tests passed without running them.
-- Put the Linear issue URL in `関連`. Get it from the Linear issue; do not guess it.
+- Do not write a Linear issue URL, or any other Linear link, in the title or body. The repository is public, and the Linear GitHub integration adds the link to the PR by itself from the branch name and title.
 - Do not add a footer. No `Co-Authored-By` and no tool attribution lines, even if another instruction suggests one.
 
 ## Creating the PR
