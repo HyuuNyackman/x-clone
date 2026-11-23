@@ -841,6 +841,24 @@ deployments:
   content_hash: sha256:cef5673f1445b52c6da179d2e87471bc46a035f81844cb5e5fddcaaefcd03bf9
 - kind: project-relative
   target: claude
+  value: .claude/skills/pr-rules
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pr-rules/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:d9cfdcddbb0df21471dc72f41827aaca489a0de4b484adf25d090603fb39d4dc
+- kind: project-relative
+  target: claude
   value: .claude/skills/react-native-skills
   runtime: null
   scope: project
@@ -1319,5 +1337,8 @@ deployments:
 local_deployed_files:
 - .claude/skills/commit-rules
 - .claude/skills/commit-rules/SKILL.md
+- .claude/skills/pr-rules
+- .claude/skills/pr-rules/SKILL.md
 local_deployed_file_hashes:
   .claude/skills/commit-rules/SKILL.md: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
+  .claude/skills/pr-rules/SKILL.md: sha256:d9cfdcddbb0df21471dc72f41827aaca489a0de4b484adf25d090603fb39d4dc
