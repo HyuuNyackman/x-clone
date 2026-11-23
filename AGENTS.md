@@ -39,3 +39,16 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## 技術負債の扱い
+
+作業中に見つけた、今回は直さない将来の技術負債(未検証の項目、先送りした判断、暫定対応、既知のリスク)は、黙って残さず Linear に Issue として切る。
+
+- 作る前に `list_issues` で重複を確認する。既にあれば新規作成せず、そちらにコメントや関連付けを足す。
+- チームは `XCL`、プロジェクトは `X Clone`、状態は `Backlog`。ラベルは内容に合うものを付ける (`infra` / `backend` / `frontend` / `db` / `docs` など)。
+- 今の作業の Issue に `relatedTo` で関連付ける。関連する既存 Issue (例: Supabase なら XCL-48) があれば、それも付ける。
+- 1件に1つの論点を書く。何が負債か、なぜ今やらないか、やること、期限の目安を、人が読める短い文で書く。実装メモは `+++ Agent notes` の折りたたみに入れる。
+- 設計判断を伴うものは ADR (`docs/adr/`) の Risks / Negative にも書き、Issue から参照する。
+- 作業の最後の報告に、作った Issue の ID と一行の要約を載せる。
+- 実装の途中で直せる小さなものは、Issue にせず今の PR で直す。
+- CI (GitHub Actions) の Claude は Linear を操作できないので、GitHub Issue として作る。Linear とは双方向に同期される。手順は `.github/workflows/claude.yml` の `--append-system-prompt` に書いてあり、経緯は [ADR-0009](docs/adr/0009-claude-actions-file-tech-debt-as-github-issues.md) にある。

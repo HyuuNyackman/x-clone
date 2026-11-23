@@ -1,0 +1,13 @@
+name: Setup
+description: pnpm と Node.js を用意して依存関係を入れる。呼び出す前に actions/checkout が必要。
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+    - uses: actions/setup-node@v7
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+      shell: bash
