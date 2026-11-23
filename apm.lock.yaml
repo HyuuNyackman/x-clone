@@ -48,30 +48,6 @@ dependencies:
     source: LICENSE
     hash: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
 - repo_url: expo/skills
-  name: expo-examples
-  host: github.com
-  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
-  version: unknown
-  virtual_path: plugins/expo/skills/expo-examples
-  is_virtual: true
-  package_type: claude_skill
-  deployed_files:
-  - .claude/skills/expo-examples
-  - .claude/skills/expo-examples/LICENSE
-  - .claude/skills/expo-examples/SKILL.md
-  - .claude/skills/expo-examples/agents/openai.yaml
-  - .claude/skills/expo-examples/references/catalog.md
-  deployed_file_hashes:
-    .claude/skills/expo-examples/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
-    .claude/skills/expo-examples/SKILL.md: sha256:f892153712ce83f057a4987a8ff97b61c396600a3edb4838fdb53047e02e4e35
-    .claude/skills/expo-examples/agents/openai.yaml: sha256:efdcc54de3f666d0d3f5515ee38e0c07ecc2d302a3c9e9acd742ce8f2f42f52d
-    .claude/skills/expo-examples/references/catalog.md: sha256:024aa05d82dffcc2a5e3b29e87ec4e800122bc39825c36e2e389f7b7e090d4fc
-  content_hash: sha256:42f9d3b7118dd44519a667a25da5581a4e9ed9e50c583aaa982a94a95f7cdc5f
-  carried_licenses:
-  - path: LICENSE
-    source: plugins/expo/LICENSE
-    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
-- repo_url: expo/skills
   name: expo-data-fetching
   host: github.com
   resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
@@ -119,6 +95,30 @@ dependencies:
     .claude/skills/expo-design-system/references/audit.md: sha256:a0ead76ab904c119a1353d8d91b9138144a97da43fdff683f291f2d45d868915
     .claude/skills/expo-design-system/references/native-slop.md: sha256:5662bd04ac2d6367fc4ca3ae355ec1b970752dcd8693a099a5e0792227eb09c1
   content_hash: sha256:75d8482dbedeaee1302f783f7710581befe4776ff9cb5eae934a15964abec418
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-examples
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-examples
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-examples
+  - .claude/skills/expo-examples/LICENSE
+  - .claude/skills/expo-examples/SKILL.md
+  - .claude/skills/expo-examples/agents/openai.yaml
+  - .claude/skills/expo-examples/references/catalog.md
+  deployed_file_hashes:
+    .claude/skills/expo-examples/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-examples/SKILL.md: sha256:f892153712ce83f057a4987a8ff97b61c396600a3edb4838fdb53047e02e4e35
+    .claude/skills/expo-examples/agents/openai.yaml: sha256:efdcc54de3f666d0d3f5515ee38e0c07ecc2d302a3c9e9acd742ce8f2f42f52d
+    .claude/skills/expo-examples/references/catalog.md: sha256:024aa05d82dffcc2a5e3b29e87ec4e800122bc39825c36e2e389f7b7e090d4fc
+  content_hash: sha256:42f9d3b7118dd44519a667a25da5581a4e9ed9e50c583aaa982a94a95f7cdc5f
   carried_licenses:
   - path: LICENSE
     source: plugins/expo/LICENSE
@@ -239,6 +239,26 @@ dependencies:
   - path: LICENSE
     source: plugins/expo/LICENSE
     hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: linuxfoundation/crowd.dev
+  name: adr
+  host: github.com
+  resolved_commit: 8f025ec661212589ed76588b21b4acf923efc652
+  version: unknown
+  virtual_path: .claude/skills/adr
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/adr
+  - .claude/skills/adr/LICENSE
+  - .claude/skills/adr/SKILL.md
+  deployed_file_hashes:
+    .claude/skills/adr/LICENSE: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
+    .claude/skills/adr/SKILL.md: sha256:26ea24f361e35f1c668332acb969fcac8e35d0c42195eda70af9fab1f99a82ce
+  content_hash: sha256:7b42395b846ecd1fdc970048c27e0552f3e7bdb8c28b707cb4bbd3e931cf2268
+  carried_licenses:
+  - path: LICENSE
+    source: LICENSE
+    hash: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
 - repo_url: supabase/agent-skills
   name: supabase
   host: github.com
@@ -362,6 +382,33 @@ dependencies:
     .claude/skills/react-native-skills/rules/ui-styling.md: sha256:cdef4d8b1a097b844e5992ab78e66a2dc604faf1e90f8d325a0eb116e8ef6a7e
   content_hash: sha256:54c634e195fe37af0cde3aab03e988f6a501b6f6ed34f67b2dadd604baa9e0ef
 deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: sha256:26ea24f361e35f1c668332acb969fcac8e35d0c42195eda70af9fab1f99a82ce
 - kind: project-relative
   target: claude
   value: .claude/skills/commit-rules
@@ -856,7 +903,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d9cfdcddbb0df21471dc72f41827aaca489a0de4b484adf25d090603fb39d4dc
+  content_hash: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
 - kind: project-relative
   target: claude
   value: .claude/skills/react-native-skills
@@ -1341,4 +1388,4 @@ local_deployed_files:
 - .claude/skills/pr-rules/SKILL.md
 local_deployed_file_hashes:
   .claude/skills/commit-rules/SKILL.md: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
-  .claude/skills/pr-rules/SKILL.md: sha256:d9cfdcddbb0df21471dc72f41827aaca489a0de4b484adf25d090603fb39d4dc
+  .claude/skills/pr-rules/SKILL.md: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
