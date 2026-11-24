@@ -9,6 +9,7 @@ type TextFieldProps<T extends FieldValues> = Pick<
   | 'textContentType'
   | 'onSubmitEditing'
   | 'returnKeyType'
+  | 'multiline'
 > & {
   control: Control<T>;
   name: Path<T>;
@@ -32,11 +33,12 @@ export function TextField<T extends FieldValues>({
             {...inputProps}
             autoCapitalize="none"
             autoCorrect={false}
+            textAlignVertical={inputProps.multiline ? 'top' : undefined}
             value={field.value}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
             accessibilityLabel={label}
-            className="rounded-xl border border-border bg-surface px-4 py-3 text-base text-foreground"
+            className={`rounded-xl border border-border bg-surface px-4 py-3 text-base text-foreground ${inputProps.multiline ? 'min-h-24' : ''}`}
           />
           {fieldState.error ? (
             <Text className="text-sm text-danger">{fieldState.error.message}</Text>

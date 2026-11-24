@@ -1,18 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const PASSWORD = 'e2e-password-123';
+import { PASSWORD, setupProfile, signUpOnly, uniqueEmail, uniqueHandle } from './helpers';
 
-// テストごとに別のユーザーを作る。ローカルの Supabase は使い捨てなので、後始末はしない。
-function uniqueEmail() {
-  return `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-}
-
+// サインアップして、初回のプロフィール設定まで済ませ、ホームに入る。
 async function signUp(page: Page, email: string) {
-  await page.goto('/signup');
-  await page.getByLabel('メールアドレス').fill(email);
-  await page.getByLabel('パスワード (8文字以上)').fill(PASSWORD);
-  await page.getByLabel('パスワード (確認)').fill(PASSWORD);
-  await page.getByRole('button', { name: '登録する' }).click();
+  await signUpOnly(page, email);
+  await setupProfile(page, uniqueHandle(), 'E2E User');
 }
 
 async function signOut(page: Page) {

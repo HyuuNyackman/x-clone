@@ -33,6 +33,7 @@ function RootStack() {
       >
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="profile-setup" />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen name="(auth)" />

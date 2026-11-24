@@ -1,0 +1,74 @@
+import type { ProfileValues } from '@/features/profile/schemas';
+import { supabase } from '@/lib/supabase';
+
+export type Profile = {
+  id: string;
+  handle: string;
+  displayName: string;
+  avatarUrl: string | null;
+  bio: string;
+};
+
+// 特定の入力欄のエラーとして表示したいエラー。
+export class ProfileFieldError extends Error {
+  field: keyof ProfileValues;
+
+  constructor(field: keyof ProfileValues, message: string) {
+    super(message);
+    this.name = 'ProfileFieldError';
+    this.field = field;
+  }
+}
+
+const COLUMNS = 'id, handle, display_name, avatar_url, bio';
+
+type ProfileRow = {
+  id: string;
+  handle: string;
+  display_name: string;
+  avatar_url: string | null;
+  bio: string;
+};
+
+function toProfile(row: ProfileRow): Profile {
+  return {
+    id: row.id,
+    handle: row.handle,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    bio: row.bio,
+  };
+}
+
+// サインアップ時にトリガーが付ける初期 handle (user_ + uuid の先頭10桁)。supabase の handle_new_user と揃える。
+export function initialHandleFor(userId: string): string {
+  return `user_${userId.replace(/-/g, '').slice(0, 10)}`;
+}
+
+// 初期 handle のままなら、まだ初回設定が済んでいない。
+export function needsProfileSetup(profile: Profile): boolean {
+  return profile.handle === initialHandleFor(profile.id);
+}
+
+export async function fetchProfile(userId: string): Promise<Profile> {
+  const { data, error } = await supabase.from('profiles').select(COLUMNS).eq('id', userId).single();
+  if (error) throw new Error(`プロフィールを読み込めませんでした: ${error.message}`);
+  return toProfile(data);
+}
+
+export async function updateProfile(userId: string, values: ProfileValues): Promise<Profile> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ handle: values.handle, display_name: values.displayName, bio: values.bio })
+    .eq('id', userId)
+    .select(COLUMNS)
+    .single();
+  if (error) {
+    // 23505: unique 違反 (profiles_handle_key)
+    if (error.code === '23505') {
+      throw new ProfileFieldError('handle', 'このハンドルは既に使われています');
+    }
+    throw new Error(`プロフィールを保存できませんでした: ${error.message}`);
+  }
+  return toProfile(data);
+}
