@@ -1,0 +1,25 @@
+name: Start Supabase
+description: >-
+  テスト用のローカル Supabase を、Docker を使わない native runtime で起動する (約 8 秒)。
+  接続先を EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY として後続の step に渡す。
+  呼び出す前に actions/checkout が必要。計測結果は XCL-85 を参照。
+
+runs:
+  using: composite
+  steps:
+    - uses: supabase/setup-cli@v1
+      with:
+        # _supabase-migrate.yml の SUPABASE_CLI_VERSION と揃える。native runtime は実験的なので、版を上げるときは動作を確かめる。
+        version: 3.3.0
+    - name: Start (native runtime)
+      shell: bash
+      env:
+        SUPABASE_EXPERIMENTAL_STACK: '1'
+      run: |
+        # native 用のサービス名で、テストに要らないものを除外する (Docker 版とは名前が違う)。
+        # start の標準出力にはキーが含まれる。ログに出さない。
+        supabase start --runtime native -x studio,functions,realtime,storage,analytics,pooler,mail > /dev/null
+        echo "EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321" >> "$GITHUB_ENV"
+        # native にはゲートウェイ (kong) が無く、キーを検証しない。status もキーを返さないので、形だけの値を渡す。
+        # (publishable キーの形式にしておくと、supabase-js はこれを認証ヘッダーに使わない)
+        echo "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_local_native_unverified" >> "$GITHUB_ENV"
