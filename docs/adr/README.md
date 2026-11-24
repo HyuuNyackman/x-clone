@@ -24,3 +24,4 @@
 | [0017](0017-run-e2e-locally-with-playwright-install-deps.md)   | E2E のローカル実行は、依存ライブラリを入れて Playwright をそのまま動かす                                    | accepted | 2026-11-24 |
 | [0019](0019-posts-table-and-rls.md)                            | posts は uuid 主キーと本人限定の insert / delete で作り、投稿の種類は列の制約で表す                         | accepted | 2026-11-24 |
 | [0020](0020-compose-modal-and-optimistic-timeline.md)          | 投稿作成はモーダル画面にし、タイムラインは TanStack Query の楽観的更新で反映する                            | accepted | 2026-11-24 |
+| [0021](0021-timeline-rpc-keyset-pagination.md)                 | タイムラインは security invoker の RPC と (created_at, id) のカーソルで返す                                 | accepted | 2026-11-24 |
