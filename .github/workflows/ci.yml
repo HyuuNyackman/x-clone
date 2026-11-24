@@ -3,7 +3,8 @@ name: CI
 # 入口。どのイベントでどのワークフローを呼ぶかだけを書き、中身は _*.yml に置く。
 #   _check.yml              lint / typecheck / format
 #   _cloudflare-deploy.yml  Cloudflare への公開と撤去 (PR の Preview、削除、本番デプロイ)
-# どのジョブが動くかは _cloudflare-deploy.yml の中で決める。
+#   _supabase-migrate.yml   Supabase へのマイグレーション (PR の dry-run、develop への適用)
+# どのジョブが動くかは _cloudflare-deploy.yml と _supabase-migrate.yml の中で決める。
 
 on:
   push:
@@ -32,3 +33,10 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # Preview URL のコメント投稿に必要
+
+  supabase:
+    needs: check
+    # cloudflare と同じ。PR を閉じたときは check が skip されるが、失敗したときだけ止める。
+    if: ${{ !cancelled() && !failure() }}
+    uses: ./.github/workflows/_supabase-migrate.yml
+    secrets: inherit
