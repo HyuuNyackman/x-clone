@@ -1,0 +1,35 @@
+name: Auto Merge
+
+# Claude が作った develop 向けの PR に、自動マージを設定する (ADR-0016)。
+# 自動マージは、ブランチ保護の必須チェックがすべて通ったときに、GitHub が squash でマージする。
+# 1 つでも失敗すると、マージされずに止まる。main 向けの PR は対象にしない (本番への反映は人が確認する)。
+# 必須チェックの設定は scripts/ci/apply-branch-protection.sh。
+#
+# 注意: GITHUB_TOKEN で行ったマージは、他のワークフロー (develop への push で動く CI) を起動しない。
+# PR の時点で同じチェックが通っているので、影響は小さい。
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: write # マージに必要
+  pull-requests: write # 自動マージの設定に必要
+
+jobs:
+  enable:
+    # Claude の PR だけを対象にする。action が作るブランチは claude/ で始まる (ADR-0013)。
+    # fork からの PR とドラフトは対象外。
+    if: |
+      github.event.pull_request.base.ref == 'develop' &&
+      startsWith(github.event.pull_request.head.ref, 'claude/') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR_URL"
