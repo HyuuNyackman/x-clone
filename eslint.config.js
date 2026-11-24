@@ -6,6 +6,15 @@ module.exports = defineConfig([
   expoConfig,
   prettierConfig,
   {
-    ignores: ['dist/*', '.expo/*', 'node_modules/*', 'apm_modules/*', '.apm/*', '.claude/skills/*'],
+    ignores: [
+      'dist/*',
+      'playwright-report/*',
+      'test-results/*',
+      '.expo/*',
+      'node_modules/*',
+      'apm_modules/*',
+      '.apm/*',
+      '.claude/skills/*',
+    ],
   },
 ]);

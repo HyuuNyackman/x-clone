@@ -2,6 +2,7 @@ name: CI
 
 # 入口。どのイベントでどのワークフローを呼ぶかだけを書き、中身は _*.yml に置く。
 #   _check.yml              lint / typecheck / format
+#   _e2e.yml                ローカル Supabase に対する Playwright の E2E
 #   _cloudflare-deploy.yml  Cloudflare への公開と撤去 (PR の Preview、削除、本番デプロイ)
 #   _supabase-migrate.yml   Supabase へのマイグレーション (PR の dry-run、develop への適用)
 # どのジョブが動くかは _cloudflare-deploy.yml と _supabase-migrate.yml の中で決める。
@@ -22,6 +23,11 @@ jobs:
     # PR を閉じたときは検査しない
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
     uses: ./.github/workflows/_check.yml
+
+  e2e:
+    # PR を閉じたときは実行しない
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
+    uses: ./.github/workflows/_e2e.yml
 
   cloudflare:
     needs: check
