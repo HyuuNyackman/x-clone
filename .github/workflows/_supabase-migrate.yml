@@ -1,9 +1,10 @@
 name: Supabase Migrate
 
 # supabase/migrations のマイグレーションをリモートの Supabase に反映する。どのジョブが動くかは、呼び出し元のイベントで決まる。
-#   dry-run : develop 向けの PR の作成・更新 → 適用される予定のマイグレーションを表示するだけで、DB は変えない
-#   push    : develop への push、手動実行     → リモートに適用する
+#   dry-run : develop または main 向けの PR の作成・更新 → 適用される予定のマイグレーションを表示するだけで、DB は変えない
+#   push    : main への push、main での手動実行         → リモートに適用する (ADR-0015)
 # どちらも supabase/migrations に変更があるときだけ動く (手動実行は常に動く)。
+# develop への push では、リモートに適用しない。develop → main の PR の dry-run で、溜まった全マイグレーションを確認する。
 # 認証情報は GitHub Secrets だけに置く (SUPABASE_ACCESS_TOKEN / SUPABASE_DB_PASSWORD / SUPABASE_PROJECT_REF)。
 # fork からの PR は Secrets が渡らないため、dry-run から除外する。
 
@@ -58,7 +59,7 @@ jobs:
       needs.changes.outputs.migrations == 'true' &&
       github.event_name == 'pull_request' &&
       github.event.action != 'closed' &&
-      github.base_ref == 'develop' &&
+      (github.base_ref == 'develop' || github.base_ref == 'main') &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -77,8 +78,8 @@ jobs:
     needs: changes
     if: |
       needs.changes.outputs.migrations == 'true' &&
-      (github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop'))
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # マイグレーションが同時に走らないよう、1つずつ順番に流す。
