@@ -17,11 +17,14 @@ npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — re
 npx expo start              # start the dev server
 npx expo lint               # lint
 npx tsc --noEmit            # typecheck
+pnpm test                   # unit tests (jest-expo + React Native Testing Library)
 npx expo-doctor             # diagnose dependency and config issues
 npx expo install --fix      # fix incompatible package versions
 ```
 
-Run lint and typecheck before declaring any task done.
+Run lint, typecheck, and `pnpm test` before declaring any task done.
+
+Unit tests live next to the code as `*.test.ts(x)` (screens in `src/__tests__/`). Never put test files under `src/app/` — every file there becomes a route. Mock `@/lib/supabase` or `@/features/auth/auth-api` so tests never reach a real Supabase.
 
 ## Navigation & Routing
 
