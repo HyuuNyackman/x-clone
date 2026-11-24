@@ -18,3 +18,4 @@
 | [0011](0011-supabase-migrations-via-cli-and-ci.md)             | Supabase のスキーマ変更はマイグレーションファイルで管理し、develop へのマージで CI が自動適用する           | accepted | 2026-11-24 |
 | [0012](0012-profiles-rls-and-signup-trigger.md)                | profiles は列単位の GRANT と RLS で守り、サインアップ時にトリガーで自動作成する                             | accepted | 2026-11-24 |
 | [0013](0013-claude-actions-use-action-created-branch.md)       | CI の Claude は action が作った claude/ ブランチで作業する                                                  | accepted | 2026-11-24 |
+| [0014](0014-auth-session-store-and-route-guard.md)             | 認証はメール + パスワードにし、セッションを Zustand で持って Stack.Protected でガードする                   | accepted | 2026-11-24 |
