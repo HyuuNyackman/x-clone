@@ -15,6 +15,7 @@ Linear の Issue から実装、テスト、マージまでを自動で進める
 - 本番への反映 (Cloudflare のデプロイと `supabase db push`) は、`main` への push だけで行う。`develop` への push では、本番に触れない。
 - `develop` は、確認済みの変更が溜まる統合ブランチにする。人は `develop → main` の PR で、全体を確認する。
 - Preview と `supabase db push --dry-run` は、`develop` 向けと `main` 向けの両方の PR で動かす。
+- リリース (`develop → main` の PR のマージ) は、差分が大きくならないよう、週に 1 回以上を目安にする。PR の本文には、人が確認すべき点の要約が、自動で載る (XCL-94)。
 - staging 環境は作らない。統合後の状態は、`develop → main` の PR の Preview で確認する。
 - Preview は、本番の Supabase に繋ぐ。人が触るときは、確認用のアカウントだけを使う。作ったデータは、確認用だと分かる名前にして、後で手動で消す。
 - マージ前の自動テスト (E2E、pgTAP) は、ローカルの Supabase だけに繋ぎ、本番には触れない (計測結果は XCL-85、実装は XCL-87 と XCL-88 を参照)。

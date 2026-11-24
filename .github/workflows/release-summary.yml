@@ -1,0 +1,44 @@
+name: Release Summary
+
+# develop → main のリリース PR の本文に、人が確認すべき点の要約を載せる (ADR-0015、XCL-94)。
+# 含まれる Issue、マイグレーション、破壊的な SQL の警告、認証・RLS・依存・ワークフローの変更、確認のチェックリストを、
+# 変更されたファイルから機械的に作る。PR の本文の、マーカーで囲んだ部分だけを更新するので、人が書いた説明は消えない。
+# コメントではなく本文に書く理由: Preview の URL のコメントが、同じボットの最後のコメントを上書きするため。
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write # PR の本文の更新に必要
+
+jobs:
+  summary:
+    # develop から main への PR だけ。fork からの PR は対象外。
+    if: |
+      github.head_ref == 'develop' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # 共通の祖先からの差分を取るため
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+      - name: Build summary
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/ci/release-summary.mjs "$BASE_SHA" "$HEAD_SHA" > summary.md
+      - name: Update PR body
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr view "$PR_NUMBER" --json body --jq .body > body.md
+          node scripts/ci/update-summary-section.mjs body.md summary.md > new-body.md
+          gh pr edit "$PR_NUMBER" --body-file new-body.md
