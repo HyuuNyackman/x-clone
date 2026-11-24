@@ -74,7 +74,7 @@ test('パスワードが違うと、ログインできずエラーが出る', as
   await page.getByLabel('メールアドレス').fill(email);
   await page.getByLabel('パスワード', { exact: true }).fill('wrong-password-999');
   await page.getByRole('button', { name: 'ログイン' }).click();
-  await expect(page.getByText(/Invalid login credentials/i)).toBeVisible();
+  await expect(page.getByText('メールアドレスまたはパスワードが正しくありません')).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
 });
 
