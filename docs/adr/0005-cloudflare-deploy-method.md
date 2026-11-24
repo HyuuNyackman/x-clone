@@ -1,7 +1,7 @@
 # ADR-0005: Web 版を Cloudflare Workers の静的アセットに GitHub Actions からデプロイする
 
 **Date**: 2026-11-23
-**Status**: accepted
+**Status**: accepted (本番デプロイの起動条件は [ADR-0015](0015-production-deploy-only-from-main.md) で `main` への push に変更)
 **Deciders**: HyuuNyackman
 
 ## Context
