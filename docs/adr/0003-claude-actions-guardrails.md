@@ -1,7 +1,7 @@
 # ADR-0003: Claude Code Actions の実行条件を絞る
 
 **Date**: 2026-11-23
-**Status**: accepted
+**Status**: accepted (自動レビューを実行するタイミングは [ADR-0016](0016-automated-pipeline-from-linear-to-merge.md) で変更)
 **Deciders**: HyuuNyackman
 
 ## Context
