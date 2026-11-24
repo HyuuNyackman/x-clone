@@ -95,3 +95,7 @@ apm_modules/
 
 # Claude skills (restored by `apm install`)
 .claude/skills/
+
+# ===== Playwright =====
+playwright-report/
+test-results/
