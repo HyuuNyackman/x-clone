@@ -1,7 +1,7 @@
 # ADR-0008: develop 向けの PR を Cloudflare Workers Previews で公開し、CI を入口の1ファイルと再利用ワークフローに分ける
 
 **Date**: 2026-11-23
-**Status**: accepted
+**Status**: accepted (本番デプロイの起動条件と Preview の対象ブランチは [ADR-0015](0015-production-deploy-only-from-main.md) で変更)
 **Deciders**: HyuuNyackman
 
 ## Context

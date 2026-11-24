@@ -1,7 +1,7 @@
 # ADR-0011: Supabase のスキーマ変更はマイグレーションファイルで管理し、develop へのマージで CI が自動適用する
 
 **Date**: 2026-11-24
-**Status**: accepted
+**Status**: accepted (`db push` の起動条件は [ADR-0015](0015-production-deploy-only-from-main.md) で `main` への push に変更)
 **Deciders**: HyuuNyackman
 
 ## Context
