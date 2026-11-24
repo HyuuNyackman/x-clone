@@ -46,3 +46,4 @@ Expo Go ではソーシャルログインのリダイレクトが扱いにくい
 - パスワードの複雑さの規則は、Supabase 側の設定と Zod 側 (8文字以上) で別々に持つ。ずれると登録時に `weak_password` エラーになる。
 - パスワード再設定・メール確認の再送・ソーシャルログインは未対応。
 - 誰でもサインアップできる。publishable キーは公開前提のため、画面を隠しても API から登録される。承認制は [XCL-81](https://linear.app/hyuunyackman/issue/XCL-81) で扱う。それまでは公開 URL を広めない。
+- 本番のメール確認は OFF にして運用する。認証メールのリダイレクト先 (Site URL・Redirect URLs・`emailRedirectTo`) は未設定のため、確認を ON にする前に [XCL-82](https://linear.app/hyuunyackman/issue/XCL-82) で設定する。
