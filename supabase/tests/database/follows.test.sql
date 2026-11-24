@@ -4,7 +4,7 @@
 
 begin;
 
-select plan(24);
+select plan(23);
 
 -- ===== 構造 =====
 
