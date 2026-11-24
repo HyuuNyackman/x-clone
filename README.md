@@ -56,3 +56,46 @@ supabase migration new <名前>   # supabase/migrations/ に SQL の雛形がで
 2. ダッシュボードで、アクセストークンを発行する。対象のプロジェクトだけに絞った scoped token を使う。
 3. `supabase login` し、`supabase link --project-ref <ref>` でリンクする。
 4. GitHub の Secrets に `SUPABASE_ACCESS_TOKEN`、`SUPABASE_DB_PASSWORD`、`SUPABASE_PROJECT_REF` を登録する。
+
+## E2E をローカルで動かす
+
+E2E は、ローカルの Supabase に繋いだ Web 版を、Playwright (Chromium) で操作する。CI と同じ流れを手元で再現する。判断は [ADR-0017](docs/adr/0017-run-e2e-locally-with-playwright-install-deps.md) を参照。
+
+### 初回だけ
+
+Chromium の起動に必要な共有ライブラリ (`libnspr4` など) を入れる。WSL では入っていないため、入れないと起動に失敗する。sudo が要る。
+
+```bash
+pnpm install
+pnpm exec playwright install chromium
+sudo pnpm exec playwright install-deps chromium
+```
+
+### 実行
+
+```bash
+# 1. ローカルの Supabase を起動する (Docker が要る)。テストに要らないサービスは除く
+supabase start -x studio,functions,realtime,storage,analytics,pooler,mail
+
+# 2. 接続先を環境変数に入れる (Web ビルドが埋め込む)
+eval "$(supabase status -o env | grep -E '^(API_URL|PUBLISHABLE_KEY)=' | sed -e 's/^API_URL=/export EXPO_PUBLIC_SUPABASE_URL=/' -e 's/^PUBLISHABLE_KEY=/export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/')"
+
+# 3. 接続先がローカルか確かめて、ビルドし、成果物も確かめる
+node scripts/e2e/check-local-target.mjs env
+pnpm build:web
+node scripts/e2e/check-local-target.mjs dist
+
+# 4. 実行する
+pnpm e2e
+```
+
+- 接続先は、`http://127.0.0.1:<ポート>` か `http://localhost:<ポート>` でなければならない。ガードが、ホスティング版の Supabase に繋がるのを防ぐ。
+- 画面を変えたら、手順 3 のビルドからやり直す。`playwright.config.ts` は `dist/` をそのまま配信する。
+- 終わったら `supabase stop` で止める。
+
+### 失敗したとき
+
+- レポートを開く: `pnpm exec playwright show-report`
+- 失敗したテストの trace を開く: `pnpm exec playwright show-trace test-results/<テスト名>/trace.zip`
+- スクリーンショットと動画は `test-results/` に残る。
+- CI で失敗したときは、Actions の成果物 `playwright-report` を取り、同じコマンドで開く。
