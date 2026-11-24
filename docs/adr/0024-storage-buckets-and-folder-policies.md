@@ -14,6 +14,7 @@ XCL-63 で画像の保存先を作る。請求先の登録が不要な Supabase 
 - アバターは別バケットにする。上限サイズと将来の運用 (差し替えの頻度、キャッシュ) が投稿画像と違うため。
 - 保存パスは `{ユーザーID}/{ファイル名}`。`storage.objects` の insert ポリシーは、バケットが一致し、直下のフォルダが `auth.uid()` で、階層が 1 つだけのときに許す。delete ポリシーは自分のフォルダだけ。対象は `authenticated` のみで、未ログインは何もできない。
 - select と update のポリシーは作らない。公開バケットの URL は認証なしで読め、一覧取得を許さずに済む。update がないので上書き (upsert) もできず、差し替えは削除して作り直す。
+- CI のローカル Supabase は storage を起動しない (`-x storage`) ので、storage スキーマがない。マイグレーションは `to_regclass` で確かめ、なければ何もせず通す。pgTAP も同じ条件で skip する。
 - バケットは `insert ... on conflict do update` で作り、マイグレーションを繰り返し流しても設定が揃うようにする。
 
 ## Alternatives Considered
@@ -44,5 +45,6 @@ XCL-63 で画像の保存先を作る。請求先の登録が不要な Supabase 
 
 ### Risks
 
+- CI では storage を起動しないため、ポリシーとバケット設定の pgTAP は skip され、実際には確かめられない。CI で storage を起動する対応は別の Issue に切る。
 - ファイルサイズと形式の拒否は Storage API の層で行われ、pgTAP では設定値しか確かめられない。実際の拒否は E2E などで別途確かめる必要がある。
 - 1GB を超えるとアップロードが失敗する。使用量は Supabase のダッシュボードで確認する。
