@@ -53,5 +53,5 @@ XCL-50 で `profiles` テーブルを作る。Supabase の Data API は、テー
 ### Risks
 
 - この SQL の挙動は、XCL-88 の pgTAP (`supabase/tests/database/profiles.test.sql`) で、ローカルの Supabase に対して CI で確かめている。確かめている内容は、サインアップ時の自動作成、他人の行を更新できないこと、`id` と `created_at` を更新できないこと、`insert` と `delete` が拒否されること、GRANT の範囲である (#46)。
-- **ホスティング版の「自動許可 OFF」は、実機では確かめていない。** テストはローカルのスタックで動く。ローカルの `supabase/config.toml` は `auto_expose_new_tables = false` にして、ホスティング版と同じ前提にそろえている。この設定を入れる前は、ローカルと CI の DB だけ、`anon` / `authenticated` に全権限が自動で付いており、テストが 9 件落ちた。ホスティング版の設定が ON のままなら、本番はこの ADR の前提より権限が広い。Supabase のダッシュボードで設定を確認する。
+- **ホスティング版の「自動許可 OFF」は、ダッシュボードで確認した (2026-11-24、オーナーが「Automatically expose new tables」の OFF を確認)。** ローカルの `supabase/config.toml` も `auto_expose_new_tables = false` にして、同じ前提にそろえている。この設定を入れる前は、ローカルと CI の DB だけ、`anon` / `authenticated` に全権限が自動で付いており、pgTAP が 9 件落ちた。ホスティング版の実際の GRANT は、まだ SQL で確かめていない。設定を変えたときは、この確認をやり直す。
 - 未ログインにも全プロフィールを見せる。非公開アカウントを作る場合は、ポリシーの見直しが要る。
