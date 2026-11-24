@@ -1,3 +1,4 @@
 allowBuilds:
   esbuild: false
   workerd: false
+  '@parcel/watcher': false
