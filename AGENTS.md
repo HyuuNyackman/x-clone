@@ -40,6 +40,12 @@ Docs: https://docs.expo.dev/eas/index.md
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
 
+## Supabase のテスト
+
+- テーブル・ポリシー・トリガーを追加・変更するときは、`supabase/tests/database/` に pgTAP のテストを一緒に書く。確かめる内容は、構造、GRANT、RLS (本人・他人・未ログイン)、トリガー。例は `profiles.test.sql`。
+- 実行は `supabase test db`。CI は `supabase/` に変更があると、ローカルの Supabase (native runtime) で自動的に実行する。
+- `supabase/config.toml` の `auto_expose_new_tables = false` を変えない。ホスティング版と同じく、GRANT を明示しないテーブルを API から使えないようにするため。
+
 ## 技術負債の扱い
 
 作業中に見つけた、今回は直さない将来の技術負債(未検証の項目、先送りした判断、暫定対応、既知のリスク)は、黙って残さず Linear に Issue として切る。

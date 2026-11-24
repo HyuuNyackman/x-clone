@@ -1,0 +1,60 @@
+name: DB Test
+
+# supabase/tests/database の pgTAP を、ローカルの Supabase (native runtime) で実行する。
+# RLS・権限・トリガーの変更で、意図しない穴ができていないかをマージ前に検出する。
+# 本番の Supabase には繋がない。supabase test db は、--linked や --db-url を付けない限り、ローカルのスタックだけを見る。
+# supabase/ とこの仕組みの設定に変更があるときだけ動く (手動実行は常に動く)。
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  # テストの対象に変更があるかを調べる。ないときは、Supabase を起動しない。
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      db: ${{ steps.diff.outputs.db }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          base=""
+          case "$EVENT_NAME" in
+            pull_request) base="$PR_BASE_SHA" ;;
+            push) base="$PUSH_BEFORE_SHA" ;;
+          esac
+          # 手動実行や、比較元がない (新しいブランチ、履歴の書き換え) ときは、変更ありとして扱う
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo "db=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "$base" HEAD -- supabase .github/actions/start-supabase .github/workflows/_db-test.yml | grep -q .; then
+            echo "db=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "db=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  db-test:
+    needs: changes
+    if: needs.changes.outputs.db == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/start-supabase
+      - name: pgTAP を実行する
+        shell: bash
+        run: |
+          supabase test db 2>&1 | tee test.log
+          # 接続先がローカルのスタックであること (本番に向いていないこと) を確かめる
+          grep -q 'Target: local stack' test.log
