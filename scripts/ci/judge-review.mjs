@@ -26,7 +26,11 @@ const latest = comments
   .at(-1);
 
 if (!latest) {
-  console.error('::error::このレビューの実行で投稿されたコメントが見つかりません');
+  console.error(
+    '::error::このレビューの実行で、コメントが投稿されませんでした。' +
+      ' AGENTS.md、CLAUDE.md、.claude/ などの機微なパスを変更する PR は、claude-code-action がレビューを実行しません (仕様)。' +
+      ' その場合は、人が内容を確認してマージしてください。それ以外のときは、ワークフローを再実行してください。',
+  );
   process.exit(1);
 }
 
