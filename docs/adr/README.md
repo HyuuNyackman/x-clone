@@ -21,3 +21,4 @@
 | [0014](0014-auth-session-store-and-route-guard.md)             | 認証はメール + パスワードにし、セッションを Zustand で持って Stack.Protected でガードする                   | accepted | 2026-11-24 |
 | [0015](0015-production-deploy-only-from-main.md)               | 本番への反映は main への push だけで行い、develop は統合の場にする                                          | accepted | 2026-11-24 |
 | [0016](0016-automated-pipeline-from-linear-to-merge.md)        | Linear の Issue から develop へのマージまでを自動で進める                                                   | accepted | 2026-11-24 |
+| [0017](0017-run-e2e-locally-with-playwright-install-deps.md)   | E2E のローカル実行は、依存ライブラリを入れて Playwright をそのまま動かす                                    | accepted | 2026-11-24 |
