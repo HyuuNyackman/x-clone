@@ -1,9 +1,10 @@
 name: Cloudflare Deploy
 
 # Cloudflare への公開と撤去をまとめる。どのジョブが動くかは、呼び出し元のイベントで決まる。
-#   preview  : develop 向けの PR の作成・更新 → Preview を公開してコメントする
-#   cleanup  : develop 向けの PR を閉じた    → Preview を削除する
-#   deploy   : develop への push、手動実行   → 本番にデプロイする
+#   preview  : develop または main 向けの PR の作成・更新 → Preview を公開してコメントする
+#   cleanup  : develop または main 向けの PR を閉じた    → Preview を削除する
+#   deploy   : main への push、main での手動実行         → 本番にデプロイする (ADR-0015)
+# develop への push では、本番に出さない。develop は統合の場で、本番に出すのは develop → main の PR をマージしたときだけ。
 # fork からの PR は Secrets が渡らないため、preview と cleanup から除外する。
 
 on:
@@ -17,7 +18,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       github.event.action != 'closed' &&
-      github.base_ref == 'develop' &&
+      (github.base_ref == 'develop' || github.base_ref == 'main') &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -60,7 +61,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       github.event.action == 'closed' &&
-      github.base_ref == 'develop' &&
+      (github.base_ref == 'develop' || github.base_ref == 'main') &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -77,9 +78,10 @@ jobs:
         run: pnpm exec wrangler preview delete --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation
 
   deploy:
+    # 手動実行も、main でだけ本番に出す (別のブランチから実行しても動かない)。
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop')
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
