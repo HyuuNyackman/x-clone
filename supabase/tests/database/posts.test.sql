@@ -12,7 +12,7 @@ select has_table('public', 'posts', 'posts テーブルがある');
 
 select columns_are(
   'public', 'posts',
-  array['id', 'author_id', 'body', 'reply_to', 'quote_of', 'repost_of', 'created_at'],
+  array['id', 'author_id', 'body', 'reply_to', 'quote_of', 'repost_of', 'created_at', 'like_count'],
   'posts の列が想定どおり'
 );
 
