@@ -1,0 +1,13 @@
+name: Probe E2E
+
+# XCL-87: PR を作る前に、E2E の再利用ワークフローを動かして確かめる一時的なワークフロー。確認が済んだら削除する。
+on:
+  push:
+    branches: [feature/xcl-87]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    uses: ./.github/workflows/_e2e.yml
