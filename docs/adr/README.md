@@ -26,3 +26,4 @@
 | [0020](0020-compose-modal-and-optimistic-timeline.md)          | 投稿作成はモーダル画面にし、タイムラインは TanStack Query の楽観的更新で反映する                            | accepted | 2026-11-24 |
 | [0021](0021-timeline-rpc-keyset-pagination.md)                 | タイムラインは security invoker の RPC と (created_at, id) のカーソルで返す                                 | accepted | 2026-11-24 |
 | [0022](0022-likes-table-and-counter-trigger.md)                | いいねは複合主キーの likes と、トリガーで更新する posts.like_count で持つ                                   | accepted | 2026-11-24 |
+| [0024](0024-storage-buckets-and-folder-policies.md)            | 画像は公開バケットを用途別に分け、自分のフォルダだけに書き込ませる                                          | accepted | 2026-11-24 |
