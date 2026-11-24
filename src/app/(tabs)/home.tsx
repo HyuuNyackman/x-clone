@@ -1,15 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { FlatList, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
-import { useThemeStore } from '@/features/theme/theme-store';
+import { useAuthStore } from '@/features/auth/auth-store';
+import { PostCard } from '@/features/posts/post-card';
+import { useDeletePost, useTimeline } from '@/features/posts/use-posts';
 import { checkSupabaseConnection } from '@/lib/supabase-health';
 
-// Tailwind のクラスとテーマの切り替えが効いているかを確認する仮の画面
 export default function HomeScreen() {
-  const preference = useThemeStore((state) => state.preference);
-  const setPreference = useThemeStore((state) => state.setPreference);
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const timeline = useTimeline();
+  const deletePost = useDeletePost();
 
   const connection = useQuery({
     queryKey: ['supabase', 'connection'],
@@ -23,20 +26,33 @@ export default function HomeScreen() {
 
   return (
     <Screen>
-      <View className="flex-1 items-center justify-center gap-4 px-6">
-        <Text className="text-3xl font-extrabold text-foreground">x-clone</Text>
-        <Text className="text-base text-muted">テーマ: {preference}</Text>
-        <Text className="text-base text-muted">データベース: {status}</Text>
-        <View className="w-full gap-3 rounded-2xl border border-border bg-surface p-4">
-          <Button label="ダーク" onPress={() => setPreference('dark')} />
-          <Button label="ライト" variant="outline" onPress={() => setPreference('light')} />
-          <Button
-            label="端末に合わせる"
-            variant="outline"
-            onPress={() => setPreference('system')}
-          />
-        </View>
+      <View className="gap-3 border-b border-border px-4 py-3">
+        <Text className="text-xl font-extrabold text-foreground">ホーム</Text>
+        <Text className="text-xs text-muted">データベース: {status}</Text>
+        <Button label="投稿を作成" onPress={() => router.push('/compose')} />
       </View>
+      {timeline.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{timeline.error.message}</Text>
+      ) : null}
+      {deletePost.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{deletePost.error.message}</Text>
+      ) : null}
+      <FlatList
+        data={timeline.data ?? []}
+        keyExtractor={(post) => post.id}
+        renderItem={({ item }) => (
+          <PostCard
+            post={item}
+            canDelete={item.authorId === userId && !item.id.startsWith('optimistic-')}
+            onDelete={(id) => deletePost.mutate(id)}
+          />
+        )}
+        ListEmptyComponent={
+          <Text className="px-4 py-6 text-center text-muted">
+            {timeline.isPending ? '読み込み中…' : 'まだ投稿がありません'}
+          </Text>
+        }
+      />
     </Screen>
   );
 }
