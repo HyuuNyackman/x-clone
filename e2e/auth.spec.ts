@@ -31,7 +31,7 @@ test('サインアップすると、ホームに入れて、ローカルの Supa
 }) => {
   await signUp(page, uniqueEmail());
   await expect(page).toHaveURL(/\/home$/);
-  await expect(page.getByText('Supabase: 接続OK')).toBeVisible();
+  await expect(page.getByText('データベース: 接続OK')).toBeVisible();
 });
 
 test('ログアウトすると、ログイン画面に戻る', async ({ page }) => {

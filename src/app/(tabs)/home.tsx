@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <View className="flex-1 items-center justify-center gap-4 px-6">
         <Text className="text-3xl font-extrabold text-foreground">x-clone</Text>
         <Text className="text-base text-muted">テーマ: {preference}</Text>
-        <Text className="text-base text-muted">Supabase: {status}</Text>
+        <Text className="text-base text-muted">データベース: {status}</Text>
         <View className="w-full gap-3 rounded-2xl border border-border bg-surface p-4">
           <Button label="ダーク" onPress={() => setPreference('dark')} />
           <Button label="ライト" variant="outline" onPress={() => setPreference('light')} />
