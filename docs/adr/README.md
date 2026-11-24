@@ -16,4 +16,5 @@
 | [0009](0009-claude-actions-file-tech-debt-as-github-issues.md) | CI の Claude は技術負債を GitHub Issue として切り、Linear の同期で取り込む                                  | accepted | 2026-11-23 |
 | [0010](0010-supabase-client-and-session-storage.md)            | Supabase クライアントはアプリ内で anon キーだけを使い、セッションは AsyncStorage に保存する                 | accepted | 2026-11-23 |
 | [0011](0011-supabase-migrations-via-cli-and-ci.md)             | Supabase のスキーマ変更はマイグレーションファイルで管理し、develop へのマージで CI が自動適用する           | accepted | 2026-11-24 |
+| [0012](0012-profiles-rls-and-signup-trigger.md)                | profiles は列単位の GRANT と RLS で守り、サインアップ時にトリガーで自動作成する                             | accepted | 2026-11-24 |
 | [0013](0013-claude-actions-use-action-created-branch.md)       | CI の Claude は action が作った claude/ ブランチで作業する                                                  | accepted | 2026-11-24 |
