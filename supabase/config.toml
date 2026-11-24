@@ -24,7 +24,10 @@ max_rows = 1000
 # `postgres` are reachable through the Data API roles (`anon`, `authenticated`, `service_role`)
 # without explicit GRANTs, matching the cloud default. Set to `false` to require explicit GRANTs
 # instead. Left unset, a fresh project falls back to `true`.
-# auto_expose_new_tables = true
+# このプロジェクトは false にする。ホスティング版は自動許可が OFF で、マイグレーションが GRANT を明示している (ADR-0012)。
+# 既定の true だと、ローカルと CI の DB だけ、anon / authenticated に全権限が自動で付き、本番と挙動が変わる。
+# 変更後は、既存のローカル DB に反映するため `supabase db reset` が要る (CI は毎回作り直すので不要)。
+auto_expose_new_tables = false
 
 [api.tls]
 # Enable HTTPS endpoints locally using a self-signed certificate.
