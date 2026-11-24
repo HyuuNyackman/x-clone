@@ -45,6 +45,20 @@ test('ログアウトすると、ログイン画面に戻る', async ({ page }) 
   await expect(page).toHaveURL(/\/login$/);
 });
 
+test('ログアウトした後に、ブラウザの「戻る」でホームに戻れない', async ({ page }) => {
+  await signUp(page, uniqueEmail());
+  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.getByText('データベース: 接続OK')).toBeVisible();
+  await signOut(page);
+  await expect(page).toHaveURL(/\/login$/);
+
+  await page.goBack();
+
+  // 戻った先がログインが要らない画面 (ログイン / サインアップ) のままで、ホームは見えない。
+  await expect(page).toHaveURL(/\/(login|signup)$/);
+  await expect(page.getByText('データベース')).toHaveCount(0);
+});
+
 test('作ったアカウントで、ログインし直せる', async ({ page }) => {
   const email = uniqueEmail();
   await signUp(page, email);
