@@ -42,5 +42,6 @@ XCL-49 でアプリから Supabase に接続する。アプリは Expo Go と We
 
 ### Risks
 
-- 環境変数は `EXPO_PUBLIC_` のため、ビルド時に埋め込まれる。CI のビルドと Preview に値を渡さないと、起動時にエラーになる。
+- 環境変数は `EXPO_PUBLIC_` のため、ビルド時に埋め込まれる。`.env` はローカル専用なので、CI のビルドには GitHub の Variables (`EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`) を `_cloudflare-deploy.yml` の `build:web` で渡す。Variables を登録しないと、Preview と本番は起動時にエラーになる。
+- Preview と本番で同じ Supabase プロジェクトを使う。分ける場合は GitHub Environments を使う (XCL-76 で判断)。
 - 実際の Supabase への接続は、このPRでは確認できていない。Expo Go と Web での確認が必要。
