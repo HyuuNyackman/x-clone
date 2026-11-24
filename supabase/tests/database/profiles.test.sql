@@ -34,9 +34,26 @@ select has_trigger('auth', 'users', 'on_auth_user_created', 'auth.users にサ�
 
 -- ===== 権限 (GRANT) =====
 
--- テーブル全体の権限は select だけ。update は列を絞って付けている。
-select table_privs_are('public', 'profiles', 'anon', array['SELECT'], 'anon は select だけ');
-select table_privs_are('public', 'profiles', 'authenticated', array['SELECT'], 'authenticated も、テーブル全体では select だけ');
+-- Data API (PostgREST) から使えるデータ操作の権限は、テーブル全体では select だけ。update は列を絞って付けている。
+-- truncate / references / trigger は、Data API からは実行できないので、ここでは見ない。
+select is(
+  (
+    select array_agg(p order by p)
+    from unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE']) as p
+    where has_table_privilege('anon', 'public.profiles', p)
+  ),
+  array['SELECT'],
+  'anon が持つデータ操作の権限は select だけ'
+);
+select is(
+  (
+    select array_agg(p order by p)
+    from unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE']) as p
+    where has_table_privilege('authenticated', 'public.profiles', p)
+  ),
+  array['SELECT'],
+  'authenticated も、テーブル全体では select だけ (update は列ごと)'
+);
 
 select ok(
   has_column_privilege('authenticated', 'public.profiles', 'handle', 'UPDATE'),
