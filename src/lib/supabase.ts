@@ -3,16 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error(
-    'EXPO_PUBLIC_SUPABASE_URL と EXPO_PUBLIC_SUPABASE_ANON_KEY を .env に設定してください (.env.example を参照)。',
+    'EXPO_PUBLIC_SUPABASE_URL と EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY を .env に設定してください (.env.example を参照)。',
   );
 }
 
-// アプリに入れてよいのは anon キーだけ。service_role キーは入れない。データは RLS で守る。
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// アプリに入れてよいのは publishable キー (旧 anon キー) だけ。service_role キーは入れない。データは RLS で守る。
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
     // セッションは AsyncStorage に保存する (Expo Go に同梱。Web では localStorage になる)。
     storage: AsyncStorage,
