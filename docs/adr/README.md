@@ -15,3 +15,4 @@
 | [0008](0008-pr-preview-and-reusable-workflows.md)              | develop 向けの PR を Cloudflare Workers Previews で公開し、CI を入口の1ファイルと再利用ワークフローに分ける | accepted | 2026-11-23 |
 | [0009](0009-claude-actions-file-tech-debt-as-github-issues.md) | CI の Claude は技術負債を GitHub Issue として切り、Linear の同期で取り込む                                  | accepted | 2026-11-23 |
 | [0010](0010-supabase-client-and-session-storage.md)            | Supabase クライアントはアプリ内で anon キーだけを使い、セッションは AsyncStorage に保存する                 | accepted | 2026-11-23 |
+| [0011](0011-supabase-migrations-via-cli-and-ci.md)             | Supabase のスキーマ変更はマイグレーションファイルで管理し、develop へのマージで CI が自動適用する           | accepted | 2026-11-24 |

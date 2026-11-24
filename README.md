@@ -34,3 +34,25 @@ pnpm deploy:web            # expo export -p web → wrangler deploy
 3. ホーム画面のアイコンから起動し、アドレスバーなしで表示されることを確認する
 
 アイコンと manifest は `public/` にある(`apple-touch-icon.png`、`icon-192.png`、`icon-512.png`、`manifest.json`)。
+
+## Supabase のマイグレーション
+
+スキーマの変更は、ダッシュボードで直接行わず、マイグレーションファイルで行う。判断は [ADR-0011](docs/adr/0011-supabase-migrations-via-cli-and-ci.md) を参照。
+
+```bash
+supabase migration new <名前>   # supabase/migrations/ に SQL の雛形ができる。SQL を書く
+```
+
+- `develop` 向けの PR: `supabase db push --remote --dry-run` で、適用される予定のマイグレーションを検証する(DB は変えない)
+- `develop` への push: `supabase db push --remote --yes` で、リモートに自動で適用する
+- どちらも、`supabase/migrations/` に変更があるときだけ動く(手動実行は常に動く)
+- SQL は、人間がレビューしてからマージする
+
+### 初回のセットアップ(人間が行う)
+
+認証情報は、リポジトリにも会話にも書かず、GitHub Secrets にだけ置く。
+
+1. Supabase CLI を WSL に入れる([リリース](https://github.com/supabase/cli/releases)から `supabase_<バージョン>_linux_amd64.tar.gz` を取り、`supabase` を `~/.local/bin` に置く)。バージョンは `_supabase-migrate.yml` の `SUPABASE_CLI_VERSION` に合わせる。
+2. ダッシュボードで、アクセストークンを発行する。対象のプロジェクトだけに絞った scoped token を使う。
+3. `supabase login` し、`supabase link --project-ref <ref>` でリンクする。
+4. GitHub の Secrets に `SUPABASE_ACCESS_TOKEN`、`SUPABASE_DB_PASSWORD`、`SUPABASE_PROJECT_REF` を登録する。
