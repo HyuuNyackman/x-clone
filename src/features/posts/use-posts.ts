@@ -23,6 +23,7 @@ import {
   type TimelineCursor,
   type TimelinePage,
 } from '@/features/posts/posts-api';
+import type { ProcessedImage } from '@/features/media/image-processing';
 import { useProfile } from '@/features/profile/use-profile';
 
 // 「おすすめ」(全体) のタイムライン。['posts', 'timeline'] は「フォロー中」も含む前方一致のキーでもある。
@@ -64,6 +65,8 @@ function mapFirstPage(data: TimelineData | undefined, fn: (posts: Post[]) => Pos
   return { ...data, pages: [{ ...first, posts: fn(first.posts) }, ...rest] };
 }
 
+export type CreatePostVariables = { body: string; images?: ProcessedImage[] };
+
 // 投稿する。送信中から、仮の投稿を先頭に出す (楽観的更新)。失敗したら元に戻す。
 export function useCreatePost() {
   const userId = useAuthStore((state) => state.session?.user.id);
@@ -71,11 +74,11 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: string) => {
+    mutationFn: ({ body, images }: CreatePostVariables) => {
       if (!userId) throw new Error('ログインしていません');
-      return createPost(userId, body);
+      return createPost(userId, body, undefined, images);
     },
-    onMutate: async (body) => {
+    onMutate: async ({ body }) => {
       await queryClient.cancelQueries({ queryKey: timelineKey });
       const previous = queryClient.getQueryData<TimelineData>(timelineKey);
       if (userId) {
@@ -88,6 +91,7 @@ export function useCreatePost() {
           likeCount: 0,
           likedByMe: false,
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
+          media: [],
         };
         queryClient.setQueryData<TimelineData>(timelineKey, (old) =>
           mapFirstPage(old, (posts) => [optimistic, ...posts]),
@@ -178,6 +182,7 @@ export function useReplyToPost(postId: string) {
           likeCount: 0,
           likedByMe: false,
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
+          media: [],
         };
         queryClient.setQueryData<Post[]>(repliesKey(postId), (old) =>
           old ? [...old, optimistic] : old,

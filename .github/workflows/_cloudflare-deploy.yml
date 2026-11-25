@@ -37,7 +37,18 @@ jobs:
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ vars.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      # check の実行中に PR をマージすると、閉じたときの cleanup が先に終わり、その後でこのジョブが Preview を作って残してしまう。
+      # ビルドの後、公開の直前に PR の状態を確かめ、閉じていたら公開しない。
+      - name: Check the PR is still open
+        id: state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          state=$(gh pr view "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --json state --jq .state)
+          echo "PR の状態: $state"
+          echo "open=$([ "$state" = OPEN ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - name: Deploy preview
+        if: steps.state.outputs.open == 'true'
         id: preview
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -50,6 +61,7 @@ jobs:
           url=$(sed -n '/^{$/,/^}$/p' preview.json | jq -er '.preview.urls[0]')
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Comment preview URL
+        if: steps.state.outputs.open == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -75,7 +87,15 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: pnpm exec wrangler preview delete --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation
+        # Preview がまだないとき (公開の前に PR を閉じたとき) は、削除するものがないので成功にする。
+        run: |
+          if ! out=$(pnpm exec wrangler preview delete --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation 2>&1); then
+            echo "$out"
+            echo "$out" | grep -q 'code: 10025' || exit 1
+            echo "Preview がないので、何もしない"
+          else
+            echo "$out"
+          fi
 
   deploy:
     # 手動実行も、main でだけ本番に出す (別のブランチから実行しても動かない)。

@@ -1,4 +1,11 @@
+import { removeImages, uploadImage } from '@/features/media/media-api';
+import type { ProcessedImage } from '@/features/media/image-processing';
 import { supabase } from '@/lib/supabase';
+
+export type PostMedia = { storageKey: string; width: number; height: number };
+
+// 1 投稿に付けられる画像の上限 (post_media_sort_order_range と揃える)。
+export const MAX_POST_IMAGES = 4;
 
 export type Post = {
   id: string;
@@ -9,6 +16,8 @@ export type Post = {
   likeCount: number;
   likedByMe: boolean;
   author: { handle: string; displayName: string };
+  // 表示順。画像がなければ空配列。
+  media: PostMedia[];
 };
 
 type PostRow = {
@@ -21,10 +30,19 @@ type PostRow = {
   // 自分の行だけを埋め込む (likes(user_id) を user_id で絞る)。無ければ空配列。
   likes?: { user_id: string }[] | null;
   profiles: { handle: string; display_name: string } | null;
+  post_media?: MediaRow[] | null;
 };
 
+type MediaRow = { storage_key: string; width: number; height: number; sort_order: number };
+
+function toMedia(rows: MediaRow[] | null | undefined): PostMedia[] {
+  return [...(rows ?? [])]
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((m) => ({ storageKey: m.storage_key, width: m.width, height: m.height }));
+}
+
 const COLUMNS =
-  'id, author_id, body, created_at, reply_count, like_count, likes(user_id), profiles!posts_author_id_fkey(handle, display_name)';
+  'id, author_id, body, created_at, reply_count, like_count, likes(user_id), profiles!posts_author_id_fkey(handle, display_name), post_media(storage_key, width, height, sort_order)';
 
 // ログインしていないとき、likes の埋め込みを 0 件にするためのダミー (どの user_id にも一致しない)。
 const NO_USER = '00000000-0000-0000-0000-000000000000';
@@ -62,7 +80,26 @@ function toPost(row: PostRow): Post {
       handle: row.profiles?.handle ?? '',
       displayName: row.profiles?.display_name ?? '',
     },
+    media: toMedia(row.post_media),
   };
+}
+
+// RPC の結果には画像が含まれないので、post_media をまとめて 1 回で読んで付ける。
+async function attachMedia(posts: Post[]): Promise<void> {
+  if (posts.length === 0) return;
+  const { data, error } = await supabase
+    .from('post_media')
+    .select('post_id, storage_key, width, height, sort_order')
+    .in(
+      'post_id',
+      posts.map((p) => p.id),
+    );
+  if (error) throw new Error(`画像を読み込めませんでした: ${error.message}`);
+  const byPost = new Map<string, MediaRow[]>();
+  for (const row of (data ?? []) as (MediaRow & { post_id: string })[]) {
+    byPost.set(row.post_id, [...(byPost.get(row.post_id) ?? []), row]);
+  }
+  for (const post of posts) post.media = toMedia(byPost.get(post.id));
 }
 
 // タイムライン取得 RPC (get_timeline) で 1 ページ読む。(created_at, id) のカーソルなので、重複も欠落も出ない。
@@ -88,7 +125,9 @@ export async function fetchTimelinePage(
     likeCount: row.like_count,
     likedByMe: row.liked_by_me,
     author: { handle: row.handle, displayName: row.display_name },
+    media: [],
   }));
+  await attachMedia(posts);
   const last = posts[posts.length - 1];
   return {
     posts,
@@ -126,14 +165,55 @@ export async function fetchReplies(postId: string, userId?: string): Promise<Pos
   return ((data ?? []) as unknown as PostRow[]).map(toPost);
 }
 
-export async function createPost(authorId: string, body: string, replyTo?: string): Promise<Post> {
+// 投稿を作る。画像があれば、自分のフォルダへアップロードして post_media に紐付ける。
+// 途中で失敗したら、作った投稿とアップロード済みの画像を片付ける。
+export async function createPost(
+  authorId: string,
+  body: string,
+  replyTo?: string,
+  images: ProcessedImage[] = [],
+): Promise<Post> {
+  const keys: string[] = [];
+  try {
+    for (const image of images) keys.push(await uploadImage('post-media', authorId, image));
+  } catch (e) {
+    await removeImages('post-media', keys);
+    throw e;
+  }
+
   const { data, error } = await supabase
     .from('posts')
     .insert({ author_id: authorId, body, ...(replyTo ? { reply_to: replyTo } : {}) })
     .select(COLUMNS)
     .single();
-  if (error) throw new Error(`投稿できませんでした: ${error.message}`);
-  return toPost(data as unknown as PostRow);
+  if (error) {
+    await removeImages('post-media', keys);
+    throw new Error(`投稿できませんでした: ${error.message}`);
+  }
+  const post = toPost(data as unknown as PostRow);
+  if (images.length === 0) return post;
+
+  const rows = images.map((image, i) => ({
+    post_id: post.id,
+    storage_key: keys[i],
+    width: image.width,
+    height: image.height,
+    sort_order: i,
+  }));
+  const { error: mediaError } = await supabase.from('post_media').insert(rows);
+  if (mediaError) {
+    await supabase.from('posts').delete().eq('id', post.id);
+    await removeImages('post-media', keys);
+    throw new Error(`画像を保存できませんでした: ${mediaError.message}`);
+  }
+  return {
+    ...post,
+    media: images.map((image, i) => ({
+      storageKey: keys[i],
+      width: image.width,
+      height: image.height,
+    })),
+  };
 }
 
 export async function deletePost(postId: string): Promise<void> {

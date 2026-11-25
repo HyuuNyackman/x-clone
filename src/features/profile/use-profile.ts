@@ -5,8 +5,10 @@ import {
   fetchFollowCounts,
   fetchProfile,
   fetchProfileByHandle,
+  updateAvatar,
   updateProfile,
 } from '@/features/profile/profile-api';
+import type { ProcessedImage } from '@/features/media/image-processing';
 import type { ProfileValues } from '@/features/profile/schemas';
 
 const profileKey = (userId: string | undefined) => ['profile', userId] as const;
@@ -27,6 +29,17 @@ export function useSaveProfile() {
   return async (values: ProfileValues) => {
     if (!userId) throw new Error('ログインしていません');
     const profile = await updateProfile(userId, values);
+    queryClient.setQueryData(profileKey(userId), profile);
+  };
+}
+
+// アバターを差し替えて、キャッシュのプロフィールを更新する関数を返す。失敗時は例外を投げる。
+export function useSaveAvatar() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const queryClient = useQueryClient();
+  return async (image: ProcessedImage) => {
+    if (!userId) throw new Error('ログインしていません');
+    const profile = await updateAvatar(userId, image);
     queryClient.setQueryData(profileKey(userId), profile);
   };
 }

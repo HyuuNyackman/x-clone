@@ -25,6 +25,7 @@ const post = (id: string, body: string, replyCount = 0): Post => ({
   likeCount: 0,
   likedByMe: false,
   author: { handle: 'alice', displayName: 'Alice' },
+  media: [],
 });
 
 beforeEach(() => {

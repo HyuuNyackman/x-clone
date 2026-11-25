@@ -10,8 +10,13 @@ import {
   unfollowUser,
   unlikePost,
 } from '@/features/posts/posts-api';
+import { removeImages, uploadImage } from '@/features/media/media-api';
 import { supabase } from '@/lib/supabase';
 
+jest.mock('@/features/media/media-api', () => ({
+  uploadImage: jest.fn(),
+  removeImages: jest.fn(),
+}));
 jest.mock('@/lib/supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
 
 const from = jest.mocked(supabase.from);
@@ -44,6 +49,16 @@ beforeEach(() => jest.clearAllMocks());
 
 const rpc = jest.mocked(supabase.rpc);
 
+// post_media の取得 (from('post_media').select().in()) を差し替える。
+function mediaRows(rows: unknown[]) {
+  const node: Record<string, jest.Mock> = {
+    select: jest.fn(() => node),
+    in: jest.fn().mockResolvedValue({ data: rows, error: null }),
+  };
+  from.mockReturnValue(node as never);
+  return node;
+}
+
 const rpcRow = (n: number) => ({
   id: `p${n}`,
   author_id: 'u1',
@@ -59,6 +74,10 @@ const rpcRow = (n: number) => ({
 describe('fetchTimelinePage', () => {
   it('RPC をカーソル付きで呼び、アプリ用の形に変換する', async () => {
     rpc.mockResolvedValue({ data: [rpcRow(2)], error: null } as never);
+    mediaRows([
+      { post_id: 'p2', storage_key: 'u1/b.jpg', width: 10, height: 20, sort_order: 1 },
+      { post_id: 'p2', storage_key: 'u1/a.jpg', width: 30, height: 40, sort_order: 0 },
+    ]);
     const page = await fetchTimelinePage({ createdAt: 'c', id: 'i' }, 2);
     expect(rpc).toHaveBeenCalledWith('get_timeline', {
       p_before_created_at: 'c',
@@ -75,6 +94,11 @@ describe('fetchTimelinePage', () => {
       likeCount: 5,
       likedByMe: true,
       author: { handle: 'alice', displayName: 'Alice' },
+      // 表示順 (sort_order) に並ぶ
+      media: [
+        { storageKey: 'u1/a.jpg', width: 30, height: 40 },
+        { storageKey: 'u1/b.jpg', width: 10, height: 20 },
+      ],
     });
     // 件数が limit に満たないので、続きはない
     expect(page.nextCursor).toBeNull();
@@ -82,6 +106,7 @@ describe('fetchTimelinePage', () => {
 
   it('limit 件そろったら、最後の投稿を次のカーソルにする', async () => {
     rpc.mockResolvedValue({ data: [rpcRow(2), rpcRow(1)], error: null } as never);
+    mediaRows([]);
     const page = await fetchTimelinePage(null, 2);
     expect(rpc).toHaveBeenCalledWith('get_timeline', {
       p_before_created_at: undefined,
@@ -121,6 +146,46 @@ describe('createPost', () => {
   it('失敗すると Error になる', async () => {
     chain({ data: null, error: { message: 'denied' } });
     await expect(createPost('u1', 'x')).rejects.toThrow('投稿できませんでした: denied');
+  });
+});
+
+describe('createPost (画像付き)', () => {
+  const image = { uri: 'file:///a.jpg', width: 800, height: 600, bytes: 1000 };
+
+  it('画像をアップロードし、キーを post_media に順番つきで保存する', async () => {
+    jest.mocked(uploadImage).mockResolvedValueOnce('u1/k0.jpg').mockResolvedValueOnce('u1/k1.jpg');
+    const posts = chain({ data: row, error: null });
+    const media = { insert: jest.fn().mockResolvedValue({ error: null }) };
+    from.mockReturnValueOnce(posts as never).mockReturnValueOnce(media as never);
+
+    const post = await createPost('u1', 'hi', undefined, [image, image]);
+
+    expect(uploadImage).toHaveBeenCalledWith('post-media', 'u1', image);
+    expect(media.insert).toHaveBeenCalledWith([
+      { post_id: 'p1', storage_key: 'u1/k0.jpg', width: 800, height: 600, sort_order: 0 },
+      { post_id: 'p1', storage_key: 'u1/k1.jpg', width: 800, height: 600, sort_order: 1 },
+    ]);
+    expect(post.media).toHaveLength(2);
+  });
+
+  it('post_media の保存に失敗したら、投稿と画像を片付ける', async () => {
+    jest.mocked(uploadImage).mockResolvedValueOnce('u1/k0.jpg');
+    const posts = chain({ data: row, error: null });
+    const media = { insert: jest.fn().mockResolvedValue({ error: { message: 'denied' } }) };
+    const cleanup: Record<string, jest.Mock> = {
+      delete: jest.fn(() => cleanup),
+      eq: jest.fn().mockResolvedValue({ error: null }),
+    };
+    from
+      .mockReturnValueOnce(posts as never)
+      .mockReturnValueOnce(media as never)
+      .mockReturnValueOnce(cleanup as never);
+
+    await expect(createPost('u1', 'hi', undefined, [image])).rejects.toThrow(
+      '画像を保存できませんでした: denied',
+    );
+    expect(cleanup.eq).toHaveBeenCalledWith('id', 'p1');
+    expect(removeImages).toHaveBeenCalledWith('post-media', ['u1/k0.jpg']);
   });
 });
 

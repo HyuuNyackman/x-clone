@@ -42,7 +42,9 @@ describe('投稿作成画面', () => {
     await renderRouter(routes, { initialUrl: '/compose' });
     await fireEvent.changeText(screen.getByLabelText('本文'), 'こんにちは');
     await fireEvent.press(screen.getByRole('button', { name: '投稿する' }));
-    await waitFor(() => expect(mutateAsync).toHaveBeenCalledWith('こんにちは'));
+    await waitFor(() =>
+      expect(mutateAsync).toHaveBeenCalledWith({ body: 'こんにちは', images: [] }),
+    );
   });
 
   it('投稿に失敗すると、エラーが出る', async () => {
