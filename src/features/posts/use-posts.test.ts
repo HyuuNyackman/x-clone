@@ -12,6 +12,7 @@ const post = (id: string): Post => ({
   likeCount: 0,
   likedByMe: false,
   author: { handle: 'a', displayName: 'A' },
+  media: [],
 });
 const page = (...ids: string[]): TimelinePage => ({ posts: ids.map(post), nextCursor: null });
 

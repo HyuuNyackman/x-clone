@@ -216,3 +216,31 @@ test('フォローすると「フォロー中」タブにその人の投稿だ�
   await bob.context.close();
   await carol.context.close();
 });
+
+// 1x1 の PNG。端末側で JPEG に変換されてアップロードされる。
+const PNG_1X1 = Uint8Array.from(
+  atob(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  ),
+  (c) => c.charCodeAt(0),
+);
+
+test('画像付きで投稿すると、タイムラインに画像が出る', async ({ page }) => {
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, uniqueHandle(), 'Carol');
+
+  await page.getByRole('button', { name: '投稿を作成' }).click();
+  await page.getByLabel('本文').fill(`e2e 画像 ${Date.now()}`);
+
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: '画像を追加' }).click();
+  await (
+    await chooser
+  ).setFiles({ name: 'a.png', mimeType: 'image/png', buffer: PNG_1X1 as never });
+  await expect(page.getByRole('button', { name: '画像1を外す' })).toBeVisible();
+
+  await page.getByRole('button', { name: '投稿する' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+  await page.reload();
+  await expect(page.getByLabel('投稿の画像').first()).toBeVisible();
+});

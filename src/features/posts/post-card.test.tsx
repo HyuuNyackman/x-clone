@@ -12,6 +12,7 @@ const post = (over: Partial<Post> = {}): Post => ({
   likeCount: 3,
   likedByMe: false,
   author: { handle: 'alice', displayName: 'Alice' },
+  media: [],
   ...over,
 });
 

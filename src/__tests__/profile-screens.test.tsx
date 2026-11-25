@@ -11,6 +11,7 @@ import { useProfile, useSaveProfile } from '@/features/profile/use-profile';
 jest.mock('@/features/profile/use-profile', () => ({
   useProfile: jest.fn(),
   useSaveProfile: jest.fn(),
+  useSaveAvatar: jest.fn(() => jest.fn()),
 }));
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
 jest.mock('@/features/auth/auth-store', () => ({ useAuthStore: jest.fn() }));

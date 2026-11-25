@@ -45,6 +45,7 @@ const post: Post = {
   likeCount: 0,
   likedByMe: false,
   author: { handle: 'bob', displayName: 'Bob' },
+  media: [],
 };
 
 function setup({ profile = bob as typeof bob | null, following = [] as string[] } = {}) {

@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
+import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
@@ -40,6 +41,7 @@ export default function UserProfileScreen() {
       {user ? (
         <View className="gap-3 border-b border-border px-4 py-4">
           <View className="flex-row items-start justify-between gap-3">
+            <Avatar storageKey={user.avatarUrl} name={user.displayName} size={64} />
             <View className="flex-1">
               <Text className="text-2xl font-extrabold text-foreground">{user.displayName}</Text>
               <Text className="text-base text-muted">@{user.handle}</Text>

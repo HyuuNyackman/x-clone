@@ -1,4 +1,6 @@
 import type { ProfileValues } from '@/features/profile/schemas';
+import type { ProcessedImage } from '@/features/media/image-processing';
+import { removeImages, uploadImage } from '@/features/media/media-api';
 import { supabase } from '@/lib/supabase';
 
 export type Profile = {
@@ -95,4 +97,27 @@ export async function fetchFollowCounts(userId: string): Promise<FollowCounts> {
   const error = following.error ?? followers.error;
   if (error) throw new Error(`フォロー数を読み込めませんでした: ${error.message}`);
   return { following: following.count ?? 0, followers: followers.count ?? 0 };
+}
+
+// アバターを差し替える。新しいキーを保存し、古い画像は消す (消せなくても差し替え自体は成功とする)。
+export async function updateAvatar(userId: string, image: ProcessedImage): Promise<Profile> {
+  const { data: current } = await supabase
+    .from('profiles')
+    .select('avatar_url')
+    .eq('id', userId)
+    .single();
+  const key = await uploadImage('avatars', userId, image);
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ avatar_url: key })
+    .eq('id', userId)
+    .select(COLUMNS)
+    .single();
+  if (error) {
+    await removeImages('avatars', [key]);
+    throw new Error(`アイコンを保存できませんでした: ${error.message}`);
+  }
+  const old = (current as { avatar_url: string | null } | null)?.avatar_url;
+  if (old) await removeImages('avatars', [old]).catch(() => undefined);
+  return toProfile(data);
 }

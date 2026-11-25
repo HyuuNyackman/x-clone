@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { PostImages } from '@/features/posts/post-images';
 import type { Post } from '@/features/posts/posts-api';
 
 type PostCardProps = {
@@ -73,6 +74,7 @@ export function PostCard({
         ) : null}
       </View>
       <Text className="text-base text-foreground">{post.body}</Text>
+      <PostImages media={post.media} />
       <View className="flex-row items-center gap-4">
         <Text accessibilityLabel="リプライ数" className="text-sm text-muted">
           返信 {post.replyCount}
