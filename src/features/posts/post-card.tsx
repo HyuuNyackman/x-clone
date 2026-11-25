@@ -13,6 +13,8 @@ type PostCardProps = {
   onToggleLike?: (postId: string, liked: boolean) => void;
   // 渡すと、他人の投稿にフォロー・解除ボタンを出す。following は今フォロー中か。follow は押した後の状態。
   following?: boolean;
+  // 渡すと、投稿者の名前を押してプロフィールを開ける。
+  onPressAuthor?: (handle: string) => void;
   onToggleFollow?: (authorId: string, follow: boolean) => void;
 };
 
@@ -23,12 +25,21 @@ export function PostCard({
   onPress,
   onToggleLike,
   following = false,
+  onPressAuthor,
   onToggleFollow,
 }: PostCardProps) {
   const content = (
     <View className="gap-1 border-b border-border px-4 py-3">
       <View className="flex-row items-center justify-between">
-        <Text className="flex-1 text-base font-bold text-foreground" numberOfLines={1}>
+        <Text
+          className="flex-1 text-base font-bold text-foreground"
+          numberOfLines={1}
+          accessibilityRole={onPressAuthor ? 'link' : undefined}
+          accessibilityLabel={
+            onPressAuthor ? `@${post.author.handle} のプロフィールを開く` : undefined
+          }
+          onPress={onPressAuthor ? () => onPressAuthor(post.author.handle) : undefined}
+        >
           {post.author.displayName}
           <Text className="font-normal text-muted"> @{post.author.handle}</Text>
         </Text>

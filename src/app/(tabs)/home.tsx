@@ -93,6 +93,9 @@ export default function HomeScreen() {
                 ? undefined
                 : (postId, liked) => toggleLike.mutate({ postId, liked })
             }
+            onPressAuthor={(handle) =>
+              router.push({ pathname: '/user/[handle]', params: { handle } })
+            }
             following={followingSet.has(item.authorId)}
             onToggleFollow={
               item.authorId === userId || item.id.startsWith('optimistic-')

@@ -188,3 +188,22 @@ export async function unfollowUser(userId: string, targetId: string): Promise<vo
     .eq('followee_id', targetId);
   if (error) throw new Error(`フォローを解除できませんでした: ${error.message}`);
 }
+
+// プロフィールに出す投稿の取得件数。ページ送りは未対応 (技術負債として別 Issue)。
+export const USER_POSTS_LIMIT = 50;
+
+// ある人の投稿 (リプライを除く) を新しい順に読む。
+export async function fetchUserPosts(authorId: string, userId?: string): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from('posts')
+    .select(COLUMNS)
+    .eq('author_id', authorId)
+    .is('reply_to', null)
+    .is('repost_of', null)
+    .eq('likes.user_id', userId ?? NO_USER)
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(USER_POSTS_LIMIT);
+  if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
+  return ((data ?? []) as unknown as PostRow[]).map(toPost);
+}

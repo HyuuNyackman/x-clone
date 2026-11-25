@@ -1,5 +1,7 @@
 import {
+  fetchFollowCounts,
   fetchProfile,
+  fetchProfileByHandle,
   initialHandleFor,
   needsProfileSetup,
   ProfileFieldError,
@@ -103,5 +105,41 @@ describe('updateProfile', () => {
     await expect(updateProfile(USER_ID, values)).rejects.toThrow(
       'プロフィールを保存できませんでした: denied',
     );
+  });
+});
+
+describe('fetchProfileByHandle', () => {
+  it('handle で引いて、プロフィールを返す。無ければ null', async () => {
+    const maybeSingle = jest.fn().mockResolvedValueOnce({ data: row, error: null });
+    const node: Record<string, jest.Mock> = {};
+    node.select = jest.fn(() => node);
+    node.eq = jest.fn(() => node);
+    node.maybeSingle = maybeSingle;
+    from.mockReturnValue(node as never);
+
+    expect(await fetchProfileByHandle('alice')).toMatchObject({ id: USER_ID, handle: 'alice' });
+    expect(node.eq).toHaveBeenCalledWith('handle', 'alice');
+
+    maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+    expect(await fetchProfileByHandle('nobody')).toBeNull();
+  });
+});
+
+describe('fetchFollowCounts', () => {
+  it('フォロー数とフォロワー数を数える', async () => {
+    from.mockImplementation((() => ({
+      select: () => ({
+        eq: (column: string) =>
+          Promise.resolve({ count: column === 'follower_id' ? 3 : 5, error: null }),
+      }),
+    })) as never);
+    expect(await fetchFollowCounts(USER_ID)).toEqual({ following: 3, followers: 5 });
+  });
+
+  it('失敗したら例外を投げる', async () => {
+    from.mockImplementation((() => ({
+      select: () => ({ eq: () => Promise.resolve({ count: null, error: { message: 'ng' } }) }),
+    })) as never);
+    await expect(fetchFollowCounts(USER_ID)).rejects.toThrow('ng');
   });
 });
