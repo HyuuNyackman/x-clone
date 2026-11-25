@@ -1,7 +1,7 @@
 -- 画像用バケットと storage.objects のポリシーを確かめる (XCL-63)。
 -- 対象のマイグレーション: 20261124200000_create_storage_buckets.sql
 -- 実行: supabase test db (トランザクションの中で動き、最後に rollback する)
--- CI のローカル Supabase は storage を起動せず storage スキーマがないので、その場合は全て skip する。
+-- storage スキーマがない環境 (supabase start -x storage など) では、全て skip する。
 -- ファイルサイズと MIME の拒否は Storage API の層で行うので、ここでは設定値を確かめる。
 
 begin;
@@ -26,6 +26,19 @@ results_eq(
 else skip('storage スキーマがない', 1) end;
 
 -- ===== 準備 =====
+
+-- 削除した行数を返す。delete を含む WITH は副問い合わせの中に書けないので、関数に包む。
+-- 中身は実行時に解決されるので、storage スキーマがなくても作れる。呼び出しの権限は、呼んだロールのまま (RLS が効く)。
+create function pg_temp.count_deleted(b text, n text) returns int language plpgsql as $f$
+declare c int;
+begin
+  -- Storage は SQL からの直接の delete を拒否する。Storage API と同じ設定で通す (RLS は効いたまま)。
+  perform set_config('storage.allow_delete_query', 'true', true);
+  delete from storage.objects where bucket_id = b and name = n;
+  get diagnostics c = row_count;
+  return c;
+end
+$f$;
 
 insert into auth.users (id, email) values
   ('f1000000-0000-0000-0000-000000000001', 's1@example.com'),
@@ -104,18 +117,14 @@ else skip('storage スキーマがない', 1) end;
 -- 削除: ポリシーに合わない行は RLS で見えず、0 行の削除になる
 select case when to_regclass('storage.objects') is not null then
 is(
-  (with d as (delete from storage.objects
-     where bucket_id = 'post-media' and name = 'f2000000-0000-0000-0000-000000000002/b.jpg' returning 1)
-   select count(*)::int from d),
+  pg_temp.count_deleted('post-media', 'f2000000-0000-0000-0000-000000000002/b.jpg'),
   0,
   '他人のファイルは削除できない'
 )
 else skip('storage スキーマがない', 1) end;
 select case when to_regclass('storage.objects') is not null then
 is(
-  (with d as (delete from storage.objects
-     where bucket_id = 'post-media' and name = 'f1000000-0000-0000-0000-000000000001/a.jpg' returning 1)
-   select count(*)::int from d),
+  pg_temp.count_deleted('post-media', 'f1000000-0000-0000-0000-000000000001/a.jpg'),
   1,
   '自分のファイルは削除できる'
 )
@@ -136,9 +145,7 @@ throws_ok(
 else skip('storage スキーマがない', 1) end;
 select case when to_regclass('storage.objects') is not null then
 is(
-  (with d as (delete from storage.objects
-     where bucket_id = 'post-media' and name = 'f2000000-0000-0000-0000-000000000002/b.jpg' returning 1)
-   select count(*)::int from d),
+  pg_temp.count_deleted('post-media', 'f2000000-0000-0000-0000-000000000002/b.jpg'),
   0,
   '未ログインでは削除できない'
 )

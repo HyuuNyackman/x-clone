@@ -35,6 +35,15 @@ begin
          )',
       replace(b, '-', '_') || '_objects_insert_own_folder', b
     );
+    -- delete は対象の行を探すために select のポリシーも通る。自分のフォルダだけ見えるようにする (他人のファイルは一覧にも出ない)。
+    execute format(
+      'create policy %I on storage.objects for select to authenticated
+         using (
+           bucket_id = %L
+           and (storage.foldername(name))[1] = (select auth.uid())::text
+         )',
+      replace(b, '-', '_') || '_objects_select_own_folder', b
+    );
     execute format(
       'create policy %I on storage.objects for delete to authenticated
          using (
