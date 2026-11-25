@@ -1,0 +1,11 @@
+node_modules
+.expo
+dist
+web-build
+pnpm-lock.yaml
+apm.lock.yaml
+apm_modules
+.claude/skills
+.apm
+playwright-report
+test-results

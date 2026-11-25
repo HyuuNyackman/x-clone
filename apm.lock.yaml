@@ -1,0 +1,1391 @@
+lockfile_version: '4'
+apm_version: 0.38.0
+manifest_targets:
+- claude
+dependencies:
+- repo_url: cloudflare/skills
+  name: frameworks-on-cloudflare
+  host: github.com
+  resolved_commit: 5108325ecceabc899c761e07aa617b09c02445ee
+  version: unknown
+  virtual_path: skills/frameworks-on-cloudflare
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/frameworks-on-cloudflare
+  - .claude/skills/frameworks-on-cloudflare/LICENSE
+  - .claude/skills/frameworks-on-cloudflare/SKILL.md
+  - .claude/skills/frameworks-on-cloudflare/references/skill-feedback.md
+  deployed_file_hashes:
+    .claude/skills/frameworks-on-cloudflare/LICENSE: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+    .claude/skills/frameworks-on-cloudflare/SKILL.md: sha256:0edfc9c8090988c32b76a0be007264073a67be1c8623b72c172976d510eccda4
+    .claude/skills/frameworks-on-cloudflare/references/skill-feedback.md: sha256:cef5673f1445b52c6da179d2e87471bc46a035f81844cb5e5fddcaaefcd03bf9
+  content_hash: sha256:f5ddbc688916f6ec92a2ccef90ed1dad125c006f1656ff442951250924d7ab04
+  carried_licenses:
+  - path: LICENSE
+    source: LICENSE
+    hash: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+- repo_url: cloudflare/skills
+  name: wrangler
+  host: github.com
+  resolved_commit: 5108325ecceabc899c761e07aa617b09c02445ee
+  version: unknown
+  virtual_path: skills/wrangler
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/wrangler
+  - .claude/skills/wrangler/LICENSE
+  - .claude/skills/wrangler/SKILL.md
+  - .claude/skills/wrangler/references/skill-feedback.md
+  deployed_file_hashes:
+    .claude/skills/wrangler/LICENSE: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+    .claude/skills/wrangler/SKILL.md: sha256:a39de5c69f50e88759736a6ec7ad07f402c15f7a58a3224bcf979dce42013b13
+    .claude/skills/wrangler/references/skill-feedback.md: sha256:f24d02c8beebbc7484c7c9d42e957e7b58c92bcf80798e8b86111b850913a57a
+  content_hash: sha256:b5969526733ff90d57ad499a6ebdc2547bb070d37e017dd695b0fa08fedc9707
+  carried_licenses:
+  - path: LICENSE
+    source: LICENSE
+    hash: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+- repo_url: expo/skills
+  name: expo-data-fetching
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-data-fetching
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-data-fetching
+  - .claude/skills/expo-data-fetching/LICENSE
+  - .claude/skills/expo-data-fetching/SKILL.md
+  - .claude/skills/expo-data-fetching/agents/openai.yaml
+  - .claude/skills/expo-data-fetching/references/expo-router-loaders.md
+  - .claude/skills/expo-data-fetching/references/offline-and-cancellation.md
+  deployed_file_hashes:
+    .claude/skills/expo-data-fetching/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-data-fetching/SKILL.md: sha256:591983e0b0ce81aa22d761f73314c6187586d158fe2dcca9d0f9397e11436b35
+    .claude/skills/expo-data-fetching/agents/openai.yaml: sha256:50254d420a1db8e631ee24aaf8463708a525049059ac391b0d219dce8ce82e0a
+    .claude/skills/expo-data-fetching/references/expo-router-loaders.md: sha256:f842c86483a15380c44a4b49db27bf3d41e17b48b1f44b9a2bbacc563a9dcbe6
+    .claude/skills/expo-data-fetching/references/offline-and-cancellation.md: sha256:750f7f25acc4e6143a6ff4daacffbcd5daf64370540a75e7b3a4f3b4b1aa462c
+  content_hash: sha256:e3f17356a11b5cb12938173b89007b4c1ccc32dbc1ac77aaee769dd0e0e25eb5
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-design-system
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-design-system
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-design-system
+  - .claude/skills/expo-design-system/LICENSE
+  - .claude/skills/expo-design-system/SKILL.md
+  - .claude/skills/expo-design-system/agents/openai.yaml
+  - .claude/skills/expo-design-system/references/audit.md
+  - .claude/skills/expo-design-system/references/native-slop.md
+  deployed_file_hashes:
+    .claude/skills/expo-design-system/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-design-system/SKILL.md: sha256:c5a71ab53a242d6fda7c6331317559b2f0810ac397c5f36b8db5ffdbe580513a
+    .claude/skills/expo-design-system/agents/openai.yaml: sha256:16d7f7f1bb47bc02fa2a816280403bfaccd24e436672cd1503670fcc2a42fd26
+    .claude/skills/expo-design-system/references/audit.md: sha256:a0ead76ab904c119a1353d8d91b9138144a97da43fdff683f291f2d45d868915
+    .claude/skills/expo-design-system/references/native-slop.md: sha256:5662bd04ac2d6367fc4ca3ae355ec1b970752dcd8693a099a5e0792227eb09c1
+  content_hash: sha256:75d8482dbedeaee1302f783f7710581befe4776ff9cb5eae934a15964abec418
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-examples
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-examples
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-examples
+  - .claude/skills/expo-examples/LICENSE
+  - .claude/skills/expo-examples/SKILL.md
+  - .claude/skills/expo-examples/agents/openai.yaml
+  - .claude/skills/expo-examples/references/catalog.md
+  deployed_file_hashes:
+    .claude/skills/expo-examples/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-examples/SKILL.md: sha256:f892153712ce83f057a4987a8ff97b61c396600a3edb4838fdb53047e02e4e35
+    .claude/skills/expo-examples/agents/openai.yaml: sha256:efdcc54de3f666d0d3f5515ee38e0c07ecc2d302a3c9e9acd742ce8f2f42f52d
+    .claude/skills/expo-examples/references/catalog.md: sha256:024aa05d82dffcc2a5e3b29e87ec4e800122bc39825c36e2e389f7b7e090d4fc
+  content_hash: sha256:42f9d3b7118dd44519a667a25da5581a4e9ed9e50c583aaa982a94a95f7cdc5f
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-native-ui
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-native-ui
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-native-ui
+  - .claude/skills/expo-native-ui/LICENSE
+  - .claude/skills/expo-native-ui/SKILL.md
+  - .claude/skills/expo-native-ui/agents/openai.yaml
+  - .claude/skills/expo-native-ui/references/controls.md
+  - .claude/skills/expo-native-ui/references/gradients.md
+  - .claude/skills/expo-native-ui/references/icons.md
+  - .claude/skills/expo-native-ui/references/media.md
+  - .claude/skills/expo-native-ui/references/storage.md
+  - .claude/skills/expo-native-ui/references/visual-effects.md
+  - .claude/skills/expo-native-ui/references/webgpu-three.md
+  deployed_file_hashes:
+    .claude/skills/expo-native-ui/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-native-ui/SKILL.md: sha256:c6df6d4a39432447c8d39cb51b3a1e56c50995649542ce2729566e436154a2a4
+    .claude/skills/expo-native-ui/agents/openai.yaml: sha256:90bf5d66b1038913fea37bd6d57292eb6ecd0e0ee3b2bc3e283facc033f4b2b0
+    .claude/skills/expo-native-ui/references/controls.md: sha256:6ec427731a65ffd66b745733665bb2c00992750c7d3710893d1bbf70b427d541
+    .claude/skills/expo-native-ui/references/gradients.md: sha256:63ced0392f67c41bf90e726613d139a389db609799bfcb91124e6e69b9a66e70
+    .claude/skills/expo-native-ui/references/icons.md: sha256:2c0622d8a3f61626a72fa7829d3044f3391cbd8ca91806f4752926cf4e66be59
+    .claude/skills/expo-native-ui/references/media.md: sha256:c964182dfbcaa5eef00b947e0425f5a39ee2cfc1b2a4e251ba51fc823e87b0dc
+    .claude/skills/expo-native-ui/references/storage.md: sha256:265e8bc21adcd698062f18fa442e0e07e99e67868576f18aac2112e5381ffbf1
+    .claude/skills/expo-native-ui/references/visual-effects.md: sha256:dcdcaa5e0bf5c20341455e39d91312ca5f3034391908f77eb2e577044283adcc
+    .claude/skills/expo-native-ui/references/webgpu-three.md: sha256:3a247a7740e4bab4aea5dec8b81c7782a5918bb221838a05f6a94c669f145679
+  content_hash: sha256:f75d2eb0a8f2ec3102316ce64837edde8a9c3d42f4b02b45d406175aab35e655
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-overview
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-overview
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-overview
+  - .claude/skills/expo-overview/LICENSE
+  - .claude/skills/expo-overview/SKILL.md
+  - .claude/skills/expo-overview/agents/openai.yaml
+  - .claude/skills/expo-overview/references/launch-without-dev-menu.md
+  deployed_file_hashes:
+    .claude/skills/expo-overview/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-overview/SKILL.md: sha256:406553baf930d4d01da660f2d47a3d774070134a5d8b222f69239e55fa14db5a
+    .claude/skills/expo-overview/agents/openai.yaml: sha256:a488fa6e5659f702b5e27d4bcc1ab601cc64c0fc001404d64fcdef1627f81494
+    .claude/skills/expo-overview/references/launch-without-dev-menu.md: sha256:d0cdc82285d136f9264fb28d8ce21690d2d12ba83591104109c9cdcb9989af26
+  content_hash: sha256:424d8c5f92f3642221d8ee3f49e47e84f7630710198b45384909a156b9123627
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-project-structure
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-project-structure
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-project-structure
+  - .claude/skills/expo-project-structure/LICENSE
+  - .claude/skills/expo-project-structure/SKILL.md
+  - .claude/skills/expo-project-structure/agents/openai.yaml
+  deployed_file_hashes:
+    .claude/skills/expo-project-structure/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-project-structure/SKILL.md: sha256:120b036f702d9f64a996fda7a05e95127602d6f6d707666732abb920b95edb68
+    .claude/skills/expo-project-structure/agents/openai.yaml: sha256:cd7a9387766af254f9d8f691c332606e71273b8dd1c99c949f0934ed693878e0
+  content_hash: sha256:b319e09ee5769beb77ba33a9c7b5357609cd18b8ea2c3dbf917c6f8b136f62bf
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: expo/skills
+  name: expo-router
+  host: github.com
+  resolved_commit: 88d9bd79f3fa8452a778fbac65bae162c0b32ce4
+  version: unknown
+  virtual_path: plugins/expo/skills/expo-router
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/expo-router
+  - .claude/skills/expo-router/LICENSE
+  - .claude/skills/expo-router/SKILL.md
+  - .claude/skills/expo-router/agents/openai.yaml
+  - .claude/skills/expo-router/references/form-sheet.md
+  - .claude/skills/expo-router/references/route-structure.md
+  - .claude/skills/expo-router/references/search.md
+  - .claude/skills/expo-router/references/tabs.md
+  - .claude/skills/expo-router/references/toolbar-and-headers.md
+  - .claude/skills/expo-router/references/zoom-transitions.md
+  deployed_file_hashes:
+    .claude/skills/expo-router/LICENSE: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+    .claude/skills/expo-router/SKILL.md: sha256:605234749eeeb6896e324f55cdef7af15603c348fbc2f7a6fe13538ec222ce43
+    .claude/skills/expo-router/agents/openai.yaml: sha256:7b76d9331a33e06e61504db9af069bccc8ab4a02e2f8be92727e8e0f9ad7941d
+    .claude/skills/expo-router/references/form-sheet.md: sha256:947de9cf35a15aacf3f02e96e45942b5e4826e536e529570886e5ddbb7ec8591
+    .claude/skills/expo-router/references/route-structure.md: sha256:4c3d70edeb7e36d965c4d96fa150f23ee57e01be5f6c57dd3e34c6309aab7e87
+    .claude/skills/expo-router/references/search.md: sha256:bb4785df4757d84f1aff09d34cdb84043e7099684b9731a24a1d79cc3c0df172
+    .claude/skills/expo-router/references/tabs.md: sha256:c49081529a200bfc62c95d41229e5dd7368f2e35cd5775ccaaab3289ed1fd7eb
+    .claude/skills/expo-router/references/toolbar-and-headers.md: sha256:14d9a71dd949bd2b28a5bd531f6b9c1b4f3fa847a86db8c5218fee67b5295769
+    .claude/skills/expo-router/references/zoom-transitions.md: sha256:cacc1665e9f3044762765d2cd55fd1ead9627f06478f12dfa2280c6f9ae88ede
+  content_hash: sha256:6958c9d84a72b8dc5b328099ab54505aaa7ec71e2a79c111141feba7414025d9
+  carried_licenses:
+  - path: LICENSE
+    source: plugins/expo/LICENSE
+    hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: linuxfoundation/crowd.dev
+  name: adr
+  host: github.com
+  resolved_commit: 8f025ec661212589ed76588b21b4acf923efc652
+  version: unknown
+  virtual_path: .claude/skills/adr
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/adr
+  - .claude/skills/adr/LICENSE
+  - .claude/skills/adr/SKILL.md
+  deployed_file_hashes:
+    .claude/skills/adr/LICENSE: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
+    .claude/skills/adr/SKILL.md: sha256:26ea24f361e35f1c668332acb969fcac8e35d0c42195eda70af9fab1f99a82ce
+  content_hash: sha256:7b42395b846ecd1fdc970048c27e0552f3e7bdb8c28b707cb4bbd3e931cf2268
+  carried_licenses:
+  - path: LICENSE
+    source: LICENSE
+    hash: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
+- repo_url: supabase/agent-skills
+  name: supabase
+  host: github.com
+  resolved_commit: c9be0e931b7930f7d02126d04774d904c381e7d7
+  version: unknown
+  virtual_path: skills/supabase
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/supabase
+  - .claude/skills/supabase/CHANGELOG.md
+  - .claude/skills/supabase/LICENSE
+  - .claude/skills/supabase/SKILL.md
+  - .claude/skills/supabase/assets/feedback-issue-template.md
+  - .claude/skills/supabase/references/skill-feedback.md
+  deployed_file_hashes:
+    .claude/skills/supabase/CHANGELOG.md: sha256:4b9c9387871d7888f18e9c97a7d5691ea38e333401ccdcb0161d2140cb16b2d8
+    .claude/skills/supabase/LICENSE: sha256:b65e575eb4f04a13c187d64e958321298e2ab84d67aa8428819f362056ba292c
+    .claude/skills/supabase/SKILL.md: sha256:697e0e949f97621c6fc1784169eb3ccbf673747d6bb8299a52962d3d84d93dc6
+    .claude/skills/supabase/assets/feedback-issue-template.md: sha256:ea211aa174c5a096fe76461f25143b8bc23f3bde3adc9e727cda38218cc8c282
+    .claude/skills/supabase/references/skill-feedback.md: sha256:09ad94c0291735dfc04c92557c8734fa259ec39e1d56bf2bd5c6a6529d838717
+  content_hash: sha256:a5f461e428839907c2bf03bb5adfd5f7642ecf2105644ae00b0a90f73e55175b
+  carried_licenses:
+  - path: LICENSE
+    source: LICENSE
+    hash: sha256:b65e575eb4f04a13c187d64e958321298e2ab84d67aa8428819f362056ba292c
+- repo_url: vercel-labs/agent-skills
+  name: vercel-react-native-skills
+  host: github.com
+  resolved_commit: 5a37a6329fbad3666c3207392a6a7c0110e92efb
+  version: unknown
+  virtual_path: skills/react-native-skills
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/react-native-skills
+  - .claude/skills/react-native-skills/AGENTS.md
+  - .claude/skills/react-native-skills/README.md
+  - .claude/skills/react-native-skills/SKILL.md
+  - .claude/skills/react-native-skills/metadata.json
+  - .claude/skills/react-native-skills/rules/_sections.md
+  - .claude/skills/react-native-skills/rules/_template.md
+  - .claude/skills/react-native-skills/rules/animation-derived-value.md
+  - .claude/skills/react-native-skills/rules/animation-gesture-detector-press.md
+  - .claude/skills/react-native-skills/rules/animation-gpu-properties.md
+  - .claude/skills/react-native-skills/rules/design-system-compound-components.md
+  - .claude/skills/react-native-skills/rules/fonts-config-plugin.md
+  - .claude/skills/react-native-skills/rules/imports-design-system-folder.md
+  - .claude/skills/react-native-skills/rules/js-hoist-intl.md
+  - .claude/skills/react-native-skills/rules/list-performance-callbacks.md
+  - .claude/skills/react-native-skills/rules/list-performance-function-references.md
+  - .claude/skills/react-native-skills/rules/list-performance-images.md
+  - .claude/skills/react-native-skills/rules/list-performance-inline-objects.md
+  - .claude/skills/react-native-skills/rules/list-performance-item-expensive.md
+  - .claude/skills/react-native-skills/rules/list-performance-item-memo.md
+  - .claude/skills/react-native-skills/rules/list-performance-item-types.md
+  - .claude/skills/react-native-skills/rules/list-performance-virtualize.md
+  - .claude/skills/react-native-skills/rules/monorepo-native-deps-in-app.md
+  - .claude/skills/react-native-skills/rules/monorepo-single-dependency-versions.md
+  - .claude/skills/react-native-skills/rules/navigation-native-navigators.md
+  - .claude/skills/react-native-skills/rules/react-compiler-destructure-functions.md
+  - .claude/skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md
+  - .claude/skills/react-native-skills/rules/react-state-dispatcher.md
+  - .claude/skills/react-native-skills/rules/react-state-fallback.md
+  - .claude/skills/react-native-skills/rules/react-state-minimize.md
+  - .claude/skills/react-native-skills/rules/rendering-no-falsy-and.md
+  - .claude/skills/react-native-skills/rules/rendering-text-in-text-component.md
+  - .claude/skills/react-native-skills/rules/scroll-position-no-state.md
+  - .claude/skills/react-native-skills/rules/state-ground-truth.md
+  - .claude/skills/react-native-skills/rules/ui-expo-image.md
+  - .claude/skills/react-native-skills/rules/ui-image-gallery.md
+  - .claude/skills/react-native-skills/rules/ui-measure-views.md
+  - .claude/skills/react-native-skills/rules/ui-menus.md
+  - .claude/skills/react-native-skills/rules/ui-native-modals.md
+  - .claude/skills/react-native-skills/rules/ui-pressable.md
+  - .claude/skills/react-native-skills/rules/ui-safe-area-scroll.md
+  - .claude/skills/react-native-skills/rules/ui-scrollview-content-inset.md
+  - .claude/skills/react-native-skills/rules/ui-styling.md
+  deployed_file_hashes:
+    .claude/skills/react-native-skills/AGENTS.md: sha256:72996343b8260800fbeb9af63ddaed91f14b65dc547e0922f9f8e9bd72076cbf
+    .claude/skills/react-native-skills/README.md: sha256:d60d7623005a833b928be6a109ed9d14dea43d7217fb534e8f2e4de5fc1f0ddf
+    .claude/skills/react-native-skills/SKILL.md: sha256:4012750a5ccbe064ca04af3835d5d1b011979d2d09d9b6df1c8128fac58e0a66
+    .claude/skills/react-native-skills/metadata.json: sha256:59ee2274cadbd95b2220727028f0dbc26d3e0251e7937226edc9e7640756ba21
+    .claude/skills/react-native-skills/rules/_sections.md: sha256:21d7445e92bd7d393b420118c3fb9ebbf30aaf123a15143afb6c0b1b562cfdfd
+    .claude/skills/react-native-skills/rules/_template.md: sha256:99df2a3ea088c6c22de2484ddc7e964d0e9923846f44c63380343ecc64455442
+    .claude/skills/react-native-skills/rules/animation-derived-value.md: sha256:689228e9d59227934f296563963951aa9368be0afb2a188f650de161203b1862
+    .claude/skills/react-native-skills/rules/animation-gesture-detector-press.md: sha256:69408d4be669e74689d865c5f50a22fc3a802d521fe493371761abd20526e58e
+    .claude/skills/react-native-skills/rules/animation-gpu-properties.md: sha256:f885e4179445da27cbc225e0a4aa3ed9016fc3507ca6f864392ba7a9d0bd7516
+    .claude/skills/react-native-skills/rules/design-system-compound-components.md: sha256:dcb10900a58fcf57cca2e27c062d02df2325a7949e08fb45e9e05cc2b132b1a6
+    .claude/skills/react-native-skills/rules/fonts-config-plugin.md: sha256:b92568774064a604e7a479d4c8d7263aed5609740e9161d2f2764bfff761905d
+    .claude/skills/react-native-skills/rules/imports-design-system-folder.md: sha256:aa6337f7f2869a46a9141ec65e02c3da5c3bf051023899b82e0f0aef5bff8423
+    .claude/skills/react-native-skills/rules/js-hoist-intl.md: sha256:b4b08622465ffcd5e5961878eb8c6d7359aa242d16c990b59941c9111962fe46
+    .claude/skills/react-native-skills/rules/list-performance-callbacks.md: sha256:db800e9dfe0080eb4954b96e2a362ee8344d08e08b1ed06bc8059450f3e6f0dd
+    .claude/skills/react-native-skills/rules/list-performance-function-references.md: sha256:b54470e41d578b207ee3223f6853efb7fbf8e5f83d9aecf8da16989072f99544
+    .claude/skills/react-native-skills/rules/list-performance-images.md: sha256:e88f16ac113c29230d674b7aa2c66c31d5772a74b1ea378d48a97b1143fe6c19
+    .claude/skills/react-native-skills/rules/list-performance-inline-objects.md: sha256:e2a80aac0f29c6abaf0163c1cc273d09cc8a0030ec077ca2022bbf5c309e4625
+    .claude/skills/react-native-skills/rules/list-performance-item-expensive.md: sha256:a68cc8ec5dba3c55761bd5df9dfd3d98485f63076868d3e03af15f1e58907ce3
+    .claude/skills/react-native-skills/rules/list-performance-item-memo.md: sha256:38ec1d149ee485434d11c2b9e2101dfc914afadae4a0738ca905f26b05f708c1
+    .claude/skills/react-native-skills/rules/list-performance-item-types.md: sha256:eed225f4e9e504bfa7db01f5395d1402545cc47de8adf1829a9408cd5d158cf6
+    .claude/skills/react-native-skills/rules/list-performance-virtualize.md: sha256:98cad308118acb4d6e8e975c0168ce56e2d48ca52ed47f23bc9a30667c066ada
+    .claude/skills/react-native-skills/rules/monorepo-native-deps-in-app.md: sha256:8368b109027fcec1b8a81bfb99718aef2b64edaba77107f73d7c465cc5a14217
+    .claude/skills/react-native-skills/rules/monorepo-single-dependency-versions.md: sha256:61c01b9eaab1e319bf078204231fb573bdfea3c43a6eb99e7ef73ee95d474ccc
+    .claude/skills/react-native-skills/rules/navigation-native-navigators.md: sha256:6642dedb57e72f0b56df5fbc3d5b8aaa91fc4456932c12712cfd076d393f32c6
+    .claude/skills/react-native-skills/rules/react-compiler-destructure-functions.md: sha256:8048926a4fa3fbd28fc0ecf4ba4c383a2f0ed06c2fd7330dd4a15d7f4e548044
+    .claude/skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md: sha256:3174303a72b6849ff0eda5cd9f9650f26baa5f31ed28d35a75076af714fb2ffc
+    .claude/skills/react-native-skills/rules/react-state-dispatcher.md: sha256:7ec5b653e3ff8d9ca97d8d66981cce5590c0e49fa79ab708fd6324542b588870
+    .claude/skills/react-native-skills/rules/react-state-fallback.md: sha256:eb76e386d71680bfdfc0ab64dba1221f4d3d0fdcb4980bb4a871381d58e9e58b
+    .claude/skills/react-native-skills/rules/react-state-minimize.md: sha256:31b989de61defda1c61d8578c4700efd64a427218c3f3dbb7062a1666e1cbe43
+    .claude/skills/react-native-skills/rules/rendering-no-falsy-and.md: sha256:7300fa45ac3a4968db144727a21052421bc62de9b5e9f6f59e28bd16d2fff001
+    .claude/skills/react-native-skills/rules/rendering-text-in-text-component.md: sha256:fc67897b6126b6b5574f4d284a6c5b2282528fe89de8ec08e6cfd2a86ab5b235
+    .claude/skills/react-native-skills/rules/scroll-position-no-state.md: sha256:70aa1ee679e755556d7b01b326431fe898d3c23ddba40d0da6bdac23c87a1525
+    .claude/skills/react-native-skills/rules/state-ground-truth.md: sha256:9f3efc73d2e66a5deb3199c9774f42524cd6a0f69784af38301946be5d747cb5
+    .claude/skills/react-native-skills/rules/ui-expo-image.md: sha256:c3c13cce3dd2cc7f8a9b4861e5743af98f62e28f5699f72f492e79a335cfae55
+    .claude/skills/react-native-skills/rules/ui-image-gallery.md: sha256:b34d1ba03710ed9622187716541ae618968e7d03bc28895c2ac918d3cc5853f1
+    .claude/skills/react-native-skills/rules/ui-measure-views.md: sha256:170d058abc4900ea9e851e54f5e8b437ffffc2c9d3847ae35e30a515c8990c3d
+    .claude/skills/react-native-skills/rules/ui-menus.md: sha256:5964adbecfe9aeb28d736a4eaacec6469a1c4ca3f48779d243eb38b6d181cfe9
+    .claude/skills/react-native-skills/rules/ui-native-modals.md: sha256:d803493b3046ad31cbb2c189f1fffb948fd0055050e3c322589bd548421e23a8
+    .claude/skills/react-native-skills/rules/ui-pressable.md: sha256:52cdbad127d713d7d32c59ef74ab1bbd6dca211edc9b25993453f7f4545e79fa
+    .claude/skills/react-native-skills/rules/ui-safe-area-scroll.md: sha256:3dd776caef2344d73529010940b50042861d06d31a192122a4df64bc06aed0e8
+    .claude/skills/react-native-skills/rules/ui-scrollview-content-inset.md: sha256:89e4bbe5e9a602660f4155e9d4c0dee09db1adf21c73f47213cd67ec896e5a13
+    .claude/skills/react-native-skills/rules/ui-styling.md: sha256:cdef4d8b1a097b844e5992ab78e66a2dc604faf1e90f8d325a0eb116e8ef6a7e
+  content_hash: sha256:54c634e195fe37af0cde3aab03e988f6a501b6f6ed34f67b2dadd604baa9e0ef
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: sha256:f4c1d7ba32ef5bcf5cf03e2eefec5825ebafedf50fa330a36700a49c605c1ef4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adr/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - linuxfoundation/crowd.dev/.claude/skills/adr
+  active_owner: linuxfoundation/crowd.dev/.claude/skills/adr
+  content_hash: sha256:26ea24f361e35f1c668332acb969fcac8e35d0c42195eda70af9fab1f99a82ce
+- kind: project-relative
+  target: claude
+  value: .claude/skills/commit-rules
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/commit-rules/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: sha256:591983e0b0ce81aa22d761f73314c6187586d158fe2dcca9d0f9397e11436b35
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: sha256:50254d420a1db8e631ee24aaf8463708a525049059ac391b0d219dce8ce82e0a
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching/references/expo-router-loaders.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: sha256:f842c86483a15380c44a4b49db27bf3d41e17b48b1f44b9a2bbacc563a9dcbe6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-data-fetching/references/offline-and-cancellation.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-data-fetching
+  active_owner: expo/skills/plugins/expo/skills/expo-data-fetching
+  content_hash: sha256:750f7f25acc4e6143a6ff4daacffbcd5daf64370540a75e7b3a4f3b4b1aa462c
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: sha256:c5a71ab53a242d6fda7c6331317559b2f0810ac397c5f36b8db5ffdbe580513a
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: sha256:16d7f7f1bb47bc02fa2a816280403bfaccd24e436672cd1503670fcc2a42fd26
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system/references/audit.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: sha256:a0ead76ab904c119a1353d8d91b9138144a97da43fdff683f291f2d45d868915
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-design-system/references/native-slop.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-design-system
+  active_owner: expo/skills/plugins/expo/skills/expo-design-system
+  content_hash: sha256:5662bd04ac2d6367fc4ca3ae355ec1b970752dcd8693a099a5e0792227eb09c1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-examples
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-examples
+  active_owner: expo/skills/plugins/expo/skills/expo-examples
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-examples/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-examples
+  active_owner: expo/skills/plugins/expo/skills/expo-examples
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-examples/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-examples
+  active_owner: expo/skills/plugins/expo/skills/expo-examples
+  content_hash: sha256:f892153712ce83f057a4987a8ff97b61c396600a3edb4838fdb53047e02e4e35
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-examples/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-examples
+  active_owner: expo/skills/plugins/expo/skills/expo-examples
+  content_hash: sha256:efdcc54de3f666d0d3f5515ee38e0c07ecc2d302a3c9e9acd742ce8f2f42f52d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-examples/references/catalog.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-examples
+  active_owner: expo/skills/plugins/expo/skills/expo-examples
+  content_hash: sha256:024aa05d82dffcc2a5e3b29e87ec4e800122bc39825c36e2e389f7b7e090d4fc
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:c6df6d4a39432447c8d39cb51b3a1e56c50995649542ce2729566e436154a2a4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:90bf5d66b1038913fea37bd6d57292eb6ecd0e0ee3b2bc3e283facc033f4b2b0
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/controls.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:6ec427731a65ffd66b745733665bb2c00992750c7d3710893d1bbf70b427d541
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/gradients.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:63ced0392f67c41bf90e726613d139a389db609799bfcb91124e6e69b9a66e70
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/icons.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:2c0622d8a3f61626a72fa7829d3044f3391cbd8ca91806f4752926cf4e66be59
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/media.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:c964182dfbcaa5eef00b947e0425f5a39ee2cfc1b2a4e251ba51fc823e87b0dc
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/storage.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:265e8bc21adcd698062f18fa442e0e07e99e67868576f18aac2112e5381ffbf1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/visual-effects.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:dcdcaa5e0bf5c20341455e39d91312ca5f3034391908f77eb2e577044283adcc
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-native-ui/references/webgpu-three.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-native-ui
+  active_owner: expo/skills/plugins/expo/skills/expo-native-ui
+  content_hash: sha256:3a247a7740e4bab4aea5dec8b81c7782a5918bb221838a05f6a94c669f145679
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-overview
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-overview
+  active_owner: expo/skills/plugins/expo/skills/expo-overview
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-overview/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-overview
+  active_owner: expo/skills/plugins/expo/skills/expo-overview
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-overview/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-overview
+  active_owner: expo/skills/plugins/expo/skills/expo-overview
+  content_hash: sha256:406553baf930d4d01da660f2d47a3d774070134a5d8b222f69239e55fa14db5a
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-overview/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-overview
+  active_owner: expo/skills/plugins/expo/skills/expo-overview
+  content_hash: sha256:a488fa6e5659f702b5e27d4bcc1ab601cc64c0fc001404d64fcdef1627f81494
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-overview/references/launch-without-dev-menu.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-overview
+  active_owner: expo/skills/plugins/expo/skills/expo-overview
+  content_hash: sha256:d0cdc82285d136f9264fb28d8ce21690d2d12ba83591104109c9cdcb9989af26
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-project-structure
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-project-structure
+  active_owner: expo/skills/plugins/expo/skills/expo-project-structure
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-project-structure/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-project-structure
+  active_owner: expo/skills/plugins/expo/skills/expo-project-structure
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-project-structure/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-project-structure
+  active_owner: expo/skills/plugins/expo/skills/expo-project-structure
+  content_hash: sha256:120b036f702d9f64a996fda7a05e95127602d6f6d707666732abb920b95edb68
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-project-structure/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-project-structure
+  active_owner: expo/skills/plugins/expo/skills/expo-project-structure
+  content_hash: sha256:cd7a9387766af254f9d8f691c332606e71273b8dd1c99c949f0934ed693878e0
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:605234749eeeb6896e324f55cdef7af15603c348fbc2f7a6fe13538ec222ce43
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:7b76d9331a33e06e61504db9af069bccc8ab4a02e2f8be92727e8e0f9ad7941d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/form-sheet.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:947de9cf35a15aacf3f02e96e45942b5e4826e536e529570886e5ddbb7ec8591
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/route-structure.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:4c3d70edeb7e36d965c4d96fa150f23ee57e01be5f6c57dd3e34c6309aab7e87
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/search.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:bb4785df4757d84f1aff09d34cdb84043e7099684b9731a24a1d79cc3c0df172
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/tabs.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:c49081529a200bfc62c95d41229e5dd7368f2e35cd5775ccaaab3289ed1fd7eb
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/toolbar-and-headers.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:14d9a71dd949bd2b28a5bd531f6b9c1b4f3fa847a86db8c5218fee67b5295769
+- kind: project-relative
+  target: claude
+  value: .claude/skills/expo-router/references/zoom-transitions.md
+  runtime: null
+  scope: project
+  owners:
+  - expo/skills/plugins/expo/skills/expo-router
+  active_owner: expo/skills/plugins/expo/skills/expo-router
+  content_hash: sha256:cacc1665e9f3044762765d2cd55fd1ead9627f06478f12dfa2280c6f9ae88ede
+- kind: project-relative
+  target: claude
+  value: .claude/skills/frameworks-on-cloudflare
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/frameworks-on-cloudflare
+  active_owner: cloudflare/skills/skills/frameworks-on-cloudflare
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/frameworks-on-cloudflare/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/frameworks-on-cloudflare
+  active_owner: cloudflare/skills/skills/frameworks-on-cloudflare
+  content_hash: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/frameworks-on-cloudflare/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/frameworks-on-cloudflare
+  active_owner: cloudflare/skills/skills/frameworks-on-cloudflare
+  content_hash: sha256:0edfc9c8090988c32b76a0be007264073a67be1c8623b72c172976d510eccda4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/frameworks-on-cloudflare/references/skill-feedback.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/frameworks-on-cloudflare
+  active_owner: cloudflare/skills/skills/frameworks-on-cloudflare
+  content_hash: sha256:cef5673f1445b52c6da179d2e87471bc46a035f81844cb5e5fddcaaefcd03bf9
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pr-rules
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pr-rules/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/AGENTS.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:72996343b8260800fbeb9af63ddaed91f14b65dc547e0922f9f8e9bd72076cbf
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/README.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:d60d7623005a833b928be6a109ed9d14dea43d7217fb534e8f2e4de5fc1f0ddf
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:4012750a5ccbe064ca04af3835d5d1b011979d2d09d9b6df1c8128fac58e0a66
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/metadata.json
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:59ee2274cadbd95b2220727028f0dbc26d3e0251e7937226edc9e7640756ba21
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/_sections.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:21d7445e92bd7d393b420118c3fb9ebbf30aaf123a15143afb6c0b1b562cfdfd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/_template.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:99df2a3ea088c6c22de2484ddc7e964d0e9923846f44c63380343ecc64455442
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/animation-derived-value.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:689228e9d59227934f296563963951aa9368be0afb2a188f650de161203b1862
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/animation-gesture-detector-press.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:69408d4be669e74689d865c5f50a22fc3a802d521fe493371761abd20526e58e
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/animation-gpu-properties.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:f885e4179445da27cbc225e0a4aa3ed9016fc3507ca6f864392ba7a9d0bd7516
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/design-system-compound-components.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:dcb10900a58fcf57cca2e27c062d02df2325a7949e08fb45e9e05cc2b132b1a6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/fonts-config-plugin.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:b92568774064a604e7a479d4c8d7263aed5609740e9161d2f2764bfff761905d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/imports-design-system-folder.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:aa6337f7f2869a46a9141ec65e02c3da5c3bf051023899b82e0f0aef5bff8423
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/js-hoist-intl.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:b4b08622465ffcd5e5961878eb8c6d7359aa242d16c990b59941c9111962fe46
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-callbacks.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:db800e9dfe0080eb4954b96e2a362ee8344d08e08b1ed06bc8059450f3e6f0dd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-function-references.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:b54470e41d578b207ee3223f6853efb7fbf8e5f83d9aecf8da16989072f99544
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-images.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:e88f16ac113c29230d674b7aa2c66c31d5772a74b1ea378d48a97b1143fe6c19
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-inline-objects.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:e2a80aac0f29c6abaf0163c1cc273d09cc8a0030ec077ca2022bbf5c309e4625
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-item-expensive.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:a68cc8ec5dba3c55761bd5df9dfd3d98485f63076868d3e03af15f1e58907ce3
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-item-memo.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:38ec1d149ee485434d11c2b9e2101dfc914afadae4a0738ca905f26b05f708c1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-item-types.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:eed225f4e9e504bfa7db01f5395d1402545cc47de8adf1829a9408cd5d158cf6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/list-performance-virtualize.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:98cad308118acb4d6e8e975c0168ce56e2d48ca52ed47f23bc9a30667c066ada
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/monorepo-native-deps-in-app.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:8368b109027fcec1b8a81bfb99718aef2b64edaba77107f73d7c465cc5a14217
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/monorepo-single-dependency-versions.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:61c01b9eaab1e319bf078204231fb573bdfea3c43a6eb99e7ef73ee95d474ccc
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/navigation-native-navigators.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:6642dedb57e72f0b56df5fbc3d5b8aaa91fc4456932c12712cfd076d393f32c6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/react-compiler-destructure-functions.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:8048926a4fa3fbd28fc0ecf4ba4c383a2f0ed06c2fd7330dd4a15d7f4e548044
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:3174303a72b6849ff0eda5cd9f9650f26baa5f31ed28d35a75076af714fb2ffc
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/react-state-dispatcher.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:7ec5b653e3ff8d9ca97d8d66981cce5590c0e49fa79ab708fd6324542b588870
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/react-state-fallback.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:eb76e386d71680bfdfc0ab64dba1221f4d3d0fdcb4980bb4a871381d58e9e58b
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/react-state-minimize.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:31b989de61defda1c61d8578c4700efd64a427218c3f3dbb7062a1666e1cbe43
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/rendering-no-falsy-and.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:7300fa45ac3a4968db144727a21052421bc62de9b5e9f6f59e28bd16d2fff001
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/rendering-text-in-text-component.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:fc67897b6126b6b5574f4d284a6c5b2282528fe89de8ec08e6cfd2a86ab5b235
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/scroll-position-no-state.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:70aa1ee679e755556d7b01b326431fe898d3c23ddba40d0da6bdac23c87a1525
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/state-ground-truth.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:9f3efc73d2e66a5deb3199c9774f42524cd6a0f69784af38301946be5d747cb5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-expo-image.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:c3c13cce3dd2cc7f8a9b4861e5743af98f62e28f5699f72f492e79a335cfae55
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-image-gallery.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:b34d1ba03710ed9622187716541ae618968e7d03bc28895c2ac918d3cc5853f1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-measure-views.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:170d058abc4900ea9e851e54f5e8b437ffffc2c9d3847ae35e30a515c8990c3d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-menus.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:5964adbecfe9aeb28d736a4eaacec6469a1c4ca3f48779d243eb38b6d181cfe9
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-native-modals.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:d803493b3046ad31cbb2c189f1fffb948fd0055050e3c322589bd548421e23a8
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-pressable.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:52cdbad127d713d7d32c59ef74ab1bbd6dca211edc9b25993453f7f4545e79fa
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-safe-area-scroll.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:3dd776caef2344d73529010940b50042861d06d31a192122a4df64bc06aed0e8
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-scrollview-content-inset.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:89e4bbe5e9a602660f4155e9d4c0dee09db1adf21c73f47213cd67ec896e5a13
+- kind: project-relative
+  target: claude
+  value: .claude/skills/react-native-skills/rules/ui-styling.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel-labs/agent-skills/skills/react-native-skills
+  active_owner: vercel-labs/agent-skills/skills/react-native-skills
+  content_hash: sha256:cdef4d8b1a097b844e5992ab78e66a2dc604faf1e90f8d325a0eb116e8ef6a7e
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase/CHANGELOG.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: sha256:4b9c9387871d7888f18e9c97a7d5691ea38e333401ccdcb0161d2140cb16b2d8
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: sha256:b65e575eb4f04a13c187d64e958321298e2ab84d67aa8428819f362056ba292c
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: sha256:697e0e949f97621c6fc1784169eb3ccbf673747d6bb8299a52962d3d84d93dc6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase/assets/feedback-issue-template.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: sha256:ea211aa174c5a096fe76461f25143b8bc23f3bde3adc9e727cda38218cc8c282
+- kind: project-relative
+  target: claude
+  value: .claude/skills/supabase/references/skill-feedback.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills/skills/supabase
+  active_owner: supabase/agent-skills/skills/supabase
+  content_hash: sha256:09ad94c0291735dfc04c92557c8734fa259ec39e1d56bf2bd5c6a6529d838717
+- kind: project-relative
+  target: claude
+  value: .claude/skills/wrangler
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/wrangler
+  active_owner: cloudflare/skills/skills/wrangler
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/wrangler/LICENSE
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/wrangler
+  active_owner: cloudflare/skills/skills/wrangler
+  content_hash: sha256:58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/wrangler/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/wrangler
+  active_owner: cloudflare/skills/skills/wrangler
+  content_hash: sha256:a39de5c69f50e88759736a6ec7ad07f402c15f7a58a3224bcf979dce42013b13
+- kind: project-relative
+  target: claude
+  value: .claude/skills/wrangler/references/skill-feedback.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/skills/skills/wrangler
+  active_owner: cloudflare/skills/skills/wrangler
+  content_hash: sha256:f24d02c8beebbc7484c7c9d42e957e7b58c92bcf80798e8b86111b850913a57a
+local_deployed_files:
+- .claude/skills/commit-rules
+- .claude/skills/commit-rules/SKILL.md
+- .claude/skills/pr-rules
+- .claude/skills/pr-rules/SKILL.md
+local_deployed_file_hashes:
+  .claude/skills/commit-rules/SKILL.md: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
+  .claude/skills/pr-rules/SKILL.md: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
