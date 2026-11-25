@@ -9,7 +9,7 @@ import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
 import { PostCard } from '@/features/posts/post-card';
 import { POST_MAX_LENGTH, postSchema, type PostValues } from '@/features/posts/schemas';
-import { usePost, useReplies, useReplyToPost } from '@/features/posts/use-posts';
+import { usePost, useReplies, useReplyToPost, useToggleLike } from '@/features/posts/use-posts';
 
 const noop = () => {};
 
@@ -19,6 +19,8 @@ export default function PostDetailScreen() {
   const post = usePost(id);
   const replies = useReplies(id);
   const reply = useReplyToPost(id);
+  const toggleLike = useToggleLike();
+  const onToggleLike = (postId: string, liked: boolean) => toggleLike.mutate({ postId, liked });
   const [error, setError] = useState<string | null>(null);
   const { control, handleSubmit, reset } = useForm<PostValues>({
     resolver: zodResolver(postSchema),
@@ -44,7 +46,9 @@ export default function PostDetailScreen() {
 
   const header = (
     <View>
-      {post.data ? <PostCard post={post.data} canDelete={false} onDelete={noop} /> : null}
+      {post.data ? (
+        <PostCard post={post.data} canDelete={false} onDelete={noop} onToggleLike={onToggleLike} />
+      ) : null}
       {!post.data && !post.isPending && !post.isError ? (
         <Text className="px-4 py-6 text-center text-muted">投稿が見つかりません</Text>
       ) : null}
@@ -83,6 +87,7 @@ export default function PostDetailScreen() {
             post={item}
             canDelete={false}
             onDelete={noop}
+            onToggleLike={item.id.startsWith('optimistic-') ? undefined : onToggleLike}
             onPress={
               item.id.startsWith('optimistic-')
                 ? undefined

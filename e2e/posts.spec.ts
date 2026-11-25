@@ -115,3 +115,32 @@ test('投稿詳細からリプライすると、一覧とカウンタに反映�
   await expect(page).toHaveURL(/\/home$/);
   await expect(page.getByText(text)).toBeVisible();
 });
+
+test('いいねと取り消しが即時に反映され、二重にならない', async ({ page }) => {
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, uniqueHandle(), 'Eve');
+
+  const text = `e2e いいね ${Date.now()}`;
+  await page.getByRole('button', { name: '投稿を作成' }).click();
+  await page.getByLabel('本文').fill(text);
+  await page.getByRole('button', { name: '投稿する' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.getByText(text)).toBeVisible();
+
+  // いいね: 押すと即時に「済み・1」になる
+  await page.getByRole('button', { name: 'いいね', exact: true }).first().click();
+  await expect(page.getByRole('button', { name: 'いいねを取り消す' }).first()).toHaveText('♥ 1');
+
+  // 再読み込みしても残っている (DB に 1 件だけ保存されている)
+  await page.reload();
+  await expect(page.getByText(text)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'いいねを取り消す' }).first()).toHaveText('♥ 1');
+
+  // 取り消し: 押すと即時に「未・0」に戻る
+  await page.getByRole('button', { name: 'いいねを取り消す' }).first().click();
+  await expect(page.getByRole('button', { name: 'いいね', exact: true }).first()).toHaveText('♡ 0');
+
+  await page.reload();
+  await expect(page.getByText(text)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'いいね', exact: true }).first()).toHaveText('♡ 0');
+});

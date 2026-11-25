@@ -4,6 +4,8 @@ import {
   fetchPost,
   fetchReplies,
   fetchTimelinePage,
+  likePost,
+  unlikePost,
 } from '@/features/posts/posts-api';
 import { supabase } from '@/lib/supabase';
 
@@ -17,6 +19,8 @@ const row = {
   body: 'hello',
   created_at: '2026-11-24T00:00:00Z',
   reply_count: 0,
+  like_count: 0,
+  likes: [],
   profiles: { handle: 'alice', display_name: 'Alice' },
 };
 
@@ -45,6 +49,8 @@ const rpcRow = (n: number) => ({
   handle: 'alice',
   display_name: 'Alice',
   reply_count: 3,
+  like_count: 5,
+  liked_by_me: true,
 });
 
 describe('fetchTimelinePage', () => {
@@ -62,6 +68,8 @@ describe('fetchTimelinePage', () => {
       body: 'body 2',
       createdAt: '2026-11-24T00:00:02Z',
       replyCount: 3,
+      likeCount: 5,
+      likedByMe: true,
       author: { handle: 'alice', displayName: 'Alice' },
     });
     // 件数が limit に満たないので、続きはない
@@ -162,5 +170,46 @@ describe('deletePost', () => {
   it('失敗すると Error になる', async () => {
     chain({ error: { message: 'denied' } });
     await expect(deletePost('p1')).rejects.toThrow('投稿を削除できませんでした: denied');
+  });
+});
+
+describe('likePost', () => {
+  it('likes に insert する', async () => {
+    const node = chain({ error: null });
+    node.insert = jest.fn().mockResolvedValue({ error: null });
+    await likePost('u1', 'p1');
+    expect(from).toHaveBeenCalledWith('likes');
+    expect(node.insert).toHaveBeenCalledWith({ user_id: 'u1', post_id: 'p1' });
+  });
+
+  it('すでにいいね済み (23505) は成功として扱う', async () => {
+    const node = chain({});
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '23505', message: 'dup' } });
+    await expect(likePost('u1', 'p1')).resolves.toBeUndefined();
+  });
+
+  it('それ以外の失敗は Error になる', async () => {
+    const node = chain({});
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '42501', message: 'denied' } });
+    await expect(likePost('u1', 'p1')).rejects.toThrow('いいねできませんでした: denied');
+  });
+});
+
+describe('unlikePost', () => {
+  it('自分の行だけを delete する', async () => {
+    const node = chain({ error: null });
+    node.eq = jest.fn().mockReturnValueOnce(node).mockResolvedValueOnce({ error: null });
+    await unlikePost('u1', 'p1');
+    expect(node.eq).toHaveBeenNthCalledWith(1, 'user_id', 'u1');
+    expect(node.eq).toHaveBeenNthCalledWith(2, 'post_id', 'p1');
+  });
+
+  it('失敗すると Error になる', async () => {
+    const node = chain({});
+    node.eq = jest
+      .fn()
+      .mockReturnValueOnce(node)
+      .mockResolvedValueOnce({ error: { message: 'x' } });
+    await expect(unlikePost('u1', 'p1')).rejects.toThrow('いいねを取り消せませんでした: x');
   });
 });

@@ -3,12 +3,13 @@ import { renderRouter } from 'expo-router/testing-library';
 
 import PostDetailScreen from '@/app/post/[id]';
 import type { Post } from '@/features/posts/posts-api';
-import { usePost, useReplies, useReplyToPost } from '@/features/posts/use-posts';
+import { usePost, useReplies, useReplyToPost, useToggleLike } from '@/features/posts/use-posts';
 
 jest.mock('@/features/posts/use-posts', () => ({
   usePost: jest.fn(),
   useReplies: jest.fn(),
   useReplyToPost: jest.fn(),
+  useToggleLike: jest.fn(),
 }));
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
 
@@ -21,6 +22,8 @@ const post = (id: string, body: string, replyCount = 0): Post => ({
   body,
   createdAt: '2026-11-25T00:00:00Z',
   replyCount,
+  likeCount: 0,
+  likedByMe: false,
   author: { handle: 'alice', displayName: 'Alice' },
 });
 
@@ -32,6 +35,7 @@ beforeEach(() => {
   jest
     .mocked(useReplies)
     .mockReturnValue({ data: [post('r1', '最初の返信')], isPending: false } as never);
+  jest.mocked(useToggleLike).mockReturnValue({ mutate: jest.fn() } as never);
   jest.mocked(useReplyToPost).mockReturnValue({ mutateAsync, isPending: false } as never);
 });
 
