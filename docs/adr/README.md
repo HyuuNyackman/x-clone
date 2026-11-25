@@ -40,3 +40,4 @@ ADR は「その時点で、なぜそう決めたか」の記録なので、判�
 | [0028](0028-like-button-optimistic-update.md)                      | いいねは楽観的に更新し、いいね済みかは get_timeline と埋め込みで返す                                        | accepted | 2026-11-25 |
 | [0029](0029-following-timeline-via-rpc-flag-and-follow-buttons.md) | 「フォロー中」タブは get_timeline の引数で絞り、フォロー状態は別クエリで持つ                                | accepted | 2026-11-25 |
 | [0030](0030-claude-fix-on-workflow-run.md)                         | CI とレビューの失敗は、workflow_run で別のジョブが起動して直す                                              | accepted | 2026-11-25 |
+| [0031](0031-search-rpc-with-pg-trgm-ilike.md)                      | 検索は pg_trgm の GIN インデックスと ilike の RPC で作る                                                    | accepted | 2026-11-25 |
