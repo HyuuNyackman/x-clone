@@ -85,7 +85,7 @@ function toPost(row: PostRow): Post {
 }
 
 // RPC の結果には画像が含まれないので、post_media をまとめて 1 回で読んで付ける。
-async function attachMedia(posts: Post[]): Promise<void> {
+export async function attachMedia(posts: Post[]): Promise<void> {
   if (posts.length === 0) return;
   const { data, error } = await supabase
     .from('post_media')
