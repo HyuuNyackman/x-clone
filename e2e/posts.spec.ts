@@ -101,12 +101,13 @@ test('投稿詳細からリプライすると、一覧とカウンタに反映�
   const replyText = `e2e 返信 ${Date.now()}`;
   await page.getByLabel('返信', { exact: true }).fill(replyText);
   await page.getByRole('button', { name: '返信する' }).click();
-  await expect(page.getByText(replyText)).toBeVisible();
-  await expect(page.getByText('返信 1', { exact: true })).toBeVisible();
+  // 下のホーム画面 (タイムライン) にも同じ投稿が出るので、先頭の 1 件で確かめる。
+  await expect(page.getByText(replyText).first()).toBeVisible();
+  await expect(page.getByText('返信 1', { exact: true }).first()).toBeVisible();
 
   // 再読み込みしても残っている (DB に保存され、カウンタも更新されている)
   await page.reload();
-  await expect(page.getByText(replyText)).toBeVisible();
+  await expect(page.getByText(replyText).first()).toBeVisible();
   await expect(page.getByText('返信 1', { exact: true }).first()).toBeVisible();
 
   // タイムラインのカウンタにも反映される
