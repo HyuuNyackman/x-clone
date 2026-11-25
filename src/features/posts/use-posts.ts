@@ -10,10 +10,13 @@ import { useAuthStore } from '@/features/auth/auth-store';
 import {
   createPost,
   deletePost,
+  fetchFollowingIds,
   fetchPost,
   fetchReplies,
   fetchTimelinePage,
+  followUser,
   likePost,
+  unfollowUser,
   unlikePost,
   type Post,
   type TimelineCursor,
@@ -21,14 +24,19 @@ import {
 } from '@/features/posts/posts-api';
 import { useProfile } from '@/features/profile/use-profile';
 
+// 「おすすめ」(全体) のタイムライン。['posts', 'timeline'] は「フォロー中」も含む前方一致のキーでもある。
 export const timelineKey = ['posts', 'timeline'] as const;
+export const followingTimelineKey = ['posts', 'timeline', 'following'] as const;
 
 type TimelineData = InfiniteData<TimelinePage, TimelineCursor | null>;
 
-export function useTimeline() {
+export type TimelineTab = 'recommended' | 'following';
+
+export function useTimeline(tab: TimelineTab = 'recommended') {
+  const followingOnly = tab === 'following';
   return useInfiniteQuery({
-    queryKey: timelineKey,
-    queryFn: ({ pageParam }) => fetchTimelinePage(pageParam),
+    queryKey: followingOnly ? followingTimelineKey : timelineKey,
+    queryFn: ({ pageParam }) => fetchTimelinePage(pageParam, undefined, followingOnly),
     initialPageParam: null as TimelineCursor | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -101,9 +109,9 @@ export function useDeletePost() {
     mutationFn: deletePost,
     onMutate: async (postId) => {
       await queryClient.cancelQueries({ queryKey: timelineKey });
-      const previous = queryClient.getQueryData<TimelineData>(timelineKey);
-      queryClient.setQueryData<TimelineData>(
-        timelineKey,
+      const previous = queryClient.getQueriesData<TimelineData>({ queryKey: timelineKey });
+      queryClient.setQueriesData<TimelineData>(
+        { queryKey: timelineKey },
         (old) =>
           old && {
             ...old,
@@ -116,7 +124,7 @@ export function useDeletePost() {
       return { previous };
     },
     onError: (_error, _postId, context) => {
-      queryClient.setQueryData(timelineKey, context?.previous);
+      for (const [key, data] of context?.previous ?? []) queryClient.setQueryData(key, data);
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: timelineKey }),
   });
@@ -214,7 +222,7 @@ export function useToggleLike() {
         queryClient.cancelQueries({ queryKey: ['posts', 'detail', postId] }),
         queryClient.cancelQueries({ queryKey: ['posts', 'replies'] }),
       ]);
-      const previousTimeline = queryClient.getQueryData<TimelineData>(timelineKey);
+      const previousTimelines = queryClient.getQueriesData<TimelineData>({ queryKey: timelineKey });
       const previousDetails = queryClient.getQueriesData<Post | null>({
         queryKey: ['posts', 'detail'],
       });
@@ -223,8 +231,8 @@ export function useToggleLike() {
       });
 
       const update = (post: Post) => (post.id === postId ? applyLike(post, liked) : post);
-      queryClient.setQueryData<TimelineData>(
-        timelineKey,
+      queryClient.setQueriesData<TimelineData>(
+        { queryKey: timelineKey },
         (old) =>
           old && {
             ...old,
@@ -237,12 +245,15 @@ export function useToggleLike() {
       queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'replies'] }, (old) =>
         old?.map(update),
       );
-      return { previousTimeline, previousDetails, previousReplies };
+      return { previousTimelines, previousDetails, previousReplies };
     },
     onError: (_error, _variables, context) => {
       if (!context) return;
-      queryClient.setQueryData(timelineKey, context.previousTimeline);
-      for (const [key, data] of [...context.previousDetails, ...context.previousReplies]) {
+      for (const [key, data] of [
+        ...context.previousTimelines,
+        ...context.previousDetails,
+        ...context.previousReplies,
+      ]) {
         queryClient.setQueryData(key, data);
       }
     },
@@ -251,6 +262,57 @@ export function useToggleLike() {
         queryClient.invalidateQueries({ queryKey: timelineKey }),
         queryClient.invalidateQueries({ queryKey: postKey(postId) }),
         queryClient.invalidateQueries({ queryKey: ['posts', 'replies'] }),
+      ]),
+  });
+}
+
+export const followingIdsKey = (userId: string | undefined) =>
+  ['follows', 'following', userId] as const;
+
+// 自分がフォローしている人の id。ログインしていなければ取らない。
+export function useFollowingIds() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({
+    queryKey: followingIdsKey(userId),
+    queryFn: () => fetchFollowingIds(userId as string),
+    enabled: Boolean(userId),
+  });
+}
+
+// フォローのつけ外しを反映した id 一覧 (重複なし)。
+export function applyFollow(ids: string[], targetId: string, follow: boolean): string[] {
+  const without = ids.filter((id) => id !== targetId);
+  return follow ? [...without, targetId] : without;
+}
+
+type FollowVariables = { targetId: string; follow: boolean };
+
+// フォロー・解除。押した瞬間に表示を変え、失敗したら戻す (楽観的更新)。操作は scope で直列にする。
+// 完了後は「フォロー中」タブも取り直す。
+export function useToggleFollow() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const queryClient = useQueryClient();
+  const key = followingIdsKey(userId);
+
+  return useMutation({
+    scope: { id: 'follow' },
+    mutationFn: ({ targetId, follow }: FollowVariables) => {
+      if (!userId) throw new Error('ログインしていません');
+      return follow ? followUser(userId, targetId) : unfollowUser(userId, targetId);
+    },
+    onMutate: async ({ targetId, follow }) => {
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<string[]>(key);
+      queryClient.setQueryData<string[]>(key, (old) => applyFollow(old ?? [], targetId, follow));
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      queryClient.setQueryData(key, context?.previous);
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: key }),
+        queryClient.invalidateQueries({ queryKey: followingTimelineKey }),
       ]),
   });
 }

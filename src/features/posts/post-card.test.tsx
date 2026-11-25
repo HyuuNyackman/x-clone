@@ -46,3 +46,39 @@ describe('PostCard のいいねボタン', () => {
     expect(screen.queryByRole('button', { name: 'いいね' })).toBeNull();
   });
 });
+
+describe('PostCard のフォローボタン', () => {
+  it('onToggleFollow が無ければ出ない', async () => {
+    await render(<PostCard post={post()} canDelete={false} onDelete={jest.fn()} />);
+    expect(screen.queryByRole('button', { name: '@alice をフォロー' })).toBeNull();
+  });
+
+  it('未フォローなら「フォロー」で、押すと follow=true で呼ぶ', async () => {
+    const onToggleFollow = jest.fn();
+    await render(
+      <PostCard
+        post={post()}
+        canDelete={false}
+        onDelete={jest.fn()}
+        onToggleFollow={onToggleFollow}
+      />,
+    );
+    await fireEvent.press(screen.getByRole('button', { name: '@alice をフォロー' }));
+    expect(onToggleFollow).toHaveBeenCalledWith('u1', true);
+  });
+
+  it('フォロー中なら「フォロー中」で、押すと follow=false で呼ぶ', async () => {
+    const onToggleFollow = jest.fn();
+    await render(
+      <PostCard
+        post={post()}
+        canDelete={false}
+        onDelete={jest.fn()}
+        following
+        onToggleFollow={onToggleFollow}
+      />,
+    );
+    await fireEvent.press(screen.getByRole('button', { name: '@alice のフォローを解除' }));
+    expect(onToggleFollow).toHaveBeenCalledWith('u1', false);
+  });
+});

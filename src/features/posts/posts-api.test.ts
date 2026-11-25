@@ -1,10 +1,13 @@
 import {
   createPost,
   deletePost,
+  fetchFollowingIds,
   fetchPost,
+  followUser,
   fetchReplies,
   fetchTimelinePage,
   likePost,
+  unfollowUser,
   unlikePost,
 } from '@/features/posts/posts-api';
 import { supabase } from '@/lib/supabase';
@@ -61,6 +64,7 @@ describe('fetchTimelinePage', () => {
       p_before_created_at: 'c',
       p_before_id: 'i',
       p_limit: 2,
+      p_following_only: false,
     });
     expect(page.posts[0]).toEqual({
       id: 'p2',
@@ -83,8 +87,20 @@ describe('fetchTimelinePage', () => {
       p_before_created_at: undefined,
       p_before_id: undefined,
       p_limit: 2,
+      p_following_only: false,
     });
     expect(page.nextCursor).toEqual({ createdAt: '2026-11-24T00:00:01Z', id: 'p1' });
+  });
+
+  it('followingOnly なら、p_following_only を true で呼ぶ', async () => {
+    rpc.mockResolvedValue({ data: [], error: null } as never);
+    await fetchTimelinePage(null, 2, true);
+    expect(rpc).toHaveBeenCalledWith('get_timeline', {
+      p_before_created_at: undefined,
+      p_before_id: undefined,
+      p_limit: 2,
+      p_following_only: true,
+    });
   });
 
   it('失敗すると Error になる', async () => {
@@ -211,5 +227,35 @@ describe('unlikePost', () => {
       .mockReturnValueOnce(node)
       .mockResolvedValueOnce({ error: { message: 'x' } });
     await expect(unlikePost('u1', 'p1')).rejects.toThrow('いいねを取り消せませんでした: x');
+  });
+});
+
+describe('フォロー', () => {
+  it('fetchFollowingIds は followee_id の配列を返す', async () => {
+    const node = chain({ data: [{ followee_id: 'u2' }, { followee_id: 'u3' }], error: null });
+    await expect(fetchFollowingIds('u1')).resolves.toEqual(['u2', 'u3']);
+    expect(from).toHaveBeenCalledWith('follows');
+    expect(node.eq).toHaveBeenCalledWith('follower_id', 'u1');
+  });
+
+  it('followUser は insert する。重複 (23505) は成功として扱う', async () => {
+    const node = chain({});
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '23505', message: 'dup' } });
+    await expect(followUser('u1', 'u2')).resolves.toBeUndefined();
+    expect(node.insert).toHaveBeenCalledWith({ follower_id: 'u1', followee_id: 'u2' });
+  });
+
+  it('followUser はそれ以外のエラーで Error になる', async () => {
+    const node = chain({});
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '42501', message: 'nope' } });
+    await expect(followUser('u1', 'u2')).rejects.toThrow('フォローできませんでした: nope');
+  });
+
+  it('unfollowUser は自分と相手で絞って delete する', async () => {
+    const node = chain({});
+    node.eq = jest.fn().mockReturnValueOnce(node).mockResolvedValueOnce({ error: null });
+    await unfollowUser('u1', 'u2');
+    expect(node.eq).toHaveBeenNthCalledWith(1, 'follower_id', 'u1');
+    expect(node.eq).toHaveBeenNthCalledWith(2, 'followee_id', 'u2');
   });
 });

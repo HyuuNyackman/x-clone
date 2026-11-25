@@ -69,11 +69,13 @@ function toPost(row: PostRow): Post {
 export async function fetchTimelinePage(
   cursor: TimelineCursor | null,
   limit = TIMELINE_PAGE_SIZE,
+  followingOnly = false,
 ): Promise<TimelinePage> {
   const { data, error } = await supabase.rpc('get_timeline', {
     p_before_created_at: cursor?.createdAt,
     p_before_id: cursor?.id,
     p_limit: limit,
+    p_following_only: followingOnly,
   });
   if (error) throw new Error(`タイムラインを読み込めませんでした: ${error.message}`);
   const rows = (data ?? []) as unknown as TimelineRow[];
@@ -155,4 +157,34 @@ export async function unlikePost(userId: string, postId: string): Promise<void> 
     .eq('user_id', userId)
     .eq('post_id', postId);
   if (error) throw new Error(`いいねを取り消せませんでした: ${error.message}`);
+}
+
+// 自分がフォローしている人の id 一覧。
+export async function fetchFollowingIds(userId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('follows')
+    .select('followee_id')
+    .eq('follower_id', userId);
+  if (error) throw new Error(`フォロー中の一覧を読み込めませんでした: ${error.message}`);
+  return (data ?? []).map((row) => row.followee_id as string);
+}
+
+// フォローする。複合主キーの重複 (23505) は、すでにフォロー済みなので成功として扱う。
+export async function followUser(userId: string, targetId: string): Promise<void> {
+  const { error } = await supabase
+    .from('follows')
+    .insert({ follower_id: userId, followee_id: targetId });
+  if (error && error.code !== '23505') {
+    throw new Error(`フォローできませんでした: ${error.message}`);
+  }
+}
+
+// フォローを解除する。無い行の delete は 0 件で成功するので、二重に解除しても安全。
+export async function unfollowUser(userId: string, targetId: string): Promise<void> {
+  const { error } = await supabase
+    .from('follows')
+    .delete()
+    .eq('follower_id', userId)
+    .eq('followee_id', targetId);
+  if (error) throw new Error(`フォローを解除できませんでした: ${error.message}`);
 }

@@ -11,9 +11,20 @@ type PostCardProps = {
   onPress?: (postId: string) => void;
   // 渡すと、いいねボタンを出す。liked は押した後の状態 (いいね済みなら false = 取り消し)。
   onToggleLike?: (postId: string, liked: boolean) => void;
+  // 渡すと、他人の投稿にフォロー・解除ボタンを出す。following は今フォロー中か。follow は押した後の状態。
+  following?: boolean;
+  onToggleFollow?: (authorId: string, follow: boolean) => void;
 };
 
-export function PostCard({ post, canDelete, onDelete, onPress, onToggleLike }: PostCardProps) {
+export function PostCard({
+  post,
+  canDelete,
+  onDelete,
+  onPress,
+  onToggleLike,
+  following = false,
+  onToggleFollow,
+}: PostCardProps) {
   const content = (
     <View className="gap-1 border-b border-border px-4 py-3">
       <View className="flex-row items-center justify-between">
@@ -21,6 +32,24 @@ export function PostCard({ post, canDelete, onDelete, onPress, onToggleLike }: P
           {post.author.displayName}
           <Text className="font-normal text-muted"> @{post.author.handle}</Text>
         </Text>
+        {onToggleFollow ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              following
+                ? `@${post.author.handle} のフォローを解除`
+                : `@${post.author.handle} をフォロー`
+            }
+            accessibilityState={{ selected: following }}
+            onPress={() => onToggleFollow(post.authorId, !following)}
+            hitSlop={8}
+            className="ml-2"
+          >
+            <Text className={`text-sm ${following ? 'text-muted' : 'font-bold text-primary'}`}>
+              {following ? 'フォロー中' : 'フォロー'}
+            </Text>
+          </Pressable>
+        ) : null}
         {canDelete ? (
           <Pressable
             accessibilityRole="button"

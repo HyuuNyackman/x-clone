@@ -1,4 +1,4 @@
-import { applyLike, flattenTimeline } from '@/features/posts/use-posts';
+import { applyFollow, applyLike, flattenTimeline } from '@/features/posts/use-posts';
 import type { Post, TimelinePage } from '@/features/posts/posts-api';
 
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
@@ -40,5 +40,17 @@ describe('applyLike', () => {
   it('すでに同じ状態なら、数を二重に増やさない', () => {
     const liked = { ...post('a'), likedByMe: true, likeCount: 1 };
     expect(applyLike(liked, true)).toBe(liked);
+  });
+});
+
+describe('applyFollow', () => {
+  it('フォローすると id が増える (重複なし)', () => {
+    expect(applyFollow(['a'], 'b', true)).toEqual(['a', 'b']);
+    expect(applyFollow(['a', 'b'], 'b', true)).toEqual(['a', 'b']);
+  });
+
+  it('解除すると id が外れる。無い id の解除は何も変えない', () => {
+    expect(applyFollow(['a', 'b'], 'b', false)).toEqual(['a']);
+    expect(applyFollow(['a'], 'z', false)).toEqual(['a']);
   });
 });
