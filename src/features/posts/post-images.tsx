@@ -31,7 +31,10 @@ export function PostImages({ media }: { media: PostMedia[] }) {
   if (media.length === 1) {
     const [m] = media;
     return (
-      <PostImage m={m} style={{ width: '100%', aspectRatio: m.width / m.height, borderRadius: 12 }} />
+      <PostImage
+        m={m}
+        style={{ width: '100%', aspectRatio: m.width / m.height, borderRadius: 12 }}
+      />
     );
   }
   return (
