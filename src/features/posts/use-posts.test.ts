@@ -8,6 +8,7 @@ const post = (id: string): Post => ({
   authorId: 'u1',
   body: id,
   createdAt: '2026-11-24T00:00:00Z',
+  replyCount: 0,
   author: { handle: 'a', displayName: 'A' },
 });
 const page = (...ids: string[]): TimelinePage => ({ posts: ids.map(post), nextCursor: null });

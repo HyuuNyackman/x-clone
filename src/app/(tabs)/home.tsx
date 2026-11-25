@@ -48,6 +48,11 @@ export default function HomeScreen() {
             post={item}
             canDelete={item.authorId === userId && !item.id.startsWith('optimistic-')}
             onDelete={(id) => deletePost.mutate(id)}
+            onPress={
+              item.id.startsWith('optimistic-')
+                ? undefined
+                : (id) => router.push({ pathname: '/post/[id]', params: { id } })
+            }
           />
         )}
         onEndReached={() => {

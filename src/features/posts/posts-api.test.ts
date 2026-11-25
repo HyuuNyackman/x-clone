@@ -1,4 +1,10 @@
-import { createPost, deletePost, fetchTimelinePage } from '@/features/posts/posts-api';
+import {
+  createPost,
+  deletePost,
+  fetchPost,
+  fetchReplies,
+  fetchTimelinePage,
+} from '@/features/posts/posts-api';
 import { supabase } from '@/lib/supabase';
 
 jest.mock('@/lib/supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
@@ -10,6 +16,7 @@ const row = {
   author_id: 'u1',
   body: 'hello',
   created_at: '2026-11-24T00:00:00Z',
+  reply_count: 0,
   profiles: { handle: 'alice', display_name: 'Alice' },
 };
 
@@ -37,6 +44,7 @@ const rpcRow = (n: number) => ({
   created_at: `2026-11-24T00:00:0${n}Z`,
   handle: 'alice',
   display_name: 'Alice',
+  reply_count: 3,
 });
 
 describe('fetchTimelinePage', () => {
@@ -53,6 +61,7 @@ describe('fetchTimelinePage', () => {
       authorId: 'u1',
       body: 'body 2',
       createdAt: '2026-11-24T00:00:02Z',
+      replyCount: 3,
       author: { handle: 'alice', displayName: 'Alice' },
     });
     // 件数が limit に満たないので、続きはない
@@ -88,6 +97,58 @@ describe('createPost', () => {
   it('失敗すると Error になる', async () => {
     chain({ data: null, error: { message: 'denied' } });
     await expect(createPost('u1', 'x')).rejects.toThrow('投稿できませんでした: denied');
+  });
+});
+
+describe('createPost (リプライ)', () => {
+  it('replyTo があれば reply_to を付けて insert する', async () => {
+    const node = chain({ data: row, error: null });
+    await createPost('u1', 'hi', 'p0');
+    expect(node.insert).toHaveBeenCalledWith({ author_id: 'u1', body: 'hi', reply_to: 'p0' });
+  });
+});
+
+describe('fetchPost', () => {
+  it('id で 1 件読み、リプライ数を含めて変換する', async () => {
+    const node = chain({ data: { ...row, reply_count: 2 }, error: null });
+    node.maybeSingle = jest
+      .fn()
+      .mockResolvedValue({ data: { ...row, reply_count: 2 }, error: null });
+    node.eq = jest.fn(() => node);
+    const post = await fetchPost('p1');
+    expect(node.eq).toHaveBeenCalledWith('id', 'p1');
+    expect(post?.replyCount).toBe(2);
+  });
+
+  it('無ければ null', async () => {
+    const node = chain({ data: null, error: null });
+    node.maybeSingle = jest.fn().mockResolvedValue({ data: null, error: null });
+    node.eq = jest.fn(() => node);
+    expect(await fetchPost('x')).toBeNull();
+  });
+
+  it('失敗すると Error になる', async () => {
+    const node = chain({});
+    node.maybeSingle = jest.fn().mockResolvedValue({ data: null, error: { message: 'boom' } });
+    node.eq = jest.fn(() => node);
+    await expect(fetchPost('x')).rejects.toThrow('投稿を読み込めませんでした: boom');
+  });
+});
+
+describe('fetchReplies', () => {
+  it('reply_to で絞り、古い順に読む', async () => {
+    const node = chain({ data: [row], error: null });
+    node.eq = jest.fn(() => node);
+    const replies = await fetchReplies('p0');
+    expect(node.eq).toHaveBeenCalledWith('reply_to', 'p0');
+    expect(node.order).toHaveBeenCalledWith('created_at', { ascending: true });
+    expect(replies).toHaveLength(1);
+  });
+
+  it('失敗すると Error になる', async () => {
+    const node = chain({ data: null, error: { message: 'boom' } });
+    node.eq = jest.fn(() => node);
+    await expect(fetchReplies('p0')).rejects.toThrow('リプライを読み込めませんでした: boom');
   });
 });
 
