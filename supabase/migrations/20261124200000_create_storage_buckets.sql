@@ -2,19 +2,11 @@
 -- 保存パスは `{ユーザーID}/{ファイル名}`。自分のフォルダにだけアップロード・削除できる。
 -- 読み取りは公開バケットの URL で行うので、select ポリシーは作らない (一覧の取得を許さない)。
 -- update ポリシーも作らない。上書き (upsert) はできず、差し替えは削除して作り直す。
---
--- CI のローカル Supabase は storage を起動しない (-x storage) ので、storage スキーマがない。
--- その場合はこのマイグレーションを何もせずに通す。ホスティング版には必ずある。
 
 do $$
 declare
   b text;
 begin
-  if to_regclass('storage.objects') is null or to_regclass('storage.buckets') is null then
-    raise notice 'storage スキーマがないので、バケットとポリシーの作成を飛ばす';
-    return;
-  end if;
-
   insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
   values
     ('post-media', 'post-media', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']),
