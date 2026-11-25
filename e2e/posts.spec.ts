@@ -218,11 +218,11 @@ test('フォローすると「フォロー中」タブにその人の投稿だ�
 });
 
 // 1x1 の PNG。端末側で JPEG に変換されてアップロードされる。
-const PNG_1X1 = Uint8Array.from(
-  atob(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-  ),
-  (c) => c.charCodeAt(0),
+// Playwright の setFiles は Node の Buffer を要求する (型定義は未導入なので最小限を宣言)。
+declare const Buffer: { from(data: string, encoding: 'base64'): never };
+const PNG_1X1 = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64',
 );
 
 test('画像付きで投稿すると、タイムラインに画像が出る', async ({ page }) => {
@@ -234,9 +234,7 @@ test('画像付きで投稿すると、タイムラインに画像が出る', as
 
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: '画像を追加' }).click();
-  await (
-    await chooser
-  ).setFiles({ name: 'a.png', mimeType: 'image/png', buffer: PNG_1X1 as never });
+  await (await chooser).setFiles({ name: 'a.png', mimeType: 'image/png', buffer: PNG_1X1 });
   await expect(page.getByRole('button', { name: '画像1を外す' })).toBeVisible();
 
   await page.getByRole('button', { name: '投稿する' }).click();
