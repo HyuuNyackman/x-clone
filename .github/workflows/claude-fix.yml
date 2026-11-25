@@ -123,6 +123,8 @@ jobs:
           # Claude が作った PR の失敗で起動するので、起動者は claude のボットになる。許可するのは Claude 自身だけにする (* は使わない)。
           # 許可しないと、action が「非人間の起動者」として、Claude の実行の前に失敗する。
           allowed_bots: 'claude'
+          # 一時的な確認用 (PR #131 で、Claude が何も push せず終わる原因の調査)。確認したらすぐ削除する。
+          show_full_output: 'true'
           # workflow_run には、読む対象のコメントがないので、指示は prompt で渡す。
           prompt: |
             Claude が作った PR #${{ steps.guard.outputs.pr }} (ブランチ ${{ github.event.workflow_run.head_branch }}) で、
