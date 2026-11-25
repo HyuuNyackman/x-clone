@@ -35,6 +35,7 @@ function RootStack() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="profile-setup" />
           <Stack.Screen name="post/[id]" />
+          <Stack.Screen name="user/[handle]" />
           <Stack.Screen name="compose" options={{ presentation: 'modal' }} />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>

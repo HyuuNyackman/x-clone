@@ -1,7 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth/auth-store';
-import { fetchProfile, updateProfile } from '@/features/profile/profile-api';
+import {
+  fetchFollowCounts,
+  fetchProfile,
+  fetchProfileByHandle,
+  updateProfile,
+} from '@/features/profile/profile-api';
 import type { ProfileValues } from '@/features/profile/schemas';
 
 const profileKey = (userId: string | undefined) => ['profile', userId] as const;
@@ -24,4 +29,24 @@ export function useSaveProfile() {
     const profile = await updateProfile(userId, values);
     queryClient.setQueryData(profileKey(userId), profile);
   };
+}
+
+// handle で引くプロフィール (他ユーザーのプロフィール画面用)。無ければ data は null。
+export function useProfileByHandle(handle: string) {
+  return useQuery({
+    queryKey: ['profile', 'handle', handle] as const,
+    queryFn: () => fetchProfileByHandle(handle),
+  });
+}
+
+export const followCountsKey = (userId: string | undefined) =>
+  ['follows', 'counts', userId] as const;
+
+// フォロー数・フォロワー数。
+export function useFollowCounts(userId: string | undefined) {
+  return useQuery({
+    queryKey: followCountsKey(userId),
+    queryFn: () => fetchFollowCounts(userId as string),
+    enabled: Boolean(userId),
+  });
 }

@@ -72,3 +72,27 @@ export async function updateProfile(userId: string, values: ProfileValues): Prom
   }
   return toProfile(data);
 }
+
+// handle からプロフィールを読む。無ければ null。
+export async function fetchProfileByHandle(handle: string): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(COLUMNS)
+    .eq('handle', handle)
+    .maybeSingle();
+  if (error) throw new Error(`プロフィールを読み込めませんでした: ${error.message}`);
+  return data ? toProfile(data) : null;
+}
+
+export type FollowCounts = { following: number; followers: number };
+
+// フォロー数 (その人がフォローしている数) とフォロワー数 (その人をフォローしている数)。
+export async function fetchFollowCounts(userId: string): Promise<FollowCounts> {
+  const [following, followers] = await Promise.all([
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', userId),
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followee_id', userId),
+  ]);
+  const error = following.error ?? followers.error;
+  if (error) throw new Error(`フォロー数を読み込めませんでした: ${error.message}`);
+  return { following: following.count ?? 0, followers: followers.count ?? 0 };
+}

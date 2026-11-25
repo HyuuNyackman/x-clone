@@ -14,6 +14,7 @@ import {
   fetchPost,
   fetchReplies,
   fetchTimelinePage,
+  fetchUserPosts,
   followUser,
   likePost,
   unfollowUser,
@@ -201,6 +202,18 @@ export function useReplyToPost(postId: string) {
   });
 }
 
+export const userPostsKey = (authorId: string | undefined) => ['posts', 'user', authorId] as const;
+
+// ある人の投稿一覧 (プロフィール画面用)。
+export function useUserPosts(authorId: string | undefined) {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({
+    queryKey: userPostsKey(authorId),
+    queryFn: () => fetchUserPosts(authorId as string, userId),
+    enabled: Boolean(authorId),
+  });
+}
+
 type LikeVariables = { postId: string; liked: boolean };
 
 // いいね・取り消し。押した瞬間にタイムライン・詳細・リプライ一覧の表示を変え、失敗したら戻す (楽観的更新)。
@@ -221,6 +234,7 @@ export function useToggleLike() {
         queryClient.cancelQueries({ queryKey: timelineKey }),
         queryClient.cancelQueries({ queryKey: ['posts', 'detail', postId] }),
         queryClient.cancelQueries({ queryKey: ['posts', 'replies'] }),
+        queryClient.cancelQueries({ queryKey: ['posts', 'user'] }),
       ]);
       const previousTimelines = queryClient.getQueriesData<TimelineData>({ queryKey: timelineKey });
       const previousDetails = queryClient.getQueriesData<Post | null>({
@@ -245,7 +259,13 @@ export function useToggleLike() {
       queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'replies'] }, (old) =>
         old?.map(update),
       );
-      return { previousTimelines, previousDetails, previousReplies };
+      const previousUserPosts = queryClient.getQueriesData<Post[]>({
+        queryKey: ['posts', 'user'],
+      });
+      queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'user'] }, (old) =>
+        old?.map(update),
+      );
+      return { previousTimelines, previousDetails, previousReplies, previousUserPosts };
     },
     onError: (_error, _variables, context) => {
       if (!context) return;
@@ -253,6 +273,7 @@ export function useToggleLike() {
         ...context.previousTimelines,
         ...context.previousDetails,
         ...context.previousReplies,
+        ...context.previousUserPosts,
       ]) {
         queryClient.setQueryData(key, data);
       }
@@ -262,6 +283,7 @@ export function useToggleLike() {
         queryClient.invalidateQueries({ queryKey: timelineKey }),
         queryClient.invalidateQueries({ queryKey: postKey(postId) }),
         queryClient.invalidateQueries({ queryKey: ['posts', 'replies'] }),
+        queryClient.invalidateQueries({ queryKey: ['posts', 'user'] }),
       ]),
   });
 }
@@ -313,6 +335,8 @@ export function useToggleFollow() {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: key }),
         queryClient.invalidateQueries({ queryKey: followingTimelineKey }),
+        // プロフィール画面のフォロー数・フォロワー数も取り直す。
+        queryClient.invalidateQueries({ queryKey: ['follows', 'counts'] }),
       ]),
   });
 }
