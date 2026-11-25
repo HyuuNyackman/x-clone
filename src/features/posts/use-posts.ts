@@ -1,6 +1,7 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
   type InfiniteData,
 } from '@tanstack/react-query';
@@ -9,6 +10,8 @@ import { useAuthStore } from '@/features/auth/auth-store';
 import {
   createPost,
   deletePost,
+  fetchPost,
+  fetchReplies,
   fetchTimelinePage,
   type Post,
   type TimelineCursor,
@@ -70,6 +73,7 @@ export function useCreatePost() {
           authorId: userId,
           body,
           createdAt: new Date().toISOString(),
+          replyCount: 0,
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
         };
         queryClient.setQueryData<TimelineData>(timelineKey, (old) =>
@@ -111,5 +115,66 @@ export function useDeletePost() {
       queryClient.setQueryData(timelineKey, context?.previous);
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: timelineKey }),
+  });
+}
+
+export const postKey = (postId: string) => ['posts', 'detail', postId] as const;
+export const repliesKey = (postId: string) => ['posts', 'replies', postId] as const;
+
+// 投稿詳細の元投稿。
+export function usePost(postId: string) {
+  return useQuery({ queryKey: postKey(postId), queryFn: () => fetchPost(postId) });
+}
+
+// 投稿詳細のリプライ一覧 (古い順)。
+export function useReplies(postId: string) {
+  return useQuery({ queryKey: repliesKey(postId), queryFn: () => fetchReplies(postId) });
+}
+
+// リプライする。送信中から、一覧の末尾に仮のリプライを出し、元投稿のカウンタも増やす。失敗したら戻す。
+export function useReplyToPost(postId: string) {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const profile = useProfile().data;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: string) => {
+      if (!userId) throw new Error('ログインしていません');
+      return createPost(userId, body, postId);
+    },
+    onMutate: async (body) => {
+      await queryClient.cancelQueries({ queryKey: repliesKey(postId) });
+      await queryClient.cancelQueries({ queryKey: postKey(postId) });
+      const previousReplies = queryClient.getQueryData<Post[]>(repliesKey(postId));
+      const previousPost = queryClient.getQueryData<Post | null>(postKey(postId));
+      if (userId) {
+        const optimistic: Post = {
+          id: `optimistic-${Date.now()}`,
+          authorId: userId,
+          body,
+          createdAt: new Date().toISOString(),
+          replyCount: 0,
+          author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
+        };
+        queryClient.setQueryData<Post[]>(repliesKey(postId), (old) =>
+          old ? [...old, optimistic] : old,
+        );
+        queryClient.setQueryData<Post | null>(postKey(postId), (old) =>
+          old ? { ...old, replyCount: old.replyCount + 1 } : old,
+        );
+      }
+      return { previousReplies, previousPost };
+    },
+    onError: (_error, _body, context) => {
+      queryClient.setQueryData(repliesKey(postId), context?.previousReplies);
+      queryClient.setQueryData(postKey(postId), context?.previousPost);
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: repliesKey(postId) }),
+        queryClient.invalidateQueries({ queryKey: postKey(postId) }),
+        // タイムラインのリプライ数も更新する。
+        queryClient.invalidateQueries({ queryKey: timelineKey }),
+      ]),
   });
 }

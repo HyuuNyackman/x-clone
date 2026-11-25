@@ -7,10 +7,12 @@ type PostCardProps = {
   // 自分の投稿のときだけ、削除ボタンを出す。
   canDelete: boolean;
   onDelete: (postId: string) => void;
+  // 渡すと、カードを押して投稿詳細を開ける。
+  onPress?: (postId: string) => void;
 };
 
-export function PostCard({ post, canDelete, onDelete }: PostCardProps) {
-  return (
+export function PostCard({ post, canDelete, onDelete, onPress }: PostCardProps) {
+  const content = (
     <View className="gap-1 border-b border-border px-4 py-3">
       <View className="flex-row items-center justify-between">
         <Text className="flex-1 text-base font-bold text-foreground" numberOfLines={1}>
@@ -29,6 +31,20 @@ export function PostCard({ post, canDelete, onDelete }: PostCardProps) {
         ) : null}
       </View>
       <Text className="text-base text-foreground">{post.body}</Text>
+      <Text accessibilityLabel="リプライ数" className="text-sm text-muted">
+        返信 {post.replyCount}
+      </Text>
     </View>
+  );
+
+  if (!onPress) return content;
+  return (
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={`${post.author.displayName}の投稿を開く`}
+      onPress={() => onPress(post.id)}
+    >
+      {content}
+    </Pressable>
   );
 }

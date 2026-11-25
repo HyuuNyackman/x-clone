@@ -82,3 +82,35 @@ test('タイムラインは、スクロールで続きを読み込み、重複�
   // 取得は 3 ページ以上 (20 + 20 + 5 件)。
   expect(rpcRequests.length).toBeGreaterThanOrEqual(3);
 });
+
+test('投稿詳細からリプライすると、一覧とカウンタに反映される', async ({ page }) => {
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, uniqueHandle(), 'Dave');
+
+  const text = `e2e 元投稿 ${Date.now()}`;
+  await page.getByRole('button', { name: '投稿を作成' }).click();
+  await page.getByLabel('本文').fill(text);
+  await page.getByRole('button', { name: '投稿する' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+
+  // 投稿を開く
+  await page.getByText(text).click();
+  await expect(page).toHaveURL(/\/post\//);
+  await expect(page.getByText('まだリプライがありません')).toBeVisible();
+
+  const replyText = `e2e 返信 ${Date.now()}`;
+  await page.getByLabel('返信', { exact: true }).fill(replyText);
+  await page.getByRole('button', { name: '返信する' }).click();
+  await expect(page.getByText(replyText)).toBeVisible();
+  await expect(page.getByText('返信 1', { exact: true })).toBeVisible();
+
+  // 再読み込みしても残っている (DB に保存され、カウンタも更新されている)
+  await page.reload();
+  await expect(page.getByText(replyText)).toBeVisible();
+  await expect(page.getByText('返信 1', { exact: true }).first()).toBeVisible();
+
+  // タイムラインのカウンタにも反映される
+  await page.getByRole('button', { name: '戻る' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.getByText(text)).toBeVisible();
+});
