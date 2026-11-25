@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
@@ -11,16 +11,28 @@ import { PostCard } from '@/features/posts/post-card';
 import {
   flattenTimeline,
   useDeletePost,
+  useFollowingIds,
   useTimeline,
+  useToggleFollow,
   useToggleLike,
+  type TimelineTab,
 } from '@/features/posts/use-posts';
 import { checkSupabaseConnection } from '@/lib/supabase-health';
 
+const TABS: { key: TimelineTab; label: string }[] = [
+  { key: 'recommended', label: 'おすすめ' },
+  { key: 'following', label: 'フォロー中' },
+];
+
 export default function HomeScreen() {
   const userId = useAuthStore((state) => state.session?.user.id);
-  const timeline = useTimeline();
+  const [tab, setTab] = useState<TimelineTab>('recommended');
+  const timeline = useTimeline(tab);
   const deletePost = useDeletePost();
   const toggleLike = useToggleLike();
+  const toggleFollow = useToggleFollow();
+  const followingIds = useFollowingIds().data;
+  const followingSet = useMemo(() => new Set(followingIds ?? []), [followingIds]);
   const posts = useMemo(() => flattenTimeline(timeline.data), [timeline.data]);
 
   const connection = useQuery({
@@ -40,11 +52,30 @@ export default function HomeScreen() {
         <Text className="text-xs text-muted">データベース: {status}</Text>
         <Button label="投稿を作成" onPress={() => router.push('/compose')} />
       </View>
+      <View accessibilityRole="tablist" className="flex-row border-b border-border">
+        {TABS.map(({ key, label }) => (
+          <Pressable
+            key={key}
+            accessibilityRole="tab"
+            accessibilityLabel={label}
+            accessibilityState={{ selected: tab === key }}
+            onPress={() => setTab(key)}
+            className="flex-1 items-center py-3"
+          >
+            <Text className={tab === key ? 'font-bold text-foreground' : 'text-muted'}>
+              {label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
       {timeline.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{timeline.error.message}</Text>
       ) : null}
       {toggleLike.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{toggleLike.error.message}</Text>
+      ) : null}
+      {toggleFollow.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{toggleFollow.error.message}</Text>
       ) : null}
       {deletePost.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{deletePost.error.message}</Text>
@@ -61,6 +92,12 @@ export default function HomeScreen() {
               item.id.startsWith('optimistic-')
                 ? undefined
                 : (postId, liked) => toggleLike.mutate({ postId, liked })
+            }
+            following={followingSet.has(item.authorId)}
+            onToggleFollow={
+              item.authorId === userId || item.id.startsWith('optimistic-')
+                ? undefined
+                : (targetId, follow) => toggleFollow.mutate({ targetId, follow })
             }
             onPress={
               item.id.startsWith('optimistic-')
@@ -82,7 +119,11 @@ export default function HomeScreen() {
         }
         ListEmptyComponent={
           <Text className="px-4 py-6 text-center text-muted">
-            {timeline.isPending ? '読み込み中…' : 'まだ投稿がありません'}
+            {timeline.isPending
+              ? '読み込み中…'
+              : tab === 'following'
+                ? 'フォロー中の人の投稿はまだありません'
+                : 'まだ投稿がありません'}
           </Text>
         }
       />

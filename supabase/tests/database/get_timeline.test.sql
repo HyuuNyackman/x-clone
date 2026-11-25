@@ -4,18 +4,18 @@
 
 begin;
 
-select plan(18);
+select plan(22);
 
 -- ===== 構造・権限 =====
 
-select has_function('public', 'get_timeline', array['timestamp with time zone', 'uuid', 'integer'], 'get_timeline がある');
+select has_function('public', 'get_timeline', array['timestamp with time zone', 'uuid', 'integer', 'boolean'], 'get_timeline がある');
 
 select ok(
-  has_function_privilege('authenticated', 'public.get_timeline(timestamptz, uuid, int)', 'EXECUTE'),
+  has_function_privilege('authenticated', 'public.get_timeline(timestamptz, uuid, int, boolean)', 'EXECUTE'),
   'authenticated は get_timeline を実行できる'
 );
 select ok(
-  not has_function_privilege('anon', 'public.get_timeline(timestamptz, uuid, int)', 'EXECUTE'),
+  not has_function_privilege('anon', 'public.get_timeline(timestamptz, uuid, int, boolean)', 'EXECUTE'),
   'anon は get_timeline を実行できない'
 );
 
@@ -152,6 +152,35 @@ select is(
   (select array_agg(body order by body) from public.get_timeline(null, null, 50) where liked_by_me),
   array['p2'],
   '他人だけがいいねした投稿 (p3) や、いいねのない投稿は liked_by_me が false'
+);
+
+-- ===== フォロー中だけ (p_following_only) =====
+-- u1 が u2 をフォローすると、u2 の投稿 (p2, p4) だけが出る。自分の投稿は含まれない。
+
+select is(
+  (select count(*)::int from public.get_timeline(null, null, 50, true)),
+  0,
+  'フォローしていないときは、フォロー中だけの結果が空'
+);
+
+insert into public.follows (follower_id, followee_id) values
+  ('d1000000-0000-0000-0000-000000000001', 'd2000000-0000-0000-0000-000000000002');
+
+select is(
+  (select array_agg(body order by created_at desc, id desc) from public.get_timeline(null, null, 50, true)),
+  array['p4', 'p2'],
+  'フォロー中だけなら、フォローした人 (u2) の投稿だけが新着順で返る'
+);
+select is(
+  (select array_agg(body order by created_at desc, id desc) from public.get_timeline(null, null, 50, false)),
+  array['p5', 'p4', 'p3', 'p2', 'p1'],
+  'p_following_only が false なら、全体のまま'
+);
+select is(
+  (select array_agg(body order by created_at desc, id desc)
+     from public.get_timeline('2026-01-01 00:00:03+00', 'e0000000-0000-0000-0000-000000000004', 50, true)),
+  array['p2'],
+  'フォロー中だけでも、カーソルで続きを取れる'
 );
 
 reset role;

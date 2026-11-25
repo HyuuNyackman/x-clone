@@ -16,8 +16,8 @@ select is(
   'カウンタ更新関数は authenticated から直接呼べない'
 );
 select ok(
-  has_function_privilege('authenticated', 'public.get_timeline(timestamptz, uuid, int)', 'EXECUTE')
-    and not has_function_privilege('anon', 'public.get_timeline(timestamptz, uuid, int)', 'EXECUTE'),
+  has_function_privilege('authenticated', 'public.get_timeline(timestamptz, uuid, int, boolean)', 'EXECUTE')
+    and not has_function_privilege('anon', 'public.get_timeline(timestamptz, uuid, int, boolean)', 'EXECUTE'),
   'get_timeline は authenticated だけが実行できる'
 );
 

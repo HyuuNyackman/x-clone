@@ -1,4 +1,4 @@
-import { expect, test, type Request } from '@playwright/test';
+import { expect, test, type Browser, type Request } from '@playwright/test';
 
 import { setupProfile, signUpOnly, uniqueEmail, uniqueHandle } from './helpers';
 
@@ -143,4 +143,76 @@ test('いいねと取り消しが即時に反映され、二重にならない',
   await page.reload();
   await expect(page.getByText(text)).toBeVisible();
   await expect(page.getByRole('button', { name: 'いいね', exact: true }).first()).toHaveText('♡ 0');
+});
+
+// ユーザーを作ってホームに入り、本文を 1 件投稿する。投稿者ごとに別のブラウザーコンテキストを使う。
+async function newUserWithPost(browser: Browser, name: string, handle: string, text: string) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, handle, name);
+  await page.getByRole('button', { name: '投稿を作成' }).click();
+  await page.getByLabel('本文').fill(text);
+  await page.getByRole('button', { name: '投稿する' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.getByText(text)).toBeVisible();
+  return { context, page };
+}
+
+test('フォローすると「フォロー中」タブにその人の投稿だけが出て、解除すると消える', async ({
+  browser,
+  page,
+}) => {
+  const tag = Date.now();
+  const bobHandle = uniqueHandle();
+  const carolHandle = uniqueHandle();
+  const bobText = `e2e bob ${tag}`;
+  const carolText = `e2e carol ${tag}`;
+  const bob = await newUserWithPost(browser, 'Bob', bobHandle, bobText);
+  const carol = await newUserWithPost(browser, 'Carol', carolHandle, carolText);
+
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, uniqueHandle(), 'Alice');
+
+  // おすすめ (全体) には、2 人とも出る。
+  await expect(page.getByText(bobText)).toBeVisible();
+  await expect(page.getByText(carolText)).toBeVisible();
+
+  // まだ誰もフォローしていないので、フォロー中タブには出ない。
+  await page.getByRole('tab', { name: 'フォロー中' }).click();
+  await expect(page.getByText('フォロー中の人の投稿はまだありません')).toBeVisible();
+  await expect(page.getByText(bobText)).toHaveCount(0);
+
+  // Bob をフォローする (おすすめタブのカードから)。
+  await page.getByRole('tab', { name: 'おすすめ' }).click();
+  await page.getByRole('button', { name: `@${bobHandle} をフォロー`, exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: `@${bobHandle} のフォローを解除`, exact: true }),
+  ).toBeVisible();
+
+  // フォロー中タブには Bob の投稿だけが出る (Carol は出ない)。
+  await page.getByRole('tab', { name: 'フォロー中' }).click();
+  await expect(page.getByText(bobText)).toBeVisible();
+  await expect(page.getByText(carolText)).toHaveCount(0);
+
+  // 再読み込みしても、フォロー状態は残る (DB に保存されている)。
+  await page.reload();
+  await page.getByRole('tab', { name: 'フォロー中' }).click();
+  await expect(page.getByText(bobText)).toBeVisible();
+  await expect(page.getByText(carolText)).toHaveCount(0);
+
+  // 解除すると、フォロー中タブから消える。
+  await page.getByRole('button', { name: `@${bobHandle} のフォローを解除`, exact: true }).click();
+  await expect(page.getByText(bobText)).toHaveCount(0);
+  await expect(page.getByText('フォロー中の人の投稿はまだありません')).toBeVisible();
+
+  // おすすめには、引き続き出る。
+  await page.getByRole('tab', { name: 'おすすめ' }).click();
+  await expect(page.getByText(bobText)).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: `@${bobHandle} をフォロー`, exact: true }),
+  ).toBeVisible();
+
+  await bob.context.close();
+  await carol.context.close();
 });
