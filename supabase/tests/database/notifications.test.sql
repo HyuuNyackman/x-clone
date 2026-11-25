@@ -4,7 +4,7 @@
 
 begin;
 
-select plan(36);
+select plan(38);
 
 -- ===== 構造 =====
 
@@ -26,6 +26,20 @@ select policies_are(
 select has_trigger('public', 'likes', 'on_like_notify', 'いいね用のトリガーがある');
 select has_trigger('public', 'posts', 'on_reply_notify', 'リプライ用のトリガーがある');
 select has_trigger('public', 'follows', 'on_follow_notify', 'フォロー用のトリガーがある');
+
+-- Realtime は notifications だけを配信する (XCL-61)
+select ok(
+  exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'notifications'
+  ),
+  'notifications は Realtime の publication に入っている'
+);
+select is(
+  (select count(*)::int from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename <> 'notifications'),
+  0,
+  'タイムライン系のテーブルは Realtime に入れていない'
+);
 
 -- ===== 権限 (GRANT) =====
 

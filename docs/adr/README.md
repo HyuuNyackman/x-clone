@@ -41,3 +41,4 @@ ADR は「その時点で、なぜそう決めたか」の記録なので、判�
 | [0029](0029-following-timeline-via-rpc-flag-and-follow-buttons.md) | 「フォロー中」タブは get_timeline の引数で絞り、フォロー状態は別クエリで持つ                                | accepted | 2026-11-25 |
 | [0030](0030-claude-fix-on-workflow-run.md)                         | CI とレビューの失敗は、workflow_run で別のジョブが起動して直す                                              | accepted | 2026-11-25 |
 | [0031](0031-search-rpc-with-pg-trgm-ilike.md)                      | 検索は pg_trgm の GIN インデックスと ilike の RPC で作る                                                    | accepted | 2026-11-25 |
+| [0032](0032-notifications-realtime-insert-only.md)                 | 通知だけを Realtime で購読し、INSERT を合図に取り直す                                                       | accepted | 2026-11-25 |
