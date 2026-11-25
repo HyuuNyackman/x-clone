@@ -55,6 +55,7 @@ Docs: https://docs.expo.dev/eas/index.md
 
 - 作る前に `list_issues` で重複を確認する。既にあれば新規作成せず、そちらにコメントや関連付けを足す。
 - チームは `XCL`、プロジェクトは `X Clone`、状態は `Backlog`。ラベルは内容に合うものを付ける (`infra` / `backend` / `frontend` / `db` / `docs` など)。
+- 人間の判断や作業が要るもの (方針の決定、設定の変更、権限や安全性に関わる判断など) には `needs-human` ラベルも付ける。自動の着手の対象から外れる。CI の Claude が GitHub Issue を作るときも同じで、`gh issue create --label needs-human` で付ける。
 - 今の作業の Issue に `relatedTo` で関連付ける。関連する既存 Issue (例: Supabase なら XCL-48) があれば、それも付ける。
 - 1件に1つの論点を書く。何が負債か、なぜ今やらないか、やること、期限の目安を、人が読める短い文で書く。実装メモは `+++ Agent notes` の折りたたみに入れる。
 - 設計判断を伴うものは ADR (`docs/adr/`) の Risks / Negative にも書き、Issue から参照する。

@@ -16,6 +16,7 @@ GitHub Issue と Linear は双方向に同期されている。
 CI の Claude は、技術負債を GitHub Issue として作る (`gh issue create`)。Linear への取り込みは同期に任せる。
 作る前に `gh issue list --state all --search` で重複を確認する。指示は `claude.yml` の `--append-system-prompt` の手順 (7) に書き、許可するコマンドは `gh issue list` と `gh issue create` を足すだけにする。
 ラベルは付けず、整理は Linear 側で行う。
+(変更: 人の判断や作業が要るものには、`needs-human` ラベルを付ける。`AGENTS.md` の「技術負債の扱い」を参照。)
 
 ## Alternatives Considered
 
