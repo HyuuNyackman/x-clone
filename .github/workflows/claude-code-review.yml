@@ -51,8 +51,6 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # 一時的な確認用 (レビューが投稿されない原因の調査)。確認したらすぐ削除する。
-          show_full_output: 'true'
           allow_fork_prs: 'false'
           # Claude が作った PR (起動者が claude のボット) でも、レビューを動かす。許可するのは Claude 自身だけにする (* は使わない)。
           allowed_bots: 'claude'
