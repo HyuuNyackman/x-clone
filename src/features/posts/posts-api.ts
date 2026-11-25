@@ -6,6 +6,8 @@ export type Post = {
   body: string;
   createdAt: string;
   replyCount: number;
+  likeCount: number;
+  likedByMe: boolean;
   author: { handle: string; displayName: string };
 };
 
@@ -15,11 +17,17 @@ type PostRow = {
   body: string;
   created_at: string;
   reply_count: number;
+  like_count: number;
+  // 自分の行だけを埋め込む (likes(user_id) を user_id で絞る)。無ければ空配列。
+  likes?: { user_id: string }[] | null;
   profiles: { handle: string; display_name: string } | null;
 };
 
 const COLUMNS =
-  'id, author_id, body, created_at, reply_count, profiles!posts_author_id_fkey(handle, display_name)';
+  'id, author_id, body, created_at, reply_count, like_count, likes(user_id), profiles!posts_author_id_fkey(handle, display_name)';
+
+// ログインしていないとき、likes の埋め込みを 0 件にするためのダミー (どの user_id にも一致しない)。
+const NO_USER = '00000000-0000-0000-0000-000000000000';
 
 // 1 ページの件数。
 export const TIMELINE_PAGE_SIZE = 20;
@@ -37,6 +45,8 @@ type TimelineRow = {
   handle: string;
   display_name: string;
   reply_count: number;
+  like_count: number;
+  liked_by_me: boolean;
 };
 
 function toPost(row: PostRow): Post {
@@ -46,6 +56,8 @@ function toPost(row: PostRow): Post {
     body: row.body,
     createdAt: row.created_at,
     replyCount: row.reply_count,
+    likeCount: row.like_count,
+    likedByMe: (row.likes?.length ?? 0) > 0,
     author: {
       handle: row.profiles?.handle ?? '',
       displayName: row.profiles?.display_name ?? '',
@@ -71,6 +83,8 @@ export async function fetchTimelinePage(
     body: row.body,
     createdAt: row.created_at,
     replyCount: row.reply_count,
+    likeCount: row.like_count,
+    likedByMe: row.liked_by_me,
     author: { handle: row.handle, displayName: row.display_name },
   }));
   const last = posts[posts.length - 1];
@@ -85,22 +99,24 @@ export async function fetchTimelinePage(
 export const REPLIES_LIMIT = 100;
 
 // 投稿 1 件を読む。消えている (または見えない) ときは null。
-export async function fetchPost(postId: string): Promise<Post | null> {
+export async function fetchPost(postId: string, userId?: string): Promise<Post | null> {
   const { data, error } = await supabase
     .from('posts')
     .select(COLUMNS)
     .eq('id', postId)
+    .eq('likes.user_id', userId ?? NO_USER)
     .maybeSingle();
   if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
   return data ? toPost(data as unknown as PostRow) : null;
 }
 
 // 投稿へのリプライを、古い順に読む。
-export async function fetchReplies(postId: string): Promise<Post[]> {
+export async function fetchReplies(postId: string, userId?: string): Promise<Post[]> {
   const { data, error } = await supabase
     .from('posts')
     .select(COLUMNS)
     .eq('reply_to', postId)
+    .eq('likes.user_id', userId ?? NO_USER)
     .order('created_at', { ascending: true })
     .order('id', { ascending: true })
     .limit(REPLIES_LIMIT);
@@ -121,4 +137,22 @@ export async function createPost(authorId: string, body: string, replyTo?: strin
 export async function deletePost(postId: string): Promise<void> {
   const { error } = await supabase.from('posts').delete().eq('id', postId);
   if (error) throw new Error(`投稿を削除できませんでした: ${error.message}`);
+}
+
+// いいねする。複合主キー (user_id, post_id) の重複 (23505) は、すでにいいね済みなので成功として扱う。
+export async function likePost(userId: string, postId: string): Promise<void> {
+  const { error } = await supabase.from('likes').insert({ user_id: userId, post_id: postId });
+  if (error && error.code !== '23505') {
+    throw new Error(`いいねできませんでした: ${error.message}`);
+  }
+}
+
+// いいねを取り消す。無い行の delete は 0 件で成功するので、二重に取り消しても安全。
+export async function unlikePost(userId: string, postId: string): Promise<void> {
+  const { error } = await supabase
+    .from('likes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('post_id', postId);
+  if (error) throw new Error(`いいねを取り消せませんでした: ${error.message}`);
 }

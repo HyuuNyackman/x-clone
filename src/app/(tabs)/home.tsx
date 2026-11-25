@@ -8,13 +8,19 @@ import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
-import { flattenTimeline, useDeletePost, useTimeline } from '@/features/posts/use-posts';
+import {
+  flattenTimeline,
+  useDeletePost,
+  useTimeline,
+  useToggleLike,
+} from '@/features/posts/use-posts';
 import { checkSupabaseConnection } from '@/lib/supabase-health';
 
 export default function HomeScreen() {
   const userId = useAuthStore((state) => state.session?.user.id);
   const timeline = useTimeline();
   const deletePost = useDeletePost();
+  const toggleLike = useToggleLike();
   const posts = useMemo(() => flattenTimeline(timeline.data), [timeline.data]);
 
   const connection = useQuery({
@@ -37,6 +43,9 @@ export default function HomeScreen() {
       {timeline.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{timeline.error.message}</Text>
       ) : null}
+      {toggleLike.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{toggleLike.error.message}</Text>
+      ) : null}
       {deletePost.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{deletePost.error.message}</Text>
       ) : null}
@@ -48,6 +57,11 @@ export default function HomeScreen() {
             post={item}
             canDelete={item.authorId === userId && !item.id.startsWith('optimistic-')}
             onDelete={(id) => deletePost.mutate(id)}
+            onToggleLike={
+              item.id.startsWith('optimistic-')
+                ? undefined
+                : (postId, liked) => toggleLike.mutate({ postId, liked })
+            }
             onPress={
               item.id.startsWith('optimistic-')
                 ? undefined

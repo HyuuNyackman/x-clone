@@ -13,6 +13,8 @@ import {
   fetchPost,
   fetchReplies,
   fetchTimelinePage,
+  likePost,
+  unlikePost,
   type Post,
   type TimelineCursor,
   type TimelinePage,
@@ -74,6 +76,8 @@ export function useCreatePost() {
           body,
           createdAt: new Date().toISOString(),
           replyCount: 0,
+          likeCount: 0,
+          likedByMe: false,
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
         };
         queryClient.setQueryData<TimelineData>(timelineKey, (old) =>
@@ -118,17 +122,25 @@ export function useDeletePost() {
   });
 }
 
+// いいねの表示を 1 つの投稿に反映する (カウンタは liked に合わせて ±1、0 未満にはしない)。
+export function applyLike(post: Post, liked: boolean): Post {
+  if (post.likedByMe === liked) return post;
+  return { ...post, likedByMe: liked, likeCount: Math.max(post.likeCount + (liked ? 1 : -1), 0) };
+}
+
 export const postKey = (postId: string) => ['posts', 'detail', postId] as const;
 export const repliesKey = (postId: string) => ['posts', 'replies', postId] as const;
 
 // 投稿詳細の元投稿。
 export function usePost(postId: string) {
-  return useQuery({ queryKey: postKey(postId), queryFn: () => fetchPost(postId) });
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({ queryKey: postKey(postId), queryFn: () => fetchPost(postId, userId) });
 }
 
 // 投稿詳細のリプライ一覧 (古い順)。
 export function useReplies(postId: string) {
-  return useQuery({ queryKey: repliesKey(postId), queryFn: () => fetchReplies(postId) });
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({ queryKey: repliesKey(postId), queryFn: () => fetchReplies(postId, userId) });
 }
 
 // リプライする。送信中から、一覧の末尾に仮のリプライを出し、元投稿のカウンタも増やす。失敗したら戻す。
@@ -154,6 +166,8 @@ export function useReplyToPost(postId: string) {
           body,
           createdAt: new Date().toISOString(),
           replyCount: 0,
+          likeCount: 0,
+          likedByMe: false,
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
         };
         queryClient.setQueryData<Post[]>(repliesKey(postId), (old) =>
@@ -175,6 +189,68 @@ export function useReplyToPost(postId: string) {
         queryClient.invalidateQueries({ queryKey: postKey(postId) }),
         // タイムラインのリプライ数も更新する。
         queryClient.invalidateQueries({ queryKey: timelineKey }),
+      ]),
+  });
+}
+
+type LikeVariables = { postId: string; liked: boolean };
+
+// いいね・取り消し。押した瞬間にタイムライン・詳細・リプライ一覧の表示を変え、失敗したら戻す (楽観的更新)。
+// 操作は scope で直列にし、連打しても順番どおりに 1 件ずつ送る。二重いいねは DB の主キーでも防ぐ。
+export function useToggleLike() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    // いいね操作は 1 件ずつ順番に送る (連打しても、押した順に反映される)。
+    scope: { id: 'like' },
+    mutationFn: ({ postId, liked }: LikeVariables) => {
+      if (!userId) throw new Error('ログインしていません');
+      return liked ? likePost(userId, postId) : unlikePost(userId, postId);
+    },
+    onMutate: async ({ postId, liked }) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: timelineKey }),
+        queryClient.cancelQueries({ queryKey: ['posts', 'detail', postId] }),
+        queryClient.cancelQueries({ queryKey: ['posts', 'replies'] }),
+      ]);
+      const previousTimeline = queryClient.getQueryData<TimelineData>(timelineKey);
+      const previousDetails = queryClient.getQueriesData<Post | null>({
+        queryKey: ['posts', 'detail'],
+      });
+      const previousReplies = queryClient.getQueriesData<Post[]>({
+        queryKey: ['posts', 'replies'],
+      });
+
+      const update = (post: Post) => (post.id === postId ? applyLike(post, liked) : post);
+      queryClient.setQueryData<TimelineData>(
+        timelineKey,
+        (old) =>
+          old && {
+            ...old,
+            pages: old.pages.map((page) => ({ ...page, posts: page.posts.map(update) })),
+          },
+      );
+      queryClient.setQueriesData<Post | null>({ queryKey: ['posts', 'detail'] }, (old) =>
+        old ? update(old) : old,
+      );
+      queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'replies'] }, (old) =>
+        old?.map(update),
+      );
+      return { previousTimeline, previousDetails, previousReplies };
+    },
+    onError: (_error, _variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData(timelineKey, context.previousTimeline);
+      for (const [key, data] of [...context.previousDetails, ...context.previousReplies]) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+    onSettled: (_data, _error, { postId }) =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: timelineKey }),
+        queryClient.invalidateQueries({ queryKey: postKey(postId) }),
+        queryClient.invalidateQueries({ queryKey: ['posts', 'replies'] }),
       ]),
   });
 }

@@ -29,3 +29,4 @@
 | [0024](0024-storage-buckets-and-folder-policies.md)            | 画像は公開バケットを用途別に分け、自分のフォルダだけに書き込ませる                                          | accepted | 2026-11-24 |
 | [0026](0026-post-detail-and-reply-counter.md)                  | 投稿詳細は /post/[id] の画面にし、リプライ数は posts.reply_count をトリガーで更新する                       | accepted | 2026-11-25 |
 | [0027](0027-notifications-table-and-triggers.md)               | 通知は notifications テーブルに持ち、いいね・リプライ・フォローのトリガーだけが作る                         | accepted | 2026-11-25 |
+| [0028](0028-like-button-optimistic-update.md)                  | いいねは楽観的に更新し、いいね済みかは get_timeline と埋め込みで返す                                        | accepted | 2026-11-25 |

@@ -4,7 +4,7 @@
 
 begin;
 
-select plan(15);
+select plan(18);
 
 -- ===== 構造・権限 =====
 
@@ -35,6 +35,12 @@ insert into public.posts (id, author_id, body, created_at) values
 
 insert into public.posts (id, author_id, repost_of, created_at) values
   ('e0000000-0000-0000-0000-0000000000f1', 'd2000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000001', '2026-01-01 00:00:09+00');
+
+-- いいね: p2 は u1・u2 の 2 件、p3 は u2 だけ (カウンタはトリガーが更新する)。
+insert into public.likes (user_id, post_id) values
+  ('d1000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000002'),
+  ('d2000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000002'),
+  ('d2000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000003');
 
 -- ===== 未ログイン (anon) =====
 
@@ -129,6 +135,23 @@ select is(
   (select count(*)::int from public.get_timeline()),
   5,
   '引数なしなら、先頭から既定の件数 (20 件まで) を返す'
+);
+
+-- いいね数と「自分がいいね済みか」(u1 から見る)
+select is(
+  (select like_count from public.get_timeline(null, null, 50) where body = 'p2'),
+  2,
+  'like_count を返す'
+);
+select is(
+  (select liked_by_me from public.get_timeline(null, null, 50) where body = 'p2'),
+  true,
+  '自分がいいねした投稿は liked_by_me が true'
+);
+select is(
+  (select array_agg(body order by body) from public.get_timeline(null, null, 50) where liked_by_me),
+  array['p2'],
+  '他人だけがいいねした投稿 (p3) や、いいねのない投稿は liked_by_me が false'
 );
 
 reset role;
