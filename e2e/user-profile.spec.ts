@@ -15,7 +15,8 @@ test('他ユーザーのプロフィールが見え、フォロー・解除で�
   await bob.getByRole('button', { name: '投稿を作成' }).click();
   await bob.getByLabel('本文').fill(bobText);
   await bob.getByRole('button', { name: '投稿する' }).click();
-  await expect(bob.getByText(bobText)).toBeVisible();
+  // 作成画面の textarea (値が本文と一致) を除くため、div のテキストに絞る。
+  await expect(bob.getByText(bobText).and(bob.locator('div'))).toBeVisible();
 
   await signUpOnly(page, uniqueEmail());
   await setupProfile(page, uniqueHandle(), 'Alice');
@@ -24,7 +25,7 @@ test('他ユーザーのプロフィールが見え、フォロー・解除で�
   await page.getByLabel(`@${bobHandle} のプロフィールを開く`).first().click();
   await expect(page).toHaveURL(new RegExp(`/user/${bobHandle}$`));
   await expect(page.getByText('Bob', { exact: true })).toBeVisible();
-  await expect(page.getByText(bobText)).toBeVisible();
+  await expect(page.getByText(bobText).and(page.locator('div:visible'))).toBeVisible();
   await expect(page.getByLabel('フォロワー数')).toContainText('0');
   await expect(page.getByRole('button', { name: 'プロフィールを編集' })).toHaveCount(0);
 
