@@ -1,7 +1,7 @@
-import { createPost, deletePost, fetchTimeline } from '@/features/posts/posts-api';
+import { createPost, deletePost, fetchTimelinePage } from '@/features/posts/posts-api';
 import { supabase } from '@/lib/supabase';
 
-jest.mock('@/lib/supabase', () => ({ supabase: { from: jest.fn() } }));
+jest.mock('@/lib/supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
 
 const from = jest.mocked(supabase.from);
 
@@ -28,25 +28,53 @@ function chain(result: unknown) {
 
 beforeEach(() => jest.clearAllMocks());
 
-describe('fetchTimeline', () => {
-  it('新しい順に読み、アプリ用の形に変換する', async () => {
-    const node = chain({ data: [row], error: null });
-    await expect(fetchTimeline()).resolves.toEqual([
-      {
-        id: 'p1',
-        authorId: 'u1',
-        body: 'hello',
-        createdAt: '2026-11-24T00:00:00Z',
-        author: { handle: 'alice', displayName: 'Alice' },
-      },
-    ]);
-    expect(from).toHaveBeenCalledWith('posts');
-    expect(node.order).toHaveBeenCalledWith('created_at', { ascending: false });
+const rpc = jest.mocked(supabase.rpc);
+
+const rpcRow = (n: number) => ({
+  id: `p${n}`,
+  author_id: 'u1',
+  body: `body ${n}`,
+  created_at: `2026-11-24T00:00:0${n}Z`,
+  handle: 'alice',
+  display_name: 'Alice',
+});
+
+describe('fetchTimelinePage', () => {
+  it('RPC をカーソル付きで呼び、アプリ用の形に変換する', async () => {
+    rpc.mockResolvedValue({ data: [rpcRow(2)], error: null } as never);
+    const page = await fetchTimelinePage({ createdAt: 'c', id: 'i' }, 2);
+    expect(rpc).toHaveBeenCalledWith('get_timeline', {
+      p_before_created_at: 'c',
+      p_before_id: 'i',
+      p_limit: 2,
+    });
+    expect(page.posts[0]).toEqual({
+      id: 'p2',
+      authorId: 'u1',
+      body: 'body 2',
+      createdAt: '2026-11-24T00:00:02Z',
+      author: { handle: 'alice', displayName: 'Alice' },
+    });
+    // 件数が limit に満たないので、続きはない
+    expect(page.nextCursor).toBeNull();
+  });
+
+  it('limit 件そろったら、最後の投稿を次のカーソルにする', async () => {
+    rpc.mockResolvedValue({ data: [rpcRow(2), rpcRow(1)], error: null } as never);
+    const page = await fetchTimelinePage(null, 2);
+    expect(rpc).toHaveBeenCalledWith('get_timeline', {
+      p_before_created_at: undefined,
+      p_before_id: undefined,
+      p_limit: 2,
+    });
+    expect(page.nextCursor).toEqual({ createdAt: '2026-11-24T00:00:01Z', id: 'p1' });
   });
 
   it('失敗すると Error になる', async () => {
-    chain({ data: null, error: { message: 'boom' } });
-    await expect(fetchTimeline()).rejects.toThrow('タイムラインを読み込めませんでした: boom');
+    rpc.mockResolvedValue({ data: null, error: { message: 'boom' } } as never);
+    await expect(fetchTimelinePage(null)).rejects.toThrow(
+      'タイムラインを読み込めませんでした: boom',
+    );
   });
 });
 

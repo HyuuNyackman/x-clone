@@ -1,18 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { FlatList, Text, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { useMemo } from 'react';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
-import { useDeletePost, useTimeline } from '@/features/posts/use-posts';
+import { flattenTimeline, useDeletePost, useTimeline } from '@/features/posts/use-posts';
 import { checkSupabaseConnection } from '@/lib/supabase-health';
 
 export default function HomeScreen() {
   const userId = useAuthStore((state) => state.session?.user.id);
   const timeline = useTimeline();
   const deletePost = useDeletePost();
+  const posts = useMemo(() => flattenTimeline(timeline.data), [timeline.data]);
 
   const connection = useQuery({
     queryKey: ['supabase', 'connection'],
@@ -37,8 +40,8 @@ export default function HomeScreen() {
       {deletePost.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{deletePost.error.message}</Text>
       ) : null}
-      <FlatList
-        data={timeline.data ?? []}
+      <FlashList
+        data={posts}
         keyExtractor={(post) => post.id}
         renderItem={({ item }) => (
           <PostCard
@@ -47,6 +50,17 @@ export default function HomeScreen() {
             onDelete={(id) => deletePost.mutate(id)}
           />
         )}
+        onEndReached={() => {
+          if (timeline.hasNextPage && !timeline.isFetchingNextPage) void timeline.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        refreshing={timeline.isRefetching && !timeline.isFetchingNextPage}
+        onRefresh={() => void timeline.refetch()}
+        ListFooterComponent={
+          timeline.isFetchingNextPage ? (
+            <Text className="px-4 py-3 text-center text-muted">読み込み中…</Text>
+          ) : null
+        }
         ListEmptyComponent={
           <Text className="px-4 py-6 text-center text-muted">
             {timeline.isPending ? '読み込み中…' : 'まだ投稿がありません'}

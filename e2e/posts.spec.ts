@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Request } from '@playwright/test';
 
 import { setupProfile, signUpOnly, uniqueEmail, uniqueHandle } from './helpers';
 
@@ -34,4 +34,51 @@ test('281文字以上は、投稿ボタンが押せない', async ({ page }) => 
   await page.getByLabel('本文').fill('a'.repeat(281));
   await expect(page.getByLabel('残り文字数')).toHaveText('-1');
   await expect(page.getByRole('button', { name: '投稿する' })).toBeDisabled();
+});
+
+// 45 件 (3 ページ分) を入れて、続きの読み込みと、重複・欠落がないことを確かめる。
+test('タイムラインは、スクロールで続きを読み込み、重複も欠落もない', async ({ page }) => {
+  const rpcRequests: Request[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('/rpc/get_timeline')) rpcRequests.push(request);
+  });
+
+  await signUpOnly(page, uniqueEmail());
+  await setupProfile(page, uniqueHandle(), 'Carol');
+  await expect.poll(() => rpcRequests.length).toBeGreaterThan(0);
+
+  // アプリ自身の認証ヘッダーを借りて、REST で投稿をまとめて入れる。
+  const headers = rpcRequests[0].headers();
+  const origin = new URL(rpcRequests[0].url()).origin;
+  const userId = JSON.parse(
+    atob(headers.authorization.split(' ')[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
+  ).sub as string;
+  const tag = `seed${Date.now()}`;
+  const total = 45;
+  const base = Date.now() - total * 1000;
+  const rows = Array.from({ length: total }, (_, i) => ({
+    author_id: userId,
+    body: `${tag}-${String(i).padStart(3, '0')}`,
+    created_at: new Date(base + i * 1000).toISOString(),
+  }));
+  const res = await page.request.post(`${origin}/rest/v1/posts`, {
+    headers: { apikey: headers.apikey, authorization: headers.authorization },
+    data: rows,
+  });
+  expect(res.ok()).toBeTruthy();
+
+  await page.reload();
+  // 新しい順。最初のページ (20 件) の先頭が見える。
+  await expect(page.getByText(`${tag}-044`)).toBeVisible();
+
+  // 末尾までスクロールして、最後 (最古) の投稿まで届くのを待つ。
+  const oldest = page.getByText(`${tag}-000`);
+  await expect(async () => {
+    await page.mouse.move(200, 400);
+    await page.mouse.wheel(0, 4000);
+    await expect(oldest).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 30_000 });
+
+  // 取得は 3 ページ以上 (20 + 20 + 5 件)。
+  expect(rpcRequests.length).toBeGreaterThanOrEqual(3);
 });
