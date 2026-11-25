@@ -123,8 +123,6 @@ jobs:
           # Claude が作った PR の失敗で起動するので、起動者は claude のボットになる。許可するのは Claude 自身だけにする (* は使わない)。
           # 許可しないと、action が「非人間の起動者」として、Claude の実行の前に失敗する。
           allowed_bots: 'claude'
-          # 一時的な確認用 (PR #131 で、Claude が何も push せず終わる原因の調査)。確認したらすぐ削除する。
-          show_full_output: 'true'
           # workflow_run には、読む対象のコメントがないので、指示は prompt で渡す。
           prompt: |
             Claude が作った PR #${{ steps.guard.outputs.pr }} (ブランチ ${{ github.event.workflow_run.head_branch }}) で、
@@ -144,7 +142,7 @@ jobs:
             4. 変更したファイルを名前で指定して git add し、git commit して git push する。
                メッセージは、このブランチの既存のコミットと同じ識別子で [<識別子を小文字にしたもの>] fix: <日本語の要約> の形式にする。
                強制 push や amend はしない。
-            5. 直せないとき、または直し方を判断できないときは、状況と試したことを短く書き、
+            5. 直せないとき、直し方を判断できないとき、ツールの許可が拒否されて変更を書き込めないときは、状況と試したことを短く書き、
                gh issue comment <Issue 番号> --body-file <ファイル> で元の Issue に残し、gh issue edit <Issue 番号> --add-label needs-human で人の判断が要ることを示して終了する。
                Issue の番号は、ブランチ名 claude/issue-<番号>-<日時> から読む。本文に @claude は書かない。
 
@@ -157,4 +155,4 @@ jobs:
           claude_args: |
             --model ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5-5' }}
             --max-turns ${{ vars.CLAUDE_MAX_TURNS || '40' }}
-            --allowedTools "Bash(pnpm format:*),Bash(pnpm lint:*),Bash(pnpm typecheck:*),Bash(pnpm test:*),Bash(supabase test db:*),Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh run view:*),Bash(gh run rerun:*),Bash(gh issue view:*),Bash(gh issue comment:*),Bash(gh issue edit:*)"
+            --allowedTools "Edit,Write,Bash(pnpm format:*),Bash(pnpm lint:*),Bash(pnpm typecheck:*),Bash(pnpm test:*),Bash(supabase test db:*),Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh run view:*),Bash(gh run rerun:*),Bash(gh issue view:*),Bash(gh issue comment:*),Bash(gh issue edit:*)"
