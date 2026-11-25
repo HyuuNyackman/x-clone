@@ -61,15 +61,10 @@ jobs:
           mkdir -p .claude/skills
           cp -r .apm/skills/. .claude/skills/
 
-      # Supabase に関わる Issue のときだけ、ローカルの Supabase (native runtime) を起動する。
-      # Claude がコミットの前に supabase test db (pgTAP) を実行でき、CI で赤くなってから直す手戻りを減らせる (約 8 秒)。
-      # 起動の時点では何を触るか分からないので、Issue のラベル (db) とタイトル・本文の語で判断する。
-      # contains は大文字小文字を区別しない。ラベル・語が合わなくても CI の db-test は動くので、検証が抜けることはない。
+      # ローカルの Supabase (native runtime) を起動する。
+      # Claude がコミットの前に supabase test db (pgTAP) を実行でき、CI で赤くなってから直す手戻りを減らせる。
+      # 起動の時点では何を触るか分からず、約 8 秒で済むので、条件を付けずに毎回起動する。
       - name: Start Supabase
-        if: |
-          contains(github.event.issue.title, 'supabase') || contains(github.event.issue.body, 'supabase') ||
-          contains(github.event.issue.body, 'pgTAP') || contains(github.event.issue.body, 'RLS') ||
-          contains(toJSON(github.event.issue.labels.*.name), '"db"')
         uses: ./.github/actions/start-supabase
 
       - name: Run Claude Code
