@@ -28,3 +28,4 @@
 | [0022](0022-likes-table-and-counter-trigger.md)                | いいねは複合主キーの likes と、トリガーで更新する posts.like_count で持つ                                   | accepted | 2026-11-24 |
 | [0024](0024-storage-buckets-and-folder-policies.md)            | 画像は公開バケットを用途別に分け、自分のフォルダだけに書き込ませる                                          | accepted | 2026-11-24 |
 | [0026](0026-post-detail-and-reply-counter.md)                  | 投稿詳細は /post/[id] の画面にし、リプライ数は posts.reply_count をトリガーで更新する                       | accepted | 2026-11-25 |
+| [0027](0027-notifications-table-and-triggers.md)               | 通知は notifications テーブルに持ち、いいね・リプライ・フォローのトリガーだけが作る                         | accepted | 2026-11-25 |
