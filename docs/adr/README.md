@@ -3,6 +3,14 @@
 設計上の判断と、その理由を残す場所。1ファイル1決定で書く。
 書式と手順は、APM で取り込んだ外部スキル `adr` ([linuxfoundation/crowd.dev](https://github.com/linuxfoundation/crowd.dev/tree/main/.claude/skills/adr)) に従う。本文は日本語で書く。
 
+## 更新のルール
+
+ADR は「その時点で、なぜそう決めたか」の記録なので、判断の本文は書き換えない。
+
+- 判断が変わったとき: 新しい ADR を足し、古い ADR の変わった箇所に、短い注記を足す。例: `(変更: ... は [ADR-00XX](00XX-....md) で変えた。)`
+- 判断が丸ごと置き換わったとき: 古い ADR の Status を `superseded by ADR-00XX` にし、新しい ADR の Context から古い方を参照する。
+- 直してよいもの: 誤字、リンク切れ、事実の誤り。判断の中身は変えない。
+
 | ADR                                                                | Title                                                                                                       | Status   | Date       |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | -------- | ---------- |
 | [0001](0001-adr-in-repo.md)                                        | 判断記録を ADR としてリポジトリ内に置く                                                                     | accepted | 2026-11-23 |
@@ -31,3 +39,4 @@
 | [0027](0027-notifications-table-and-triggers.md)                   | 通知は notifications テーブルに持ち、いいね・リプライ・フォローのトリガーだけが作る                         | accepted | 2026-11-25 |
 | [0028](0028-like-button-optimistic-update.md)                      | いいねは楽観的に更新し、いいね済みかは get_timeline と埋め込みで返す                                        | accepted | 2026-11-25 |
 | [0029](0029-following-timeline-via-rpc-flag-and-follow-buttons.md) | 「フォロー中」タブは get_timeline の引数で絞り、フォロー状態は別クエリで持つ                                | accepted | 2026-11-25 |
+| [0030](0030-claude-fix-on-workflow-run.md)                         | CI とレビューの失敗は、workflow_run で別のジョブが起動して直す                                              | accepted | 2026-11-25 |
