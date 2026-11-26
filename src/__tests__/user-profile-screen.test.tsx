@@ -96,10 +96,10 @@ describe('プロフィール画面', () => {
     expect(toggleFollow).toHaveBeenCalledWith({ targetId: BOB, follow: false });
   });
 
-  it('自分のプロフィールでは、編集ボタンを出し、フォローボタンは出さない', async () => {
+  it('自分の handle を開くと、プロフィールのタブに移る', async () => {
     setup({ profile: { ...bob, id: ME, handle: 'me' } });
     await renderRouter(routes, { initialUrl: '/user/me' });
-    expect(screen.getByRole('button', { name: 'プロフィールを編集' })).toBeTruthy();
+    expect(screen).toHavePathname('/profile');
     expect(screen.queryByRole('button', { name: 'フォロー' })).toBeNull();
   });
 
