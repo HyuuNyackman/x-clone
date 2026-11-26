@@ -17,9 +17,9 @@ import {
   fetchBookmarkedPosts,
   fetchFollowingIds,
   fetchPost,
-  fetchReplies,
+  fetchRepliesPage,
   fetchTimelinePage,
-  fetchUserPosts,
+  fetchUserPostsPage,
   followUser,
   likePost,
   removeBookmark,
@@ -159,7 +159,12 @@ export function usePost(postId: string) {
 // 投稿詳細のリプライ一覧 (古い順)。
 export function useReplies(postId: string) {
   const userId = useAuthStore((state) => state.session?.user.id);
-  return useQuery({ queryKey: repliesKey(postId), queryFn: () => fetchReplies(postId, userId) });
+  return useInfiniteQuery({
+    queryKey: repliesKey(postId),
+    queryFn: ({ pageParam }) => fetchRepliesPage(postId, pageParam, userId),
+    initialPageParam: null as TimelineCursor | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
 }
 
 // リプライする。送信中から、一覧の末尾に仮のリプライを出し、元投稿のカウンタも増やす。失敗したら戻す。
@@ -176,7 +181,7 @@ export function useReplyToPost(postId: string) {
     onMutate: async (body) => {
       await queryClient.cancelQueries({ queryKey: repliesKey(postId) });
       await queryClient.cancelQueries({ queryKey: postKey(postId) });
-      const previousReplies = queryClient.getQueryData<Post[]>(repliesKey(postId));
+      const previousReplies = queryClient.getQueryData<TimelineData>(repliesKey(postId));
       const previousPost = queryClient.getQueryData<Post | null>(postKey(postId));
       if (userId) {
         const optimistic: Post = {
@@ -190,9 +195,16 @@ export function useReplyToPost(postId: string) {
           author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
           media: [],
         };
-        queryClient.setQueryData<Post[]>(repliesKey(postId), (old) =>
-          old ? [...old, optimistic] : old,
-        );
+        // 末尾まで読み込み済みのときだけ、最後のページに足す (途中までなら、続きを読んだときに出る)。
+        queryClient.setQueryData<TimelineData>(repliesKey(postId), (old) => {
+          if (!old || old.pages.length === 0) return old;
+          const last = old.pages[old.pages.length - 1];
+          if (last.nextCursor) return old;
+          return {
+            ...old,
+            pages: [...old.pages.slice(0, -1), { ...last, posts: [...last.posts, optimistic] }],
+          };
+        });
         queryClient.setQueryData<Post | null>(postKey(postId), (old) =>
           old ? { ...old, replyCount: old.replyCount + 1 } : old,
         );
@@ -218,9 +230,11 @@ export const userPostsKey = (authorId: string | undefined) => ['posts', 'user', 
 // ある人の投稿一覧 (プロフィール画面用)。
 export function useUserPosts(authorId: string | undefined) {
   const userId = useAuthStore((state) => state.session?.user.id);
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: userPostsKey(authorId),
-    queryFn: () => fetchUserPosts(authorId as string, userId),
+    queryFn: ({ pageParam }) => fetchUserPostsPage(authorId as string, pageParam, userId),
+    initialPageParam: null as TimelineCursor | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: Boolean(authorId),
   });
 }
@@ -251,7 +265,7 @@ export function useToggleLike() {
       const previousDetails = queryClient.getQueriesData<Post | null>({
         queryKey: ['posts', 'detail'],
       });
-      const previousReplies = queryClient.getQueriesData<Post[]>({
+      const previousReplies = queryClient.getQueriesData<TimelineData>({
         queryKey: ['posts', 'replies'],
       });
 
@@ -267,15 +281,16 @@ export function useToggleLike() {
       queryClient.setQueriesData<Post | null>({ queryKey: ['posts', 'detail'] }, (old) =>
         old ? update(old) : old,
       );
-      queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'replies'] }, (old) =>
-        old?.map(update),
-      );
-      const previousUserPosts = queryClient.getQueriesData<Post[]>({
+      const updatePages = (old: TimelineData | undefined) =>
+        old && {
+          ...old,
+          pages: old.pages.map((page) => ({ ...page, posts: page.posts.map(update) })),
+        };
+      queryClient.setQueriesData<TimelineData>({ queryKey: ['posts', 'replies'] }, updatePages);
+      const previousUserPosts = queryClient.getQueriesData<TimelineData>({
         queryKey: ['posts', 'user'],
       });
-      queryClient.setQueriesData<Post[]>({ queryKey: ['posts', 'user'] }, (old) =>
-        old?.map(update),
-      );
+      queryClient.setQueriesData<TimelineData>({ queryKey: ['posts', 'user'] }, updatePages);
       return { previousTimelines, previousDetails, previousReplies, previousUserPosts };
     },
     onError: (_error, _variables, context) => {

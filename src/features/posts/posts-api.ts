@@ -128,6 +128,21 @@ export async function fetchTimelinePage(
     media: [],
   }));
   await attachMedia(posts);
+  return toPage(posts, limit);
+}
+
+// リプライ一覧・プロフィールの投稿タブの 1 ページの件数。
+export const REPLIES_PAGE_SIZE = 20;
+export const USER_POSTS_PAGE_SIZE = 20;
+
+// (created_at, id) のカーソルより後ろだけに絞る条件 (PostgREST の or)。値は引用符で囲む。
+function afterCursor(cursor: TimelineCursor, direction: 'asc' | 'desc'): string {
+  const op = direction === 'asc' ? 'gt' : 'lt';
+  const at = `"${cursor.createdAt}"`;
+  return `created_at.${op}.${at},and(created_at.eq.${at},id.${op}.${cursor.id})`;
+}
+
+function toPage(posts: Post[], limit: number): TimelinePage {
   const last = posts[posts.length - 1];
   return {
     posts,
@@ -135,9 +150,6 @@ export async function fetchTimelinePage(
     nextCursor: last && posts.length >= limit ? { createdAt: last.createdAt, id: last.id } : null,
   };
 }
-
-// リプライ一覧の 1 回の取得件数。ページ送りは未対応 (技術負債として別 Issue)。
-export const REPLIES_LIMIT = 100;
 
 // 投稿 1 件を読む。消えている (または見えない) ときは null。
 export async function fetchPost(postId: string, userId?: string): Promise<Post | null> {
@@ -151,18 +163,25 @@ export async function fetchPost(postId: string, userId?: string): Promise<Post |
   return data ? toPost(data as unknown as PostRow) : null;
 }
 
-// 投稿へのリプライを、古い順に読む。
-export async function fetchReplies(postId: string, userId?: string): Promise<Post[]> {
-  const { data, error } = await supabase
+// 投稿へのリプライを、古い順に 1 ページ読む。(created_at, id) のカーソルなので、重複も欠落も出ない。
+export async function fetchRepliesPage(
+  postId: string,
+  cursor: TimelineCursor | null,
+  userId?: string,
+  limit = REPLIES_PAGE_SIZE,
+): Promise<TimelinePage> {
+  let query = supabase
     .from('posts')
     .select(COLUMNS)
     .eq('reply_to', postId)
-    .eq('likes.user_id', userId ?? NO_USER)
+    .eq('likes.user_id', userId ?? NO_USER);
+  if (cursor) query = query.or(afterCursor(cursor, 'asc'));
+  const { data, error } = await query
     .order('created_at', { ascending: true })
     .order('id', { ascending: true })
-    .limit(REPLIES_LIMIT);
+    .limit(limit);
   if (error) throw new Error(`リプライを読み込めませんでした: ${error.message}`);
-  return ((data ?? []) as unknown as PostRow[]).map(toPost);
+  return toPage(((data ?? []) as unknown as PostRow[]).map(toPost), limit);
 }
 
 // 投稿を作る。画像があれば、自分のフォルダへアップロードして post_media に紐付ける。
@@ -272,23 +291,27 @@ export async function unfollowUser(userId: string, targetId: string): Promise<vo
   if (error) throw new Error(`フォローを解除できませんでした: ${error.message}`);
 }
 
-// プロフィールに出す投稿の取得件数。ページ送りは未対応 (技術負債として別 Issue)。
-export const USER_POSTS_LIMIT = 50;
-
-// ある人の投稿 (リプライを除く) を新しい順に読む。
-export async function fetchUserPosts(authorId: string, userId?: string): Promise<Post[]> {
-  const { data, error } = await supabase
+// ある人の投稿 (リプライを除く) を新しい順に 1 ページ読む。
+export async function fetchUserPostsPage(
+  authorId: string,
+  cursor: TimelineCursor | null,
+  userId?: string,
+  limit = USER_POSTS_PAGE_SIZE,
+): Promise<TimelinePage> {
+  let query = supabase
     .from('posts')
     .select(COLUMNS)
     .eq('author_id', authorId)
     .is('reply_to', null)
     .is('repost_of', null)
-    .eq('likes.user_id', userId ?? NO_USER)
+    .eq('likes.user_id', userId ?? NO_USER);
+  if (cursor) query = query.or(afterCursor(cursor, 'desc'));
+  const { data, error } = await query
     .order('created_at', { ascending: false })
     .order('id', { ascending: false })
-    .limit(USER_POSTS_LIMIT);
+    .limit(limit);
   if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
-  return ((data ?? []) as unknown as PostRow[]).map(toPost);
+  return toPage(((data ?? []) as unknown as PostRow[]).map(toPost), limit);
 }
 
 // ブックマーク一覧の取得件数。ページ送りは未対応 (技術負債として別 Issue)。

@@ -13,6 +13,7 @@ import {
 import { useFollowCounts, useProfileByHandle } from '@/features/profile/use-profile';
 
 jest.mock('@/features/posts/use-posts', () => ({
+  flattenTimeline: jest.requireActual('@/features/posts/use-posts').flattenTimeline,
   useFollowingIds: jest.fn(),
   useToggleFollow: jest.fn(),
   useToggleLike: jest.fn(),
@@ -51,7 +52,10 @@ const post: Post = {
 function setup({ profile = bob as typeof bob | null, following = [] as string[] } = {}) {
   jest.mocked(useProfileByHandle).mockReturnValue({ data: profile, isPending: false } as never);
   jest.mocked(useFollowCounts).mockReturnValue({ data: { following: 3, followers: 5 } } as never);
-  jest.mocked(useUserPosts).mockReturnValue({ data: [post], isPending: false } as never);
+  jest.mocked(useUserPosts).mockReturnValue({
+    data: { pages: [{ posts: [post], nextCursor: null }], pageParams: [null] },
+    isPending: false,
+  } as never);
   jest.mocked(useFollowingIds).mockReturnValue({ data: following } as never);
   jest.mocked(useToggleFollow).mockReturnValue({ mutate: toggleFollow } as never);
   jest.mocked(useToggleLike).mockReturnValue({ mutate: jest.fn() } as never);
