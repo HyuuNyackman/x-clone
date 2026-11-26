@@ -6,7 +6,8 @@ import {
   fetchFollowingIds,
   fetchPost,
   followUser,
-  fetchReplies,
+  fetchRepliesPage,
+  fetchUserPostsPage,
   fetchTimelinePage,
   likePost,
   removeBookmark,
@@ -37,7 +38,7 @@ const row = {
 
 function chain(result: unknown) {
   const node: Record<string, jest.Mock> = {};
-  for (const name of ['select', 'insert', 'delete', 'is', 'order', 'eq']) {
+  for (const name of ['select', 'insert', 'delete', 'is', 'order', 'eq', 'or']) {
     node[name] = jest.fn(() => node);
   }
   node.limit = jest.fn().mockResolvedValue(result);
@@ -227,20 +228,61 @@ describe('fetchPost', () => {
   });
 });
 
-describe('fetchReplies', () => {
-  it('reply_to で絞り、古い順に読む', async () => {
+describe('fetchRepliesPage', () => {
+  it('reply_to で絞り、古い順に読む。カーソルが無ければ or は付けない', async () => {
     const node = chain({ data: [row], error: null });
     node.eq = jest.fn(() => node);
-    const replies = await fetchReplies('p0');
+    const page = await fetchRepliesPage('p0', null);
     expect(node.eq).toHaveBeenCalledWith('reply_to', 'p0');
     expect(node.order).toHaveBeenCalledWith('created_at', { ascending: true });
-    expect(replies).toHaveLength(1);
+    expect(node.or).not.toHaveBeenCalled();
+    expect(page.posts).toHaveLength(1);
+    expect(page.nextCursor).toBeNull();
+  });
+
+  it('カーソルより後ろだけを読み、limit 件そろったら次のカーソルを返す', async () => {
+    const node = chain({ data: [row], error: null });
+    node.eq = jest.fn(() => node);
+    const page = await fetchRepliesPage('p0', { createdAt: 'c', id: 'i' }, undefined, 1);
+    expect(node.or).toHaveBeenCalledWith('created_at.gt."c",and(created_at.eq."c",id.gt.i)');
+    expect(node.limit).toHaveBeenCalledWith(1);
+    expect(page.nextCursor).toEqual({ createdAt: row.created_at, id: 'p1' });
   });
 
   it('失敗すると Error になる', async () => {
     const node = chain({ data: null, error: { message: 'boom' } });
     node.eq = jest.fn(() => node);
-    await expect(fetchReplies('p0')).rejects.toThrow('リプライを読み込めませんでした: boom');
+    await expect(fetchRepliesPage('p0', null)).rejects.toThrow(
+      'リプライを読み込めませんでした: boom',
+    );
+  });
+});
+
+describe('fetchUserPostsPage', () => {
+  it('投稿者で絞り、リプライを除いて新しい順に読む', async () => {
+    const node = chain({ data: [row], error: null });
+    node.eq = jest.fn(() => node);
+    const page = await fetchUserPostsPage('u1', null);
+    expect(node.eq).toHaveBeenCalledWith('author_id', 'u1');
+    expect(node.is).toHaveBeenCalledWith('reply_to', null);
+    expect(node.order).toHaveBeenCalledWith('created_at', { ascending: false });
+    expect(page.nextCursor).toBeNull();
+  });
+
+  it('カーソルより前だけを読み、limit 件そろったら次のカーソルを返す', async () => {
+    const node = chain({ data: [row], error: null });
+    node.eq = jest.fn(() => node);
+    const page = await fetchUserPostsPage('u1', { createdAt: 'c', id: 'i' }, undefined, 1);
+    expect(node.or).toHaveBeenCalledWith('created_at.lt."c",and(created_at.eq."c",id.lt.i)');
+    expect(page.nextCursor).toEqual({ createdAt: row.created_at, id: 'p1' });
+  });
+
+  it('失敗すると Error になる', async () => {
+    const node = chain({ data: null, error: { message: 'boom' } });
+    node.eq = jest.fn(() => node);
+    await expect(fetchUserPostsPage('u1', null)).rejects.toThrow(
+      '投稿を読み込めませんでした: boom',
+    );
   });
 });
 

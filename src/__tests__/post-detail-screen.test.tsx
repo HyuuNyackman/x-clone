@@ -6,6 +6,7 @@ import type { Post } from '@/features/posts/posts-api';
 import { usePost, useReplies, useReplyToPost, useToggleLike } from '@/features/posts/use-posts';
 
 jest.mock('@/features/posts/use-posts', () => ({
+  flattenTimeline: jest.requireActual('@/features/posts/use-posts').flattenTimeline,
   usePost: jest.fn(),
   useReplies: jest.fn(),
   useReplyToPost: jest.fn(),
@@ -28,6 +29,8 @@ const post = (id: string, body: string, replyCount = 0): Post => ({
   media: [],
 });
 
+const pages = (posts: Post[]) => ({ pages: [{ posts, nextCursor: null }], pageParams: [null] });
+
 beforeEach(() => {
   jest.clearAllMocks();
   jest
@@ -35,7 +38,7 @@ beforeEach(() => {
     .mockReturnValue({ data: post('p1', '元の投稿', 1), isPending: false } as never);
   jest
     .mocked(useReplies)
-    .mockReturnValue({ data: [post('r1', '最初の返信')], isPending: false } as never);
+    .mockReturnValue({ data: pages([post('r1', '最初の返信')]), isPending: false } as never);
   jest.mocked(useToggleLike).mockReturnValue({ mutate: jest.fn() } as never);
   jest.mocked(useReplyToPost).mockReturnValue({ mutateAsync, isPending: false } as never);
 });
@@ -50,7 +53,7 @@ describe('投稿詳細画面', () => {
   });
 
   it('リプライが無ければ、その旨を出す', async () => {
-    jest.mocked(useReplies).mockReturnValue({ data: [], isPending: false } as never);
+    jest.mocked(useReplies).mockReturnValue({ data: pages([]), isPending: false } as never);
     await renderRouter(routes, { initialUrl: '/post/p1' });
     expect(screen.getByText('まだリプライがありません')).toBeTruthy();
   });

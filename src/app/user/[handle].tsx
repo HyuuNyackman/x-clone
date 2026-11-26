@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
 import {
+  flattenTimeline,
   useFollowingIds,
   useToggleFollow,
   useToggleLike,
@@ -111,9 +112,13 @@ export default function UserProfileScreen() {
         <Text className="text-xl font-extrabold text-foreground">プロフィール</Text>
       </View>
       <FlatList
-        data={posts.data ?? []}
+        data={flattenTimeline(posts.data)}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={header}
+        onEndReached={() => {
+          if (posts.hasNextPage && !posts.isFetchingNextPage) void posts.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
         renderItem={({ item }) => (
           <PostCard
             post={item}

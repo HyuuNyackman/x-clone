@@ -9,7 +9,13 @@ import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
 import { PostCard } from '@/features/posts/post-card';
 import { POST_MAX_LENGTH, postSchema, type PostValues } from '@/features/posts/schemas';
-import { usePost, useReplies, useReplyToPost, useToggleLike } from '@/features/posts/use-posts';
+import {
+  flattenTimeline,
+  usePost,
+  useReplies,
+  useReplyToPost,
+  useToggleLike,
+} from '@/features/posts/use-posts';
 
 const noop = () => {};
 
@@ -78,10 +84,14 @@ export default function PostDetailScreen() {
         <Text className="text-xl font-extrabold text-foreground">投稿</Text>
       </View>
       <FlatList
-        data={replies.data ?? []}
+        data={flattenTimeline(replies.data)}
         keyExtractor={(item) => item.id}
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={header}
+        onEndReached={() => {
+          if (replies.hasNextPage && !replies.isFetchingNextPage) void replies.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
         renderItem={({ item }) => (
           <PostCard
             post={item}
