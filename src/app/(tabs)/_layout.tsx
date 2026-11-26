@@ -30,7 +30,9 @@ export default function TabsLayout() {
   }
 
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    // tabBarIcon を指定しないと、既定の代替文字「⏷」が各タブに出る。
+    // アイコンの部品はまだ入れていないので、空のアイコンにしてラベルだけを出す。
+    <Tabs screenOptions={{ headerShown: false, tabBarIcon: () => null }}>
       <Tabs.Screen name="home" options={{ title: 'ホーム' }} />
       <Tabs.Screen name="search" options={{ title: '検索' }} />
       <Tabs.Screen

@@ -30,7 +30,7 @@ test('設定した内容が DB に保存され、再読み込みしても保た�
   await signUpOnly(page, uniqueEmail());
   await setupProfile(page, handle, 'Alice');
 
-  await page.getByRole('tab', { name: 'プロフィール' }).click();
+  await page.getByRole('tab', { name: 'プロフィール', exact: true }).click();
   await expect(page.getByLabel('ハンドル')).toHaveValue(handle);
   await expect(page.getByLabel('表示名')).toHaveValue('Alice');
 
@@ -50,7 +50,7 @@ test('他の人と同じ handle にすると、重複のエラーが出る', asy
   await signUpOnly(page, uniqueEmail());
   await setupProfile(page, taken, 'First');
 
-  await page.getByRole('tab', { name: '設定' }).click();
+  await page.getByRole('tab', { name: '設定', exact: true }).click();
   await page.getByRole('button', { name: 'ログアウト' }).click();
   await expect(page).toHaveURL(/\/login$/);
 

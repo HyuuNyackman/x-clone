@@ -9,7 +9,7 @@ async function signUp(page: Page, email: string) {
 }
 
 async function signOut(page: Page) {
-  await page.getByRole('tab', { name: '設定' }).click();
+  await page.getByRole('tab', { name: '設定', exact: true }).click();
   await page.getByRole('button', { name: 'ログアウト' }).click();
 }
 
@@ -32,7 +32,7 @@ test('ログアウトすると、ログイン画面に戻る', async ({ page }) 
   await signUp(page, email);
   await expect(page).toHaveURL(/\/home$/);
 
-  await page.getByRole('tab', { name: '設定' }).click();
+  await page.getByRole('tab', { name: '設定', exact: true }).click();
   await expect(page.getByText(`ログイン中: ${email}`)).toBeVisible();
   await page.getByRole('button', { name: 'ログアウト' }).click();
   await expect(page).toHaveURL(/\/login$/);
