@@ -44,7 +44,7 @@ test('他ユーザーのプロフィールが見え、フォロー・解除で�
   await bobContext.close();
 });
 
-test('自分のプロフィールには編集ボタンが出て、存在しない handle は見つからないと出る', async ({
+test('自分の handle はプロフィールのタブに移り、存在しない handle は見つからないと出る', async ({
   page,
 }) => {
   const handle = uniqueHandle();
@@ -52,10 +52,8 @@ test('自分のプロフィールには編集ボタンが出て、存在しな�
   await setupProfile(page, handle, 'Alice');
 
   await page.goto(`/user/${handle}`);
-  await expect(page.getByText('Alice', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'フォロー', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'プロフィールを編集' }).click();
   await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByRole('button', { name: 'フォロー', exact: true })).toHaveCount(0);
 
   await page.goto('/user/no_such_user_zz');
   await expect(page.getByText('ユーザーが見つかりません')).toBeVisible();

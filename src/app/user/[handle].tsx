@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
@@ -18,7 +18,7 @@ import { useFollowCounts, useProfileByHandle } from '@/features/profile/use-prof
 
 const noop = () => {};
 
-// 他ユーザー (または自分) のプロフィール画面。handle で開く。
+// 他ユーザーのプロフィール画面。handle で開く。自分の handle は、プロフィールのタブに移す。
 export default function UserProfileScreen() {
   const { handle } = useLocalSearchParams<{ handle: string }>();
   const myId = useAuthStore((state) => state.session?.user.id);
@@ -36,6 +36,8 @@ export default function UserProfileScreen() {
   );
   const isMe = user !== undefined && user.id === myId;
 
+  if (isMe) return <Redirect href="/profile" />;
+
   const back = () => (router.canGoBack() ? router.back() : router.replace('/home'));
 
   const header = (
@@ -48,19 +50,11 @@ export default function UserProfileScreen() {
               <Text className="text-2xl font-extrabold text-foreground">{user.displayName}</Text>
               <Text className="text-base text-muted">@{user.handle}</Text>
             </View>
-            {isMe ? (
-              <Button
-                label="プロフィールを編集"
-                variant="outline"
-                onPress={() => router.push('/profile')}
-              />
-            ) : (
-              <Button
-                label={following ? 'フォロー中' : 'フォロー'}
-                variant={following ? 'outline' : 'primary'}
-                onPress={() => toggleFollow.mutate({ targetId: user.id, follow: !following })}
-              />
-            )}
+            <Button
+              label={following ? 'フォロー中' : 'フォロー'}
+              variant={following ? 'outline' : 'primary'}
+              onPress={() => toggleFollow.mutate({ targetId: user.id, follow: !following })}
+            />
           </View>
           {user.bio ? <Text className="text-base text-foreground">{user.bio}</Text> : null}
           <View className="flex-row gap-4">
