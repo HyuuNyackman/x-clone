@@ -1,12 +1,15 @@
 import {
+  addBookmark,
   createPost,
   deletePost,
+  fetchBookmarkedIds,
   fetchFollowingIds,
   fetchPost,
   followUser,
   fetchReplies,
   fetchTimelinePage,
   likePost,
+  removeBookmark,
   unfollowUser,
   unlikePost,
 } from '@/features/posts/posts-api';
@@ -322,5 +325,33 @@ describe('フォロー', () => {
     await unfollowUser('u1', 'u2');
     expect(node.eq).toHaveBeenNthCalledWith(1, 'follower_id', 'u1');
     expect(node.eq).toHaveBeenNthCalledWith(2, 'followee_id', 'u2');
+  });
+});
+
+describe('ブックマーク', () => {
+  it('addBookmark は重複 (23505) を成功として扱い、他のエラーは投げる', async () => {
+    const node = chain({ error: { code: '23505', message: 'dup' } });
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '23505', message: 'dup' } });
+    await expect(addBookmark('u1', 'p1')).resolves.toBeUndefined();
+    expect(node.insert).toHaveBeenCalledWith({ user_id: 'u1', post_id: 'p1' });
+
+    node.insert = jest.fn().mockResolvedValue({ error: { code: '42501', message: 'denied' } });
+    await expect(addBookmark('u1', 'p1')).rejects.toThrow('ブックマークできませんでした');
+  });
+
+  it('removeBookmark は user_id と post_id で絞って消す', async () => {
+    const node = chain({ error: null });
+    node.eq = jest.fn().mockReturnValueOnce(node).mockResolvedValueOnce({ error: null });
+    await expect(removeBookmark('u1', 'p1')).resolves.toBeUndefined();
+    expect(node.eq).toHaveBeenNthCalledWith(1, 'user_id', 'u1');
+    expect(node.eq).toHaveBeenNthCalledWith(2, 'post_id', 'p1');
+  });
+
+  it('fetchBookmarkedIds は post_id の配列を返す', async () => {
+    const node = chain({ data: [], error: null });
+    node.eq = jest
+      .fn()
+      .mockResolvedValue({ data: [{ post_id: 'p1' }, { post_id: 'p2' }], error: null });
+    await expect(fetchBookmarkedIds('u1')).resolves.toEqual(['p1', 'p2']);
   });
 });

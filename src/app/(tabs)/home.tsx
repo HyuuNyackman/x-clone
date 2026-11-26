@@ -10,9 +10,11 @@ import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
 import {
   flattenTimeline,
+  useBookmarkedIds,
   useDeletePost,
   useFollowingIds,
   useTimeline,
+  useToggleBookmark,
   useToggleFollow,
   useToggleLike,
   type TimelineTab,
@@ -31,6 +33,9 @@ export default function HomeScreen() {
   const deletePost = useDeletePost();
   const toggleLike = useToggleLike();
   const toggleFollow = useToggleFollow();
+  const toggleBookmark = useToggleBookmark();
+  const bookmarkedIds = useBookmarkedIds().data;
+  const bookmarkedSet = useMemo(() => new Set(bookmarkedIds ?? []), [bookmarkedIds]);
   const followingIds = useFollowingIds().data;
   const followingSet = useMemo(() => new Set(followingIds ?? []), [followingIds]);
   const posts = useMemo(() => flattenTimeline(timeline.data), [timeline.data]);
@@ -74,6 +79,9 @@ export default function HomeScreen() {
       {toggleLike.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{toggleLike.error.message}</Text>
       ) : null}
+      {toggleBookmark.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{toggleBookmark.error.message}</Text>
+      ) : null}
       {toggleFollow.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{toggleFollow.error.message}</Text>
       ) : null}
@@ -92,6 +100,12 @@ export default function HomeScreen() {
               item.id.startsWith('optimistic-')
                 ? undefined
                 : (postId, liked) => toggleLike.mutate({ postId, liked })
+            }
+            bookmarked={bookmarkedSet.has(item.id)}
+            onToggleBookmark={
+              item.id.startsWith('optimistic-')
+                ? undefined
+                : (postId, bookmarked) => toggleBookmark.mutate({ postId, bookmarked })
             }
             onPressAuthor={(handle) =>
               router.push({ pathname: '/user/[handle]', params: { handle } })

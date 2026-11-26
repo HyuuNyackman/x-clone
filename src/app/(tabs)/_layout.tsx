@@ -37,6 +37,7 @@ export default function TabsLayout() {
         name="notifications"
         options={{ title: '通知', tabBarBadge: badgeLabel(unread) }}
       />
+      <Tabs.Screen name="bookmarks" options={{ title: 'ブックマーク' }} />
       <Tabs.Screen name="profile" options={{ title: 'プロフィール' }} />
       <Tabs.Screen name="settings" options={{ title: '設定' }} />
     </Tabs>

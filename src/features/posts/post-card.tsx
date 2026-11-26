@@ -12,6 +12,9 @@ type PostCardProps = {
   onPress?: (postId: string) => void;
   // 渡すと、いいねボタンを出す。liked は押した後の状態 (いいね済みなら false = 取り消し)。
   onToggleLike?: (postId: string, liked: boolean) => void;
+  // 渡すと、ブックマークボタンを出す。bookmarked は今ブックマーク済みか。onToggleBookmark の第2引数は押した後の状態。
+  bookmarked?: boolean;
+  onToggleBookmark?: (postId: string, bookmarked: boolean) => void;
   // 渡すと、他人の投稿にフォロー・解除ボタンを出す。following は今フォロー中か。follow は押した後の状態。
   following?: boolean;
   // 渡すと、投稿者の名前を押してプロフィールを開ける。
@@ -25,6 +28,8 @@ export function PostCard({
   onDelete,
   onPress,
   onToggleLike,
+  bookmarked = false,
+  onToggleBookmark,
   following = false,
   onPressAuthor,
   onToggleFollow,
@@ -89,6 +94,19 @@ export function PostCard({
           >
             <Text className={`text-sm ${post.likedByMe ? 'font-bold text-danger' : 'text-muted'}`}>
               {post.likedByMe ? '♥' : '♡'} {post.likeCount}
+            </Text>
+          </Pressable>
+        ) : null}
+        {onToggleBookmark ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={bookmarked ? 'ブックマークを解除' : 'ブックマーク'}
+            accessibilityState={{ selected: bookmarked }}
+            onPress={() => onToggleBookmark(post.id, !bookmarked)}
+            hitSlop={8}
+          >
+            <Text className={`text-sm ${bookmarked ? 'font-bold text-primary' : 'text-muted'}`}>
+              {bookmarked ? '★' : '☆'}
             </Text>
           </Pressable>
         ) : null}
