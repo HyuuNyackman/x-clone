@@ -8,8 +8,11 @@ import {
 
 import { useAuthStore } from '@/features/auth/auth-store';
 import {
+  addBookmark,
   createPost,
   deletePost,
+  fetchBookmarkedIds,
+  fetchBookmarkedPosts,
   fetchFollowingIds,
   fetchPost,
   fetchReplies,
@@ -17,6 +20,7 @@ import {
   fetchUserPosts,
   followUser,
   likePost,
+  removeBookmark,
   unfollowUser,
   unlikePost,
   type Post,
@@ -342,6 +346,69 @@ export function useToggleFollow() {
         queryClient.invalidateQueries({ queryKey: followingTimelineKey }),
         // プロフィール画面のフォロー数・フォロワー数も取り直す。
         queryClient.invalidateQueries({ queryKey: ['follows', 'counts'] }),
+      ]),
+  });
+}
+
+export const bookmarkedIdsKey = (userId: string | undefined) =>
+  ['bookmarks', 'ids', userId] as const;
+export const bookmarksKey = (userId: string | undefined) => ['bookmarks', 'list', userId] as const;
+
+// 自分がブックマークした投稿の id。ログインしていなければ取らない。
+export function useBookmarkedIds() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({
+    queryKey: bookmarkedIdsKey(userId),
+    queryFn: () => fetchBookmarkedIds(userId as string),
+    enabled: Boolean(userId),
+  });
+}
+
+// 自分のブックマーク一覧 (新しい順)。
+export function useBookmarks() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  return useQuery({
+    queryKey: bookmarksKey(userId),
+    queryFn: () => fetchBookmarkedPosts(userId as string),
+    enabled: Boolean(userId),
+  });
+}
+
+// ブックマークのつけ外しを反映した id 一覧 (重複なし)。
+export function applyBookmark(ids: string[], postId: string, bookmarked: boolean): string[] {
+  const without = ids.filter((id) => id !== postId);
+  return bookmarked ? [...without, postId] : without;
+}
+
+type BookmarkVariables = { postId: string; bookmarked: boolean };
+
+// ブックマーク・解除。押した瞬間に表示を変え、失敗したら戻す (楽観的更新)。操作は scope で直列にする。
+export function useToggleBookmark() {
+  const userId = useAuthStore((state) => state.session?.user.id);
+  const queryClient = useQueryClient();
+  const key = bookmarkedIdsKey(userId);
+
+  return useMutation({
+    scope: { id: 'bookmark' },
+    mutationFn: ({ postId, bookmarked }: BookmarkVariables) => {
+      if (!userId) throw new Error('ログインしていません');
+      return bookmarked ? addBookmark(userId, postId) : removeBookmark(userId, postId);
+    },
+    onMutate: async ({ postId, bookmarked }) => {
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<string[]>(key);
+      queryClient.setQueryData<string[]>(key, (old) =>
+        applyBookmark(old ?? [], postId, bookmarked),
+      );
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      queryClient.setQueryData(key, context?.previous);
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: key }),
+        queryClient.invalidateQueries({ queryKey: bookmarksKey(userId) }),
       ]),
   });
 }

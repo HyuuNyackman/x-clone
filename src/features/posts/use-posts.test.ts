@@ -1,4 +1,4 @@
-import { applyFollow, applyLike, flattenTimeline } from '@/features/posts/use-posts';
+import { applyBookmark, applyFollow, applyLike, flattenTimeline } from '@/features/posts/use-posts';
 import type { Post, TimelinePage } from '@/features/posts/posts-api';
 
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
@@ -53,5 +53,17 @@ describe('applyFollow', () => {
   it('解除すると id が外れる。無い id の解除は何も変えない', () => {
     expect(applyFollow(['a', 'b'], 'b', false)).toEqual(['a']);
     expect(applyFollow(['a'], 'z', false)).toEqual(['a']);
+  });
+});
+
+describe('applyBookmark', () => {
+  it('ブックマークすると末尾に足し、二重には足さない', () => {
+    expect(applyBookmark(['a'], 'b', true)).toEqual(['a', 'b']);
+    expect(applyBookmark(['a', 'b'], 'b', true)).toEqual(['a', 'b']);
+  });
+
+  it('解除すると取り除く。無い id でも壊れない', () => {
+    expect(applyBookmark(['a', 'b'], 'b', false)).toEqual(['a']);
+    expect(applyBookmark(['a'], 'z', false)).toEqual(['a']);
   });
 });

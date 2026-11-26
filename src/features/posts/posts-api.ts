@@ -287,3 +287,56 @@ export async function fetchUserPosts(authorId: string, userId?: string): Promise
   if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
   return ((data ?? []) as unknown as PostRow[]).map(toPost);
 }
+
+// ブックマーク一覧の取得件数。ページ送りは未対応 (技術負債として別 Issue)。
+export const BOOKMARKS_LIMIT = 50;
+
+// 自分がブックマークした投稿の id 一覧。
+export async function fetchBookmarkedIds(userId: string): Promise<string[]> {
+  const { data, error } = await supabase.from('bookmarks').select('post_id').eq('user_id', userId);
+  if (error) throw new Error(`ブックマークを読み込めませんでした: ${error.message}`);
+  return (data ?? []).map((row) => row.post_id as string);
+}
+
+// ブックマークする。複合主キーの重複 (23505) は、すでにブックマーク済みなので成功として扱う。
+export async function addBookmark(userId: string, postId: string): Promise<void> {
+  const { error } = await supabase.from('bookmarks').insert({ user_id: userId, post_id: postId });
+  if (error && error.code !== '23505') {
+    throw new Error(`ブックマークできませんでした: ${error.message}`);
+  }
+}
+
+// ブックマークを解除する。無い行の delete は 0 件で成功するので、二重に解除しても安全。
+export async function removeBookmark(userId: string, postId: string): Promise<void> {
+  const { error } = await supabase
+    .from('bookmarks')
+    .delete()
+    .eq('user_id', userId)
+    .eq('post_id', postId);
+  if (error) throw new Error(`ブックマークを解除できませんでした: ${error.message}`);
+}
+
+// 自分のブックマークした投稿を、ブックマークした新しい順に読む。
+// RLS で自分の行しか見えないが、user_id でも絞る。
+export async function fetchBookmarkedPosts(userId: string): Promise<Post[]> {
+  const { data: marks, error: markError } = await supabase
+    .from('bookmarks')
+    .select('post_id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .order('post_id', { ascending: false })
+    .limit(BOOKMARKS_LIMIT);
+  if (markError) throw new Error(`ブックマークを読み込めませんでした: ${markError.message}`);
+  const ids = (marks ?? []).map((row) => row.post_id as string);
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('posts')
+    .select(COLUMNS)
+    .in('id', ids)
+    .eq('likes.user_id', userId);
+  if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
+  const byId = new Map(((data ?? []) as unknown as PostRow[]).map((row) => [row.id, toPost(row)]));
+  // 投稿が消えている (連鎖削除の途中など) 分は飛ばし、ブックマークした順に並べ直す。
+  return ids.flatMap((id) => byId.get(id) ?? []);
+}

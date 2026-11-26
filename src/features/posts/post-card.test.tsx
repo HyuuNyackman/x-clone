@@ -83,3 +83,39 @@ describe('PostCard のフォローボタン', () => {
     expect(onToggleFollow).toHaveBeenCalledWith('u1', false);
   });
 });
+
+describe('PostCard のブックマークボタン', () => {
+  it('未ブックマークなら、押すと追加で呼ぶ', async () => {
+    const onToggleBookmark = jest.fn();
+    await render(
+      <PostCard
+        post={post()}
+        canDelete={false}
+        onDelete={jest.fn()}
+        onToggleBookmark={onToggleBookmark}
+      />,
+    );
+    await fireEvent.press(screen.getByRole('button', { name: 'ブックマーク' }));
+    expect(onToggleBookmark).toHaveBeenCalledWith('p1', true);
+  });
+
+  it('ブックマーク済みなら、押すと解除で呼ぶ', async () => {
+    const onToggleBookmark = jest.fn();
+    await render(
+      <PostCard
+        post={post()}
+        canDelete={false}
+        onDelete={jest.fn()}
+        bookmarked
+        onToggleBookmark={onToggleBookmark}
+      />,
+    );
+    await fireEvent.press(screen.getByRole('button', { name: 'ブックマークを解除' }));
+    expect(onToggleBookmark).toHaveBeenCalledWith('p1', false);
+  });
+
+  it('onToggleBookmark がなければボタンを出さない', async () => {
+    await render(<PostCard post={post()} canDelete={false} onDelete={jest.fn()} />);
+    expect(screen.queryByRole('button', { name: 'ブックマーク' })).toBeNull();
+  });
+});
