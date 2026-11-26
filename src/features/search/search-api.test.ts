@@ -18,6 +18,7 @@ describe('searchPostsPage', () => {
           created_at: '2026-11-25T00:00:00Z',
           handle: 'alice',
           display_name: 'Alice',
+          avatar_url: 'u1/a.jpg',
           reply_count: 1,
           like_count: 2,
           liked_by_me: true,
@@ -35,7 +36,11 @@ describe('searchPostsPage', () => {
       p_before_id: undefined,
       p_limit: 20,
     });
-    expect(page.posts[0]).toMatchObject({ id: 'p1', likedByMe: true, author: { handle: 'alice' } });
+    expect(page.posts[0]).toMatchObject({
+      id: 'p1',
+      likedByMe: true,
+      author: { handle: 'alice', avatarUrl: 'u1/a.jpg' },
+    });
     expect(page.nextCursor).toBeNull();
   });
 

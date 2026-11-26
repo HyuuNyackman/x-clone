@@ -96,7 +96,11 @@ export function useCreatePost() {
           replyCount: 0,
           likeCount: 0,
           likedByMe: false,
-          author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
+          author: {
+            handle: profile?.handle ?? '',
+            displayName: profile?.displayName ?? '',
+            avatarUrl: profile?.avatarUrl ?? null,
+          },
           media: [],
         };
         queryClient.setQueryData<TimelineData>(timelineKey, (old) =>
@@ -192,7 +196,11 @@ export function useReplyToPost(postId: string) {
           replyCount: 0,
           likeCount: 0,
           likedByMe: false,
-          author: { handle: profile?.handle ?? '', displayName: profile?.displayName ?? '' },
+          author: {
+            handle: profile?.handle ?? '',
+            displayName: profile?.displayName ?? '',
+            avatarUrl: profile?.avatarUrl ?? null,
+          },
           media: [],
         };
         // 末尾まで読み込み済みのときだけ、最後のページに足す (途中までなら、続きを読んだときに出る)。

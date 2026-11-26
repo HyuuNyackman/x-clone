@@ -2,6 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
+import { Avatar } from '@/components/avatar';
 import { Screen } from '@/components/screen';
 import { notificationMessage } from '@/features/notifications/notification-text';
 import type { AppNotification } from '@/features/notifications/notifications-api';
@@ -63,6 +64,7 @@ export default function NotificationsScreen() {
             className={`gap-1 border-b border-border px-4 py-3 ${item.read ? '' : 'bg-surface'}`}
           >
             <View className="flex-row items-center gap-2">
+              <Avatar storageKey={item.actor.avatarUrl} name={item.actor.displayName} size={32} />
               {item.read ? null : <View className="h-2 w-2 rounded-full bg-primary" />}
               <Text className={`flex-1 text-base text-foreground ${item.read ? '' : 'font-bold'}`}>
                 {notificationMessage(item)}

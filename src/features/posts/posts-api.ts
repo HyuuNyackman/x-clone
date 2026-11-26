@@ -15,7 +15,7 @@ export type Post = {
   replyCount: number;
   likeCount: number;
   likedByMe: boolean;
-  author: { handle: string; displayName: string };
+  author: { handle: string; displayName: string; avatarUrl: string | null };
   // 表示順。画像がなければ空配列。
   media: PostMedia[];
 };
@@ -29,7 +29,7 @@ type PostRow = {
   like_count: number;
   // 自分の行だけを埋め込む (likes(user_id) を user_id で絞る)。無ければ空配列。
   likes?: { user_id: string }[] | null;
-  profiles: { handle: string; display_name: string } | null;
+  profiles: { handle: string; display_name: string; avatar_url: string | null } | null;
   post_media?: MediaRow[] | null;
 };
 
@@ -42,7 +42,7 @@ function toMedia(rows: MediaRow[] | null | undefined): PostMedia[] {
 }
 
 const COLUMNS =
-  'id, author_id, body, created_at, reply_count, like_count, likes(user_id), profiles!posts_author_id_fkey(handle, display_name), post_media(storage_key, width, height, sort_order)';
+  'id, author_id, body, created_at, reply_count, like_count, likes(user_id), profiles!posts_author_id_fkey(handle, display_name, avatar_url), post_media(storage_key, width, height, sort_order)';
 
 // ログインしていないとき、likes の埋め込みを 0 件にするためのダミー (どの user_id にも一致しない)。
 const NO_USER = '00000000-0000-0000-0000-000000000000';
@@ -62,6 +62,7 @@ type TimelineRow = {
   created_at: string;
   handle: string;
   display_name: string;
+  avatar_url: string | null;
   reply_count: number;
   like_count: number;
   liked_by_me: boolean;
@@ -79,6 +80,7 @@ function toPost(row: PostRow): Post {
     author: {
       handle: row.profiles?.handle ?? '',
       displayName: row.profiles?.display_name ?? '',
+      avatarUrl: row.profiles?.avatar_url ?? null,
     },
     media: toMedia(row.post_media),
   };
@@ -124,7 +126,7 @@ export async function fetchTimelinePage(
     replyCount: row.reply_count,
     likeCount: row.like_count,
     likedByMe: row.liked_by_me,
-    author: { handle: row.handle, displayName: row.display_name },
+    author: { handle: row.handle, displayName: row.display_name, avatarUrl: row.avatar_url },
     media: [],
   }));
   await attachMedia(posts);

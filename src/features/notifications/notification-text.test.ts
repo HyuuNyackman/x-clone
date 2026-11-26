@@ -1,6 +1,6 @@
 import { badgeLabel, notificationMessage } from '@/features/notifications/notification-text';
 
-const actor = { handle: 'bob', displayName: 'Bob' };
+const actor = { handle: 'bob', displayName: 'Bob', avatarUrl: null };
 
 describe('notificationMessage', () => {
   it('種類ごとの文を返す', () => {
@@ -11,7 +11,10 @@ describe('notificationMessage', () => {
 
   it('表示名が空なら handle を使う', () => {
     expect(
-      notificationMessage({ type: 'follow', actor: { handle: 'bob', displayName: '' } }),
+      notificationMessage({
+        type: 'follow',
+        actor: { handle: 'bob', displayName: '', avatarUrl: null },
+      }),
     ).toContain('@bob');
   });
 });

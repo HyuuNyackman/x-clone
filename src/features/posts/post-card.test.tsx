@@ -11,9 +11,24 @@ const post = (over: Partial<Post> = {}): Post => ({
   replyCount: 0,
   likeCount: 3,
   likedByMe: false,
-  author: { handle: 'alice', displayName: 'Alice' },
+  author: { handle: 'alice', displayName: 'Alice', avatarUrl: null },
   media: [],
   ...over,
+});
+
+describe('PostCard のアバター', () => {
+  it('アバターがあれば画像を、無ければ表示名の頭文字を出す', async () => {
+    await render(
+      <PostCard
+        post={post({ author: { handle: 'alice', displayName: 'Alice', avatarUrl: 'u1/a.jpg' } })}
+        canDelete={false}
+        onDelete={jest.fn()}
+      />,
+    );
+    expect(screen.getByLabelText('Aliceのアイコン')).toBeTruthy();
+    await render(<PostCard post={post()} canDelete={false} onDelete={jest.fn()} />);
+    expect(screen.getByText('A')).toBeTruthy();
+  });
 });
 
 describe('PostCard のいいねボタン', () => {

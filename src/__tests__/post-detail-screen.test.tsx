@@ -25,7 +25,7 @@ const post = (id: string, body: string, replyCount = 0): Post => ({
   replyCount,
   likeCount: 0,
   likedByMe: false,
-  author: { handle: 'alice', displayName: 'Alice' },
+  author: { handle: 'alice', displayName: 'Alice', avatarUrl: null },
   media: [],
 });
 

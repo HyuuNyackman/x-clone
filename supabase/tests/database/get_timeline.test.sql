@@ -1,10 +1,10 @@
 -- get_timeline (タイムライン取得 RPC) の構造・権限・keyset ページネーションを確かめる (XCL-55)。
--- 対象のマイグレーション: 20261124160000_create_get_timeline.sql
+-- 対象のマイグレーション: 20261124160000_create_get_timeline.sql, 20261126100000_add_avatar_url_to_post_rpcs.sql
 -- 実行: supabase test db (トランザクションの中で動き、最後に rollback する)
 
 begin;
 
-select plan(22);
+select plan(24);
 
 -- ===== 構造・権限 =====
 
@@ -85,6 +85,23 @@ select is(
   (select display_name from public.get_timeline(null, null, 50) where body = 'p2'),
   (select display_name from public.profiles where id = 'd2000000-0000-0000-0000-000000000002'),
   '投稿者の表示名が付く'
+);
+
+-- アバター (avatar_url)。u2 だけ設定し、u1 は null のまま。
+reset role;
+update public.profiles set avatar_url = 'd2000000-0000-0000-0000-000000000002/a.jpg'
+  where id = 'd2000000-0000-0000-0000-000000000002';
+set local role authenticated;
+
+select is(
+  (select avatar_url from public.get_timeline(null, null, 50) where body = 'p2'),
+  'd2000000-0000-0000-0000-000000000002/a.jpg',
+  '投稿者の avatar_url が付く'
+);
+select is(
+  (select avatar_url from public.get_timeline(null, null, 50) where body = 'p1'),
+  null,
+  'アバター未設定なら avatar_url は null'
 );
 
 -- ページ 1 (2 件) → ページ 2 → ページ 3 と、カーソルで続きを取る。
