@@ -300,10 +300,21 @@ describe('unlikePost', () => {
 
 describe('フォロー', () => {
   it('fetchFollowingIds は followee_id の配列を返す', async () => {
-    const node = chain({ data: [{ followee_id: 'u2' }, { followee_id: 'u3' }], error: null });
-    await expect(fetchFollowingIds('u1')).resolves.toEqual(['u2', 'u3']);
+    const node = chain({});
+    node.eq = jest.fn(() => node);
+    node.in = jest.fn().mockResolvedValue({
+      data: [{ followee_id: 'u2' }, { followee_id: 'u3' }],
+      error: null,
+    });
+    await expect(fetchFollowingIds('u1', ['u2', 'u3', 'u4'])).resolves.toEqual(['u2', 'u3']);
     expect(from).toHaveBeenCalledWith('follows');
     expect(node.eq).toHaveBeenCalledWith('follower_id', 'u1');
+    expect(node.in).toHaveBeenCalledWith('followee_id', ['u2', 'u3', 'u4']);
+  });
+
+  it('fetchFollowingIds は投稿者が 0 人なら問い合わせない', async () => {
+    await expect(fetchFollowingIds('u1', [])).resolves.toEqual([]);
+    expect(from).not.toHaveBeenCalled();
   });
 
   it('followUser は insert する。重複 (23505) は成功として扱う', async () => {

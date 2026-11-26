@@ -25,7 +25,8 @@ export default function UserProfileScreen() {
   const user = profile.data ?? undefined;
   const counts = useFollowCounts(user?.id);
   const posts = useUserPosts(user?.id);
-  const followingIds = useFollowingIds().data;
+  const profileIds = useMemo(() => (user ? [user.id] : []), [user]);
+  const followingIds = useFollowingIds(profileIds).data;
   const toggleFollow = useToggleFollow();
   const toggleLike = useToggleLike();
   const following = useMemo(
