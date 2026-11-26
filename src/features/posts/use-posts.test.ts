@@ -1,4 +1,11 @@
-import { applyBookmark, applyFollow, applyLike, flattenTimeline } from '@/features/posts/use-posts';
+import {
+  applyBookmark,
+  applyFollow,
+  applyLike,
+  authorIdsOf,
+  flattenTimeline,
+  removeAuthorPosts,
+} from '@/features/posts/use-posts';
 import type { Post, TimelinePage } from '@/features/posts/posts-api';
 
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
@@ -53,6 +60,27 @@ describe('applyFollow', () => {
   it('解除すると id が外れる。無い id の解除は何も変えない', () => {
     expect(applyFollow(['a', 'b'], 'b', false)).toEqual(['a']);
     expect(applyFollow(['a'], 'z', false)).toEqual(['a']);
+  });
+});
+
+describe('removeAuthorPosts / authorIdsOf', () => {
+  const by = (id: string, authorId: string): Post => ({ ...post(id), authorId });
+
+  it('指定した投稿者の投稿を全ページから外す', () => {
+    const data = {
+      pages: [
+        { posts: [by('a', 'u1'), by('b', 'u2')], nextCursor: null },
+        { posts: [by('c', 'u1')], nextCursor: null },
+      ],
+      pageParams: [null, null],
+    };
+    const result = removeAuthorPosts(data, 'u1');
+    expect(result?.pages.map((p) => p.posts.map((x) => x.id))).toEqual([['b'], []]);
+    expect(removeAuthorPosts(undefined, 'u1')).toBeUndefined();
+  });
+
+  it('投稿者 id を重複なしで返す', () => {
+    expect(authorIdsOf([by('a', 'u1'), by('b', 'u2'), by('c', 'u1')])).toEqual(['u1', 'u2']);
   });
 });
 

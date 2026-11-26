@@ -239,12 +239,15 @@ export async function unlikePost(userId: string, postId: string): Promise<void> 
   if (error) throw new Error(`いいねを取り消せませんでした: ${error.message}`);
 }
 
-// 自分がフォローしている人の id 一覧。
-export async function fetchFollowingIds(userId: string): Promise<string[]> {
+// 自分がフォローしている人の id のうち、authorIds に含まれるもの。
+// 表示中の投稿の投稿者だけを in で引くので、フォロー数が多くても件数は画面の分に収まる。
+export async function fetchFollowingIds(userId: string, authorIds: string[]): Promise<string[]> {
+  if (authorIds.length === 0) return [];
   const { data, error } = await supabase
     .from('follows')
     .select('followee_id')
-    .eq('follower_id', userId);
+    .eq('follower_id', userId)
+    .in('followee_id', authorIds);
   if (error) throw new Error(`フォロー中の一覧を読み込めませんでした: ${error.message}`);
   return (data ?? []).map((row) => row.followee_id as string);
 }

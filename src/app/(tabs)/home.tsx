@@ -9,6 +9,7 @@ import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
 import {
+  authorIdsOf,
   flattenTimeline,
   useBookmarkedIds,
   useDeletePost,
@@ -36,9 +37,10 @@ export default function HomeScreen() {
   const toggleBookmark = useToggleBookmark();
   const bookmarkedIds = useBookmarkedIds().data;
   const bookmarkedSet = useMemo(() => new Set(bookmarkedIds ?? []), [bookmarkedIds]);
-  const followingIds = useFollowingIds().data;
-  const followingSet = useMemo(() => new Set(followingIds ?? []), [followingIds]);
   const posts = useMemo(() => flattenTimeline(timeline.data), [timeline.data]);
+  const authorIds = useMemo(() => authorIdsOf(posts), [posts]);
+  const followingIds = useFollowingIds(authorIds).data;
+  const followingSet = useMemo(() => new Set(followingIds ?? []), [followingIds]);
 
   const connection = useQuery({
     queryKey: ['supabase', 'connection'],

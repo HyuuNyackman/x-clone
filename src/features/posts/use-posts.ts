@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import {
+  keepPreviousData,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -297,23 +299,47 @@ export function useToggleLike() {
   });
 }
 
+// 前方一致で、自分のフォロー先の問い合わせ全部を指す。
 export const followingIdsKey = (userId: string | undefined) =>
   ['follows', 'following', userId] as const;
 
-// 自分がフォローしている人の id。ログインしていなければ取らない。
-export function useFollowingIds() {
+// 表示中の投稿の投稿者のうち、自分がフォローしている人の id。ログインしていなければ取らない。
+// 投稿者が増えて問い合わせが変わる間は、前の結果を出し続ける (ボタンの表示がちらつかないように)。
+export function useFollowingIds(authorIds: string[]) {
   const userId = useAuthStore((state) => state.session?.user.id);
+  const ids = useMemo(() => [...new Set(authorIds)].sort(), [authorIds]);
   return useQuery({
-    queryKey: followingIdsKey(userId),
-    queryFn: () => fetchFollowingIds(userId as string),
+    queryKey: [...followingIdsKey(userId), ids] as const,
+    queryFn: () => fetchFollowingIds(userId as string, ids),
     enabled: Boolean(userId),
+    placeholderData: keepPreviousData,
   });
+}
+
+// 表示中の投稿の投稿者 id (重複なし)。
+export function authorIdsOf(posts: Post[]): string[] {
+  return [...new Set(posts.map((post) => post.authorId))];
 }
 
 // フォローのつけ外しを反映した id 一覧 (重複なし)。
 export function applyFollow(ids: string[], targetId: string, follow: boolean): string[] {
   const without = ids.filter((id) => id !== targetId);
   return follow ? [...without, targetId] : without;
+}
+
+// タイムラインから、ある投稿者の投稿を外す。
+export function removeAuthorPosts<T extends { pages: TimelinePage[] }>(
+  data: T | undefined,
+  authorId: string,
+): T | undefined {
+  if (!data) return data;
+  return {
+    ...data,
+    pages: data.pages.map((page) => ({
+      ...page,
+      posts: page.posts.filter((post) => post.authorId !== authorId),
+    })),
+  };
 }
 
 type FollowVariables = { targetId: string; follow: boolean };
@@ -332,13 +358,32 @@ export function useToggleFollow() {
       return follow ? followUser(userId, targetId) : unfollowUser(userId, targetId);
     },
     onMutate: async ({ targetId, follow }) => {
-      await queryClient.cancelQueries({ queryKey: key });
-      const previous = queryClient.getQueryData<string[]>(key);
-      queryClient.setQueryData<string[]>(key, (old) => applyFollow(old ?? [], targetId, follow));
-      return { previous };
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: key }),
+        queryClient.cancelQueries({ queryKey: followingTimelineKey }),
+      ]);
+      const previous = queryClient.getQueriesData<string[]>({ queryKey: key });
+      const previousTimeline = queryClient.getQueriesData<TimelineData>({
+        queryKey: followingTimelineKey,
+      });
+      queryClient.setQueriesData<string[]>({ queryKey: key }, (old) =>
+        applyFollow(old ?? [], targetId, follow),
+      );
+      // 解除したら、「フォロー中」タブからその人の投稿を外す。
+      if (!follow) {
+        queryClient.setQueriesData<TimelineData>({ queryKey: followingTimelineKey }, (old) =>
+          removeAuthorPosts(old, targetId),
+        );
+      }
+      return { previous, previousTimeline };
     },
     onError: (_error, _variables, context) => {
-      queryClient.setQueryData(key, context?.previous);
+      for (const [k, data] of [
+        ...(context?.previous ?? []),
+        ...(context?.previousTimeline ?? []),
+      ]) {
+        queryClient.setQueryData(k, data);
+      }
     },
     onSettled: () =>
       Promise.all([
