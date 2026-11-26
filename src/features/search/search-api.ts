@@ -15,6 +15,7 @@ type SearchPostRow = {
   created_at: string;
   handle: string;
   display_name: string;
+  avatar_url: string | null;
   reply_count: number;
   like_count: number;
   liked_by_me: boolean;
@@ -49,7 +50,7 @@ export async function searchPostsPage(
     replyCount: row.reply_count,
     likeCount: row.like_count,
     likedByMe: row.liked_by_me,
-    author: { handle: row.handle, displayName: row.display_name },
+    author: { handle: row.handle, displayName: row.display_name, avatarUrl: row.avatar_url },
     media: [],
   }));
   await attachMedia(posts);

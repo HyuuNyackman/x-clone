@@ -4,7 +4,7 @@
 
 begin;
 
-select plan(18);
+select plan(19);
 
 -- ===== 構造・権限 =====
 
@@ -83,6 +83,11 @@ select is(
   (select array_agg(id order by created_at desc) from public.search_posts('hello')),
   array['e0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000001']::uuid[],
   '投稿は新しい順に返る'
+);
+select is(
+  (select pg_typeof(avatar_url)::text from public.search_posts('hello') limit 1),
+  'text',
+  '投稿の検索結果に avatar_url の列がある'
 );
 select is(
   (select count(*) from public.search_posts('%')),

@@ -5,7 +5,7 @@ export type NotificationType = 'like' | 'reply' | 'follow';
 export type AppNotification = {
   id: string;
   type: NotificationType;
-  actor: { handle: string; displayName: string };
+  actor: { handle: string; displayName: string; avatarUrl: string | null };
   postId: string | null;
   // いいね = いいねされた投稿の本文、リプライ = リプライの本文。フォローは null。
   postBody: string | null;
@@ -19,12 +19,12 @@ type NotificationRow = {
   post_id: string | null;
   read_at: string | null;
   created_at: string;
-  profiles: { handle: string; display_name: string } | null;
+  profiles: { handle: string; display_name: string; avatar_url: string | null } | null;
   posts: { body: string } | null;
 };
 
 const COLUMNS =
-  'id, type, post_id, read_at, created_at, profiles!notifications_actor_id_fkey(handle, display_name), posts(body)';
+  'id, type, post_id, read_at, created_at, profiles!notifications_actor_id_fkey(handle, display_name, avatar_url), posts(body)';
 
 // 一覧の最大件数。ページネーションは未対応 (最新の件数だけ出す)。
 export const NOTIFICATIONS_LIMIT = 50;
@@ -36,6 +36,7 @@ export function toNotification(row: NotificationRow): AppNotification {
     actor: {
       handle: row.profiles?.handle ?? '',
       displayName: row.profiles?.display_name ?? '',
+      avatarUrl: row.profiles?.avatar_url ?? null,
     },
     postId: row.post_id,
     postBody: row.posts?.body ?? null,

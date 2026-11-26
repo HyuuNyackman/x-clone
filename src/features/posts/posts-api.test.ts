@@ -33,7 +33,7 @@ const row = {
   reply_count: 0,
   like_count: 0,
   likes: [],
-  profiles: { handle: 'alice', display_name: 'Alice' },
+  profiles: { handle: 'alice', display_name: 'Alice', avatar_url: null },
 };
 
 function chain(result: unknown) {
@@ -70,6 +70,7 @@ const rpcRow = (n: number) => ({
   created_at: `2026-11-24T00:00:0${n}Z`,
   handle: 'alice',
   display_name: 'Alice',
+  avatar_url: null,
   reply_count: 3,
   like_count: 5,
   liked_by_me: true,
@@ -97,7 +98,7 @@ describe('fetchTimelinePage', () => {
       replyCount: 3,
       likeCount: 5,
       likedByMe: true,
-      author: { handle: 'alice', displayName: 'Alice' },
+      author: { handle: 'alice', displayName: 'Alice', avatarUrl: null },
       // 表示順 (sort_order) に並ぶ
       media: [
         { storageKey: 'u1/a.jpg', width: 30, height: 40 },

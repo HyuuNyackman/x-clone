@@ -33,7 +33,7 @@ describe('fetchNotifications', () => {
           post_id: 'p1',
           read_at: null,
           created_at: '2026-11-25T00:00:00Z',
-          profiles: { handle: 'bob', display_name: 'Bob' },
+          profiles: { handle: 'bob', display_name: 'Bob', avatar_url: 'u2/a.jpg' },
           posts: { body: 'hello' },
         },
         {
@@ -42,7 +42,7 @@ describe('fetchNotifications', () => {
           post_id: null,
           read_at: '2026-11-25T01:00:00Z',
           created_at: '2026-11-24T00:00:00Z',
-          profiles: { handle: 'carol', display_name: 'Carol' },
+          profiles: { handle: 'carol', display_name: 'Carol', avatar_url: null },
           posts: null,
         },
       ],
@@ -57,7 +57,7 @@ describe('fetchNotifications', () => {
       {
         id: 'n1',
         type: 'like',
-        actor: { handle: 'bob', displayName: 'Bob' },
+        actor: { handle: 'bob', displayName: 'Bob', avatarUrl: 'u2/a.jpg' },
         postId: 'p1',
         postBody: 'hello',
         read: false,
@@ -66,7 +66,7 @@ describe('fetchNotifications', () => {
       {
         id: 'n2',
         type: 'follow',
-        actor: { handle: 'carol', displayName: 'Carol' },
+        actor: { handle: 'carol', displayName: 'Carol', avatarUrl: null },
         postId: null,
         postBody: null,
         read: true,

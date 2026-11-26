@@ -45,7 +45,7 @@ const post: Post = {
   replyCount: 0,
   likeCount: 0,
   likedByMe: false,
-  author: { handle: 'bob', displayName: 'Bob' },
+  author: { handle: 'bob', displayName: 'Bob', avatarUrl: null },
   media: [],
 };
 
