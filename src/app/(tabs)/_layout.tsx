@@ -32,6 +32,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="home" options={{ title: 'ホーム' }} />
+      <Tabs.Screen name="search" options={{ title: '検索' }} />
       <Tabs.Screen
         name="notifications"
         options={{ title: '通知', tabBarBadge: badgeLabel(unread) }}
