@@ -70,6 +70,7 @@ Docs: https://docs.expo.dev/eas/index.md
 | 項目               | 値                                                                                                |
 | ------------------ | ------------------------------------------------------------------------------------------------- |
 | Linear             | チーム `XCL`、プロジェクト `X Clone`                                                              |
+| 承認               | 今の Cycle で Todo の Issue だけを、エージェントが実行する (ADR-0036)                             |
 | ワーカーのブランチ | `agent/<key>-<slug>`、`origin/develop` から作り、PR は `develop` 宛て (commit-rules)              |
 | 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db` |
 | マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                  |
