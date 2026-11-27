@@ -22,7 +22,7 @@ dependencies:
     - cloudflare/skills/skills/wrangler
     - cloudflare/skills/skills/frameworks-on-cloudflare
     - linuxfoundation/crowd.dev/.claude/skills/adr
-    - HyuuNyackman/agent-dev-kit/skills/manager#v1.1.0
+    - HyuuNyackman/agent-dev-kit/skills/manager#v1.2.0
   mcp: []
 includes: auto
 scripts: {}
