@@ -54,7 +54,7 @@ Docs: https://docs.expo.dev/eas/index.md
 作業中に見つけた、今回は直さない将来の技術負債(未検証の項目、先送りした判断、暫定対応、既知のリスク)は、黙って残さず Linear に Issue として切る。
 
 - 作る前に `list_issues` で重複を確認する。既にあれば新規作成せず、そちらにコメントや関連付けを足す。
-- チームは `XCL`、プロジェクトは `X Clone`、状態は `Backlog`。ラベルは内容に合うものを付ける (`infra` / `backend` / `frontend` / `db` / `docs` など)。
+- チームは `XCL`、状態は `Backlog`。Project には入れない (閉じてから 7 日で linear-janitor が消せるように。ADR-0037)。ラベルは内容に合うものを付ける (`infra` / `backend` / `frontend` / `db` / `docs` など)。
 - 人の判断が要るもの (方針・仕様・スコープ・権限や安全性の判断) には `human:decision`、人の作業が要るもの (設定の変更、アカウント、実機での確認) には `human:task` のラベルも付ける。どちらもエージェントの着手の対象から外れる。
 - 今の作業の Issue に `relatedTo` で関連付ける。関連する既存 Issue (例: Supabase なら XCL-48) があれば、それも付ける。
 - 1件に1つの論点を書く。何が負債か、なぜ今やらないか、やること、期限の目安を、人が読める短い文で書く。実装メモは `+++ Agent notes` の折りたたみに入れる。
@@ -67,13 +67,13 @@ Docs: https://docs.expo.dev/eas/index.md
 
 企画からテストまでのエージェントの作業は、Orca の Manager とワーカーで進める。手順は `manager` スキル (`agent-dev-kit` から APM で入れる) にあり、経緯は [ADR-0035](docs/adr/0035-move-agent-work-to-orca.md) にある。このリポジトリの設定は次のとおり。
 
-| 項目               | 値                                                                                                                                  |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Linear             | チーム `XCL`。作業は機能ごとの Project (Manager が Planned で作る)、技術負債は `X Clone` (Backlog のまま置き、In Progress にしない) |
-| 承認               | In Progress の Project の Issue だけを、エージェントが実行する。`human:*` の付いたものは除く (ADR-0036)                             |
-| ワーカーのブランチ | `agent/<key>-<slug>`、`origin/develop` から作り、PR は `develop` 宛て (commit-rules)                                                |
-| 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db`                                   |
-| マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                                                    |
+| 項目               | 値                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| Linear             | チーム `XCL`。作業は機能ごとの Project (Manager が Planned で作る)、技術負債は Project に入れない       |
+| 承認               | In Progress の Project の Issue だけを、エージェントが実行する。`human:*` の付いたものは除く (ADR-0036) |
+| ワーカーのブランチ | `agent/<key>-<slug>`、`origin/develop` から作り、PR は `develop` 宛て (commit-rules)                    |
+| 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db`       |
+| マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                        |
 
 - エージェントは PR をマージしない。
 - ワーカーは `AGENTS.md`、`CLAUDE.md`、`.claude/`、`.apm/`、`.github/workflows/` を変えない。これらを変える PR は Claude のレビューが実行されないので、人が作る。変更が要るときは、Manager に `ask` で伝える。
