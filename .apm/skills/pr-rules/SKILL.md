@@ -10,7 +10,8 @@ Follow `commit-rules` for the issue key, branch, and commit conventions.
 ## Target
 
 - Base branch: `develop`. Never open a PR against `main` unless the user asks.
-- Head branch: `feature/<key>`.
+- Head branch: the current branch (`feature/<key>`, or `agent/<key>-<slug>` for an Orca worker). See `commit-rules`.
+- A PR from an `agent/` branch is auto-merged when the required checks pass. Say in 補足 when a person should look before it merges, and open it as a draft in that case.
 
 ## Title
 
@@ -55,4 +56,6 @@ Write in Japanese. Use these sections in this order. Omit a section only when it
 - By default, output the title and body as text for the user to paste.
 - Create the PR with `gh pr create --base develop` only when the user asks and `gh` is installed and authenticated (`gh auth status`).
 - Pushing the branch and opening the PR publish the work. Confirm with the user before doing either.
+- Exception: an Orca worker whose task spec tells it to push and open the PR does so without asking, with the base the spec names. It reports the PR number to the Manager and never merges it.
+- Write the body to a file first and pass it with `--body-file`. Do not use heredocs or `$(...)` in `--body`.
 - Open a draft PR (`--draft`) if the user says the work is unfinished.
