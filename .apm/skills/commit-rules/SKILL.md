@@ -79,7 +79,6 @@ Examples:
 
 ## Safety
 
-- Commit only when the user asks. For an Orca worker, a task spec that tells it to commit counts as asking.
 - Do not use `--no-verify`.
 - Do not amend or force-push commits that are already pushed.
 - Do not push to `main` or `develop` directly.
