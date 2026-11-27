@@ -45,4 +45,4 @@ ADR は「その時点で、なぜそう決めたか」の記録なので、判�
 | [0033](0033-client-side-image-compression-and-key-based-urls.md)   | 画像は端末側で縮小・圧縮してアップロードし、表示 URL はキーから組み立てる                                   | accepted   | 2026-11-25 |
 | [0034](0034-bookmarks-ids-query-and-list-screen.md)                | ブックマーク済みかは別クエリの id 一覧で持ち、一覧は専用のタブにする                                        | accepted   | 2026-11-26 |
 | [0035](0035-move-agent-work-to-orca.md)                            | エージェントの作業を Orca に移し、Actions には検査とマージだけを残す                                        | accepted   | 2026-11-27 |
-| [0036](0036-approve-plans-by-linear-cycle.md)                      | エージェントの計画は、Linear の Cycle の Issue を Todo に動かして承認する                                   | accepted   | 2026-11-27 |
+| [0036](0036-approve-plans-by-linear-project-status.md)             | エージェントの作業は Linear の Project でまとめ、Project の状態で承認する                                   | accepted   | 2026-11-28 |
