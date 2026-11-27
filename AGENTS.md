@@ -67,12 +67,13 @@ Docs: https://docs.expo.dev/eas/index.md
 
 企画からテストまでのエージェントの作業は、Orca の Manager とワーカーで進める。手順は `manager` スキル (`agent-dev-kit` から APM で入れる) にあり、経緯は [ADR-0035](docs/adr/0035-move-agent-work-to-orca.md) にある。このリポジトリの設定は次のとおり。
 
-| 項目               | 値                                                                                                |
-| ------------------ | ------------------------------------------------------------------------------------------------- |
-| Linear             | チーム `XCL`、プロジェクト `X Clone`                                                              |
-| ワーカーのブランチ | `agent/<key>-<slug>`、`origin/develop` から作り、PR は `develop` 宛て (commit-rules)              |
-| 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db` |
-| マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                  |
+| 項目               | 値                                                                                                                                  |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Linear             | チーム `XCL`。作業は機能ごとの Project (Manager が Planned で作る)、技術負債は `X Clone` (Backlog のまま置き、In Progress にしない) |
+| 承認               | In Progress の Project の Issue だけを、エージェントが実行する。`human:*` の付いたものは除く (ADR-0036)                             |
+| ワーカーのブランチ | `agent/<key>-<slug>`、`origin/develop` から作り、PR は `develop` 宛て (commit-rules)                                                |
+| 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db`                                   |
+| マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                                                    |
 
 - エージェントは PR をマージしない。
 - ワーカーは `AGENTS.md`、`CLAUDE.md`、`.claude/`、`.apm/`、`.github/workflows/` を変えない。これらを変える PR は Claude のレビューが実行されないので、人が作る。変更が要るときは、Manager に `ask` で伝える。
