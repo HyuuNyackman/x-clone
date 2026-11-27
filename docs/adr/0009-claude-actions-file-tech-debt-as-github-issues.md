@@ -1,7 +1,7 @@
 # ADR-0009: CI の Claude は技術負債を GitHub Issue として切り、Linear の同期で取り込む
 
 **Date**: 2026-11-23
-**Status**: accepted
+**Status**: deprecated (ADR-0035)
 **Deciders**: HyuuNyackman
 
 ## Context
