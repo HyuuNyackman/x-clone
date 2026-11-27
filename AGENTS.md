@@ -74,7 +74,7 @@ Docs: https://docs.expo.dev/eas/index.md
 | 確認のコマンド     | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm format:check`。DB を変えたら `supabase test db` |
 | マージ             | `develop` へは、必須チェックが通ると自動。`develop → main` は人が見る (ADR-0016)                  |
 
-- エージェントは PR をマージしない。`main` と `develop` に直接 push しない。
+- エージェントは PR をマージしない。
 - ワーカーは `AGENTS.md`、`CLAUDE.md`、`.claude/`、`.apm/`、`.github/workflows/` を変えない。これらを変える PR は Claude のレビューが実行されないので、人が作る。変更が要るときは、Manager に `ask` で伝える。
 - ローカルの Supabase は同時に1つしか動かせない。DB を使うタスク (Linear ラベル `local-db`) は、Manager が1つずつ動かす。ワーカーは自分で `supabase start` / `stop` しない。
 - 本番には触らない。`supabase link` / `db push` / `functions deploy`、`wrangler deploy`、`eas submit` は人だけが行う。
