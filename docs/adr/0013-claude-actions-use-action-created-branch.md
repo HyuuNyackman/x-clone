@@ -1,7 +1,7 @@
 # ADR-0013: CI の Claude は action が作った claude/ ブランチで作業する
 
 **Date**: 2026-11-24
-**Status**: accepted
+**Status**: deprecated (ADR-0035)
 **Deciders**: HyuuNyackman
 
 [ADR-0004](0004-claude-actions-follow-repo-rules.md) の手順 2 (`feature/<key>` を作る) と手順 5 (旧 `claude/` ブランチの削除) を、この ADR で置き換える。ADR-0004 は過去の記録として編集しない。

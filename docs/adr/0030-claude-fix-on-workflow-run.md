@@ -1,7 +1,7 @@
 # ADR-0030: CI とレビューの失敗は、workflow_run で別のジョブが起動して直す
 
 **Date**: 2026-11-25
-**Status**: accepted
+**Status**: deprecated (ADR-0035)
 **Deciders**: HyuuNyackman
 
 ## Context

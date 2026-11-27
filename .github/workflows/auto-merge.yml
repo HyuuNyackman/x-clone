@@ -1,6 +1,6 @@
 name: Auto Merge
 
-# Claude が作った develop 向けの PR に、自動マージを設定する (ADR-0016)。
+# エージェントが作った develop 向けの PR に、自動マージを設定する (ADR-0016、ADR-0035)。
 # 自動マージは、ブランチ保護の必須チェックがすべて通ったときに、GitHub が squash でマージする。
 # 1 つでも失敗すると、マージされずに止まる。main 向けの PR は対象にしない (本番への反映は人が確認する)。
 # 必須チェックの設定は scripts/ci/apply-branch-protection.sh。
@@ -18,11 +18,11 @@ permissions:
 
 jobs:
   enable:
-    # Claude の PR だけを対象にする。action が作るブランチは claude/ で始まる (ADR-0013)。
+    # エージェントの PR だけを対象にする。Orca のワーカーのブランチは agent/ で始まる (ADR-0035)。
     # fork からの PR とドラフトは対象外。
     if: |
       github.event.pull_request.base.ref == 'develop' &&
-      startsWith(github.event.pull_request.head.ref, 'claude/') &&
+      startsWith(github.event.pull_request.head.ref, 'agent/') &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.draft == false
     runs-on: ubuntu-latest
