@@ -243,8 +243,8 @@ dependencies:
   materialization_repo_url: HyuuNyackman/agent-dev-kit
   name: manager
   host: github.com
-  resolved_commit: aaf3302486a8dedda7bdea769b33ca9c2fe17e13
-  resolved_ref: v1.0.0
+  resolved_commit: 4585971e38c55e64b1e7886db88af73ae7c95bc8
+  resolved_ref: v1.1.0
   version: unknown
   virtual_path: skills/manager
   is_virtual: true
@@ -257,12 +257,12 @@ dependencies:
   - .claude/skills/manager/templates/reviewer.md
   - .claude/skills/manager/templates/tester.md
   deployed_file_hashes:
-    .claude/skills/manager/SKILL.md: sha256:d83ec4c3a96c93ae3c6009eb311873dd15fc838f9cc031b582645a8242e90930
+    .claude/skills/manager/SKILL.md: sha256:128c510775f63be392247601ddc28ffcd454fc598199eee77d1e6f34d89bbd4f
     .claude/skills/manager/templates/designer.md: sha256:be531b7fc3e5b808aa2d19cd971cf17845935addfc80382037589103c74ad174
     .claude/skills/manager/templates/developer.md: sha256:011849393520834fcbfa9fef536261d91a0fa034ae308b4dd0e01956b79e564a
     .claude/skills/manager/templates/reviewer.md: sha256:64e881608e2997500ce38ad4082863ac832aea237758018ce2da5461a727dd5d
     .claude/skills/manager/templates/tester.md: sha256:71b46b0d5464b17b84dc3e038c1c849b87776f3c8a8aa902e578a994d50fbb50
-  content_hash: sha256:4ace91237662bbfff067d64d2865de435f83e7308f929e6b57f5be898fb0d3e2
+  content_hash: sha256:bee74fb37a0829a128731e50397afc6cf6d73339a2537e42e09cfb9978064463
 - repo_url: linuxfoundation/crowd.dev
   name: adr
   host: github.com
@@ -927,7 +927,7 @@ deployments:
   owners:
   - hyuunyackman/agent-dev-kit/skills/manager
   active_owner: hyuunyackman/agent-dev-kit/skills/manager
-  content_hash: sha256:d83ec4c3a96c93ae3c6009eb311873dd15fc838f9cc031b582645a8242e90930
+  content_hash: sha256:128c510775f63be392247601ddc28ffcd454fc598199eee77d1e6f34d89bbd4f
 - kind: project-relative
   target: claude
   value: .claude/skills/manager/templates/designer.md
