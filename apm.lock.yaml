@@ -239,6 +239,30 @@ dependencies:
   - path: LICENSE
     source: plugins/expo/LICENSE
     hash: sha256:49c5f9c7097c9a940ff663a54c27a4c60e379df6cc2b3052df0d37a09a85df93
+- repo_url: hyuunyackman/agent-dev-kit
+  materialization_repo_url: HyuuNyackman/agent-dev-kit
+  name: manager
+  host: github.com
+  resolved_commit: aaf3302486a8dedda7bdea769b33ca9c2fe17e13
+  resolved_ref: v1.0.0
+  version: unknown
+  virtual_path: skills/manager
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/manager
+  - .claude/skills/manager/SKILL.md
+  - .claude/skills/manager/templates/designer.md
+  - .claude/skills/manager/templates/developer.md
+  - .claude/skills/manager/templates/reviewer.md
+  - .claude/skills/manager/templates/tester.md
+  deployed_file_hashes:
+    .claude/skills/manager/SKILL.md: sha256:d83ec4c3a96c93ae3c6009eb311873dd15fc838f9cc031b582645a8242e90930
+    .claude/skills/manager/templates/designer.md: sha256:be531b7fc3e5b808aa2d19cd971cf17845935addfc80382037589103c74ad174
+    .claude/skills/manager/templates/developer.md: sha256:011849393520834fcbfa9fef536261d91a0fa034ae308b4dd0e01956b79e564a
+    .claude/skills/manager/templates/reviewer.md: sha256:64e881608e2997500ce38ad4082863ac832aea237758018ce2da5461a727dd5d
+    .claude/skills/manager/templates/tester.md: sha256:71b46b0d5464b17b84dc3e038c1c849b87776f3c8a8aa902e578a994d50fbb50
+  content_hash: sha256:4ace91237662bbfff067d64d2865de435f83e7308f929e6b57f5be898fb0d3e2
 - repo_url: linuxfoundation/crowd.dev
   name: adr
   host: github.com
@@ -426,7 +450,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
+  content_hash: sha256:1f0af49ab7e956d7bdedaac0ccb0429c566c7850ac256dff40dac4453fc54d2a
 - kind: project-relative
   target: claude
   value: .claude/skills/expo-data-fetching
@@ -888,6 +912,60 @@ deployments:
   content_hash: sha256:cef5673f1445b52c6da179d2e87471bc46a035f81844cb5e5fddcaaefcd03bf9
 - kind: project-relative
   target: claude
+  value: .claude/skills/manager
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/manager/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: sha256:d83ec4c3a96c93ae3c6009eb311873dd15fc838f9cc031b582645a8242e90930
+- kind: project-relative
+  target: claude
+  value: .claude/skills/manager/templates/designer.md
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: sha256:be531b7fc3e5b808aa2d19cd971cf17845935addfc80382037589103c74ad174
+- kind: project-relative
+  target: claude
+  value: .claude/skills/manager/templates/developer.md
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: sha256:011849393520834fcbfa9fef536261d91a0fa034ae308b4dd0e01956b79e564a
+- kind: project-relative
+  target: claude
+  value: .claude/skills/manager/templates/reviewer.md
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: sha256:64e881608e2997500ce38ad4082863ac832aea237758018ce2da5461a727dd5d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/manager/templates/tester.md
+  runtime: null
+  scope: project
+  owners:
+  - hyuunyackman/agent-dev-kit/skills/manager
+  active_owner: hyuunyackman/agent-dev-kit/skills/manager
+  content_hash: sha256:71b46b0d5464b17b84dc3e038c1c849b87776f3c8a8aa902e578a994d50fbb50
+- kind: project-relative
+  target: claude
   value: .claude/skills/pr-rules
   runtime: null
   scope: project
@@ -903,7 +981,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
+  content_hash: sha256:7b907e548710d463003ed35a5b8bcb4014206bf2967ffda22fcc8a8d7096e34f
 - kind: project-relative
   target: claude
   value: .claude/skills/react-native-skills
@@ -1387,5 +1465,5 @@ local_deployed_files:
 - .claude/skills/pr-rules
 - .claude/skills/pr-rules/SKILL.md
 local_deployed_file_hashes:
-  .claude/skills/commit-rules/SKILL.md: sha256:23d9c94816f3820e0643b71f7d78958bb7368f65774ec4581c022b51ee0269dd
-  .claude/skills/pr-rules/SKILL.md: sha256:91fb8393209d3107e9c78b386d6d586cf936db05b02d46d7777652a8c47843ae
+  .claude/skills/commit-rules/SKILL.md: sha256:1f0af49ab7e956d7bdedaac0ccb0429c566c7850ac256dff40dac4453fc54d2a
+  .claude/skills/pr-rules/SKILL.md: sha256:7b907e548710d463003ed35a5b8bcb4014206bf2967ffda22fcc8a8d7096e34f
