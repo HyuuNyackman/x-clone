@@ -7,7 +7,13 @@ import { Avatar } from '@/components/avatar';
 import { Screen } from '@/components/screen';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
-import { flattenTimeline, useDeletePost, useToggleLike } from '@/features/posts/use-posts';
+import {
+  flattenTimeline,
+  useBookmarkedIds,
+  useDeletePost,
+  useToggleBookmark,
+  useToggleLike,
+} from '@/features/posts/use-posts';
 import {
   normalizeQuery,
   useDebouncedValue,
@@ -31,6 +37,9 @@ export default function SearchScreen() {
   const users = useSearchUsers(query);
   const toggleLike = useToggleLike();
   const deletePost = useDeletePost();
+  const toggleBookmark = useToggleBookmark();
+  const bookmarkedIds = useBookmarkedIds().data;
+  const bookmarkedSet = useMemo(() => new Set(bookmarkedIds ?? []), [bookmarkedIds]);
   const postList = useMemo(() => flattenTimeline(posts.data), [posts.data]);
 
   const active = tab === 'posts' ? posts : users;
@@ -78,6 +87,9 @@ export default function SearchScreen() {
       {toggleLike.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{toggleLike.error.message}</Text>
       ) : null}
+      {toggleBookmark.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{toggleBookmark.error.message}</Text>
+      ) : null}
       {tab === 'posts' ? (
         <FlashList
           data={query.length > 0 ? postList : []}
@@ -88,6 +100,12 @@ export default function SearchScreen() {
               canDelete={item.authorId === userId}
               onDelete={(id) => deletePost.mutate(id)}
               onToggleLike={(postId, liked) => toggleLike.mutate({ postId, liked })}
+              bookmarked={bookmarkedSet.has(item.id)}
+              onToggleBookmark={
+                userId
+                  ? (postId, bookmarked) => toggleBookmark.mutate({ postId, bookmarked })
+                  : undefined
+              }
               onPressAuthor={(handle) =>
                 router.push({ pathname: '/user/[handle]', params: { handle } })
               }

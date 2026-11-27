@@ -9,7 +9,9 @@ import { useAuthStore } from '@/features/auth/auth-store';
 import { PostCard } from '@/features/posts/post-card';
 import {
   flattenTimeline,
+  useBookmarkedIds,
   useFollowingIds,
+  useToggleBookmark,
   useToggleFollow,
   useToggleLike,
   useUserPosts,
@@ -30,6 +32,9 @@ export default function UserProfileScreen() {
   const followingIds = useFollowingIds(profileIds).data;
   const toggleFollow = useToggleFollow();
   const toggleLike = useToggleLike();
+  const toggleBookmark = useToggleBookmark();
+  const bookmarkedIds = useBookmarkedIds().data;
+  const bookmarkedSet = useMemo(() => new Set(bookmarkedIds ?? []), [bookmarkedIds]);
   const following = useMemo(
     () => (user ? (followingIds ?? []).includes(user.id) : false),
     [followingIds, user],
@@ -84,6 +89,9 @@ export default function UserProfileScreen() {
       {toggleFollow.isError ? (
         <Text className="px-4 py-3 text-sm text-danger">{toggleFollow.error.message}</Text>
       ) : null}
+      {toggleBookmark.isError ? (
+        <Text className="px-4 py-3 text-sm text-danger">{toggleBookmark.error.message}</Text>
+      ) : null}
       {user ? (
         <View accessibilityRole="tablist" className="flex-row border-b border-border">
           <View
@@ -119,6 +127,12 @@ export default function UserProfileScreen() {
             canDelete={false}
             onDelete={noop}
             onToggleLike={(postId, liked) => toggleLike.mutate({ postId, liked })}
+            bookmarked={bookmarkedSet.has(item.id)}
+            onToggleBookmark={
+              myId
+                ? (postId, bookmarked) => toggleBookmark.mutate({ postId, bookmarked })
+                : undefined
+            }
             onPress={(id) => router.push({ pathname: '/post/[id]', params: { id } })}
           />
         )}
