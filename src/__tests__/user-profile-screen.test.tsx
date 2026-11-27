@@ -5,7 +5,9 @@ import UserProfileScreen from '@/app/user/[handle]';
 import { useAuthStore } from '@/features/auth/auth-store';
 import type { Post } from '@/features/posts/posts-api';
 import {
+  useBookmarkedIds,
   useFollowingIds,
+  useToggleBookmark,
   useToggleFollow,
   useToggleLike,
   useUserPosts,
@@ -14,7 +16,9 @@ import { useFollowCounts, useProfileByHandle } from '@/features/profile/use-prof
 
 jest.mock('@/features/posts/use-posts', () => ({
   flattenTimeline: jest.requireActual('@/features/posts/use-posts').flattenTimeline,
+  useBookmarkedIds: jest.fn(),
   useFollowingIds: jest.fn(),
+  useToggleBookmark: jest.fn(),
   useToggleFollow: jest.fn(),
   useToggleLike: jest.fn(),
   useUserPosts: jest.fn(),
@@ -29,6 +33,7 @@ jest.mock('@/features/auth/auth-store', () => ({ useAuthStore: jest.fn() }));
 const ME = 'a1000000-0000-0000-0000-000000000001';
 const BOB = 'b2000000-0000-0000-0000-000000000002';
 const toggleFollow = jest.fn();
+const toggleBookmark = jest.fn();
 const routes = {
   'user/[handle]': UserProfileScreen,
   profile: () => null,
@@ -59,6 +64,10 @@ function setup({ profile = bob as typeof bob | null, following = [] as string[] 
   jest.mocked(useFollowingIds).mockReturnValue({ data: following } as never);
   jest.mocked(useToggleFollow).mockReturnValue({ mutate: toggleFollow } as never);
   jest.mocked(useToggleLike).mockReturnValue({ mutate: jest.fn() } as never);
+  jest.mocked(useBookmarkedIds).mockReturnValue({ data: [] } as never);
+  jest
+    .mocked(useToggleBookmark)
+    .mockReturnValue({ mutate: toggleBookmark, isError: false } as never);
 }
 
 beforeEach(() => {
@@ -107,5 +116,12 @@ describe('プロフィール画面', () => {
     setup({ profile: null });
     await renderRouter(routes, { initialUrl: '/user/nobody' });
     expect(screen.getByText('ユーザーが見つかりません')).toBeTruthy();
+  });
+
+  it('投稿にブックマークのボタンが出て、押すと追加が呼ばれる', async () => {
+    setup();
+    await renderRouter(routes, { initialUrl: '/user/bob' });
+    await fireEvent.press(screen.getByRole('button', { name: 'ブックマーク' }));
+    expect(toggleBookmark).toHaveBeenCalledWith({ postId: 'p1', bookmarked: true });
   });
 });
