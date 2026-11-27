@@ -70,9 +70,7 @@ Write in Japanese. Use the sections of `.github/pull_request_template.md`, in th
 
 ## Creating the PR
 
-- By default, output the title and body as text for the user to paste.
-- Create the PR with `gh pr create --base develop` only when the user asks and `gh` is installed and authenticated (`gh auth status`).
-- Pushing the branch and opening the PR publish the work. Confirm with the user before doing either.
-- Exception: an Orca worker whose task spec tells it to push and open the PR does so without asking, with the base the spec names. It reports the PR number to the Manager and never merges it.
+- When the work is ready, push the branch and create the PR with `gh pr create --base develop`. No confirmation is needed. If `gh` is not installed or not authenticated (`gh auth status`), output the title and body as text instead.
+- Never merge the PR yourself. An Orca worker reports the PR number to the Manager.
 - Write the body to a file first and pass it with `--body-file`. Do not use heredocs or `$(...)` in `--body`.
 - Open a draft PR (`--draft`) if the user says the work is unfinished.
