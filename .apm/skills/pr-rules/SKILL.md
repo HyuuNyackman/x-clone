@@ -25,7 +25,7 @@ Follow `commit-rules` for the issue key, branch, and commit conventions.
 
 ## Body
 
-Write in Japanese. Use these sections in this order. Omit a section only when it has nothing to say.
+Write in Japanese. Use the sections of `.github/pull_request_template.md`, in this order. The template is the same as below; if they ever differ, follow this file and fix the template. Omit a section only when it has nothing to say.
 
 ```markdown
 ## 概要
@@ -36,14 +36,31 @@ Write in Japanese. Use these sections in this order. Omit a section only when it
 
 - <主な変更を箇条書きで>
 
+## 受け入れ条件
+
+- [ ] <Linear の Issue の受け入れ条件を、そのまま写す>
+
 ## 動作確認
 
-- [ ] <確認した項目、または確認してほしい項目>
+- [ ] <実行したコマンド、確認した項目>
+
+## リスクの確認
+
+- [ ] 秘密情報 (`.env*`、キー、トークン) を含めていない
+- [ ] 本番の環境に触れていない
+- [ ] 認証・RLS・課金・migration の変更: なし / あり (あれば理由と、設計メモか ADR)
+
+## 人が確認すること
+
+- <シミュレータ・実機・画面で見てほしい点。なければ「なし」>
 
 ## 補足
 
-<レビュアーに伝えたいこと。未対応事項、判断の理由、懸念点>
+<判断の理由、懸念点、技術負債 (作った Issue の ID)>
 ```
+
+- 受け入れ条件: tick a box only when the change meets it. Leave the section out if the issue has none.
+- リスクの確認: tick only what you checked. For "あり", write which and why.
 
 - Base the content on `git log origin/develop..HEAD` and `git diff origin/develop...HEAD`. Do not invent changes.
 - Describe why before what. Keep the list to what a reviewer needs.
