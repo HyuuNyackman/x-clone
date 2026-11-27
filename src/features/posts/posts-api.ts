@@ -316,8 +316,14 @@ export async function fetchUserPostsPage(
   return toPage(((data ?? []) as unknown as PostRow[]).map(toPost), limit);
 }
 
-// ブックマーク一覧の取得件数。ページ送りは未対応 (技術負債として別 Issue)。
-export const BOOKMARKS_LIMIT = 50;
+// ブックマーク一覧の 1 ページの件数。
+export const BOOKMARKS_PAGE_SIZE = 20;
+
+// ブックマーク一覧の続きを読む位置。直前のページの最後のブックマークの (created_at, post_id)。
+// 投稿の created_at ではなく、ブックマークした時刻で並べる。
+export type BookmarkCursor = { createdAt: string; postId: string };
+
+export type BookmarksPage = { posts: Post[]; nextCursor: BookmarkCursor | null };
 
 // 自分がブックマークした投稿の id 一覧。
 export async function fetchBookmarkedIds(userId: string): Promise<string[]> {
@@ -344,19 +350,33 @@ export async function removeBookmark(userId: string, postId: string): Promise<vo
   if (error) throw new Error(`ブックマークを解除できませんでした: ${error.message}`);
 }
 
-// 自分のブックマークした投稿を、ブックマークした新しい順に読む。
+// 自分のブックマークした投稿を、ブックマークした新しい順に 1 ページ読む。
 // RLS で自分の行しか見えないが、user_id でも絞る。
-export async function fetchBookmarkedPosts(userId: string): Promise<Post[]> {
-  const { data: marks, error: markError } = await supabase
-    .from('bookmarks')
-    .select('post_id')
-    .eq('user_id', userId)
+export async function fetchBookmarkedPosts(
+  userId: string,
+  cursor: BookmarkCursor | null = null,
+  limit = BOOKMARKS_PAGE_SIZE,
+): Promise<BookmarksPage> {
+  let markQuery = supabase.from('bookmarks').select('post_id, created_at').eq('user_id', userId);
+  if (cursor) {
+    // (created_at, post_id) がカーソルより前の行だけ。同じ時刻の行は post_id で境目を決める。
+    const at = `"${cursor.createdAt}"`;
+    markQuery = markQuery.or(
+      `created_at.lt.${at},and(created_at.eq.${at},post_id.lt.${cursor.postId})`,
+    );
+  }
+  const { data: marks, error: markError } = await markQuery
     .order('created_at', { ascending: false })
     .order('post_id', { ascending: false })
-    .limit(BOOKMARKS_LIMIT);
+    .limit(limit);
   if (markError) throw new Error(`ブックマークを読み込めませんでした: ${markError.message}`);
-  const ids = (marks ?? []).map((row) => row.post_id as string);
-  if (ids.length === 0) return [];
+  const rows = (marks ?? []) as { post_id: string; created_at: string }[];
+  const last = rows[rows.length - 1];
+  // 件数はブックマークの行で数える (投稿が消えて飛ばした分があっても、続きはある)。
+  const nextCursor =
+    last && rows.length >= limit ? { createdAt: last.created_at, postId: last.post_id } : null;
+  const ids = rows.map((row) => row.post_id);
+  if (ids.length === 0) return { posts: [], nextCursor };
 
   const { data, error } = await supabase
     .from('posts')
@@ -366,5 +386,5 @@ export async function fetchBookmarkedPosts(userId: string): Promise<Post[]> {
   if (error) throw new Error(`投稿を読み込めませんでした: ${error.message}`);
   const byId = new Map(((data ?? []) as unknown as PostRow[]).map((row) => [row.id, toPost(row)]));
   // 投稿が消えている (連鎖削除の途中など) 分は飛ばし、ブックマークした順に並べ直す。
-  return ids.flatMap((id) => byId.get(id) ?? []);
+  return { posts: ids.flatMap((id) => byId.get(id) ?? []), nextCursor };
 }

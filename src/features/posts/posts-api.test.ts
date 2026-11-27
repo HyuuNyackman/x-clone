@@ -3,6 +3,7 @@ import {
   createPost,
   deletePost,
   fetchBookmarkedIds,
+  fetchBookmarkedPosts,
   fetchFollowingIds,
   fetchPost,
   followUser,
@@ -407,5 +408,94 @@ describe('ブックマーク', () => {
       .fn()
       .mockResolvedValue({ data: [{ post_id: 'p1' }, { post_id: 'p2' }], error: null });
     await expect(fetchBookmarkedIds('u1')).resolves.toEqual(['p1', 'p2']);
+  });
+});
+
+describe('fetchBookmarkedPosts', () => {
+  const mark = (n: number, createdAt = `2026-11-25T00:00:${String(n).padStart(2, '0')}Z`) => ({
+    post_id: `p${n}`,
+    created_at: createdAt,
+  });
+  const postRow = (id: string) => ({ ...row, id });
+
+  // from('bookmarks') と from('posts') を、それぞれの結果で差し替える。
+  function tables(marks: unknown, posts: unknown = { data: [], error: null }) {
+    const markNode: Record<string, jest.Mock> = {};
+    for (const name of ['select', 'eq', 'or', 'order']) markNode[name] = jest.fn(() => markNode);
+    markNode.limit = jest.fn().mockResolvedValue(marks);
+    const postNode: Record<string, jest.Mock> = {};
+    for (const name of ['select', 'in']) postNode[name] = jest.fn(() => postNode);
+    postNode.eq = jest.fn().mockResolvedValue(posts);
+    from.mockImplementation(((table: string) =>
+      table === 'bookmarks' ? markNode : postNode) as never);
+    return { markNode, postNode };
+  }
+
+  it('カーソルなしで先頭の 20 件と次のカーソルを返す', async () => {
+    const marks = Array.from({ length: 20 }, (_, i) => mark(20 - i));
+    const { markNode, postNode } = tables(
+      { data: marks, error: null },
+      // posts は順不同で返ってくる
+      { data: [...marks].reverse().map((m) => postRow(m.post_id)), error: null },
+    );
+    const page = await fetchBookmarkedPosts('u1');
+    expect(markNode.eq).toHaveBeenCalledWith('user_id', 'u1');
+    expect(markNode.or).not.toHaveBeenCalled();
+    expect(markNode.order).toHaveBeenNthCalledWith(1, 'created_at', { ascending: false });
+    expect(markNode.order).toHaveBeenNthCalledWith(2, 'post_id', { ascending: false });
+    expect(markNode.limit).toHaveBeenCalledWith(20);
+    expect(postNode.in).toHaveBeenCalledWith(
+      'id',
+      marks.map((m) => m.post_id),
+    );
+    // ブックマークした順に並べ直す
+    expect(page.posts.map((p) => p.id)).toEqual(marks.map((m) => m.post_id));
+    expect(page.nextCursor).toEqual({ createdAt: marks[19].created_at, postId: 'p1' });
+  });
+
+  it('20 件未満なら次のカーソルは null', async () => {
+    tables(
+      { data: [mark(2), mark(1)], error: null },
+      { data: [postRow('p1'), postRow('p2')], error: null },
+    );
+    const page = await fetchBookmarkedPosts('u1');
+    expect(page.posts.map((p) => p.id)).toEqual(['p2', 'p1']);
+    expect(page.nextCursor).toBeNull();
+  });
+
+  it('カーソルを渡すと、(created_at, post_id) がその前の行から読む', async () => {
+    const at = '2026-11-25T00:00:00.123456+00:00';
+    const { markNode } = tables(
+      { data: [mark(3, at)], error: null },
+      { data: [postRow('p3')], error: null },
+    );
+    const page = await fetchBookmarkedPosts('u1', { createdAt: at, postId: 'p5' }, 1);
+    // 同じ時刻の行は post_id で境目を決め、重複も抜けもなく続きを読む。
+    expect(markNode.or).toHaveBeenCalledWith(
+      `created_at.lt."${at}",and(created_at.eq."${at}",post_id.lt.p5)`,
+    );
+    expect(page.nextCursor).toEqual({ createdAt: at, postId: 'p3' });
+  });
+
+  it('投稿が消えて飛ばした分があっても、ブックマークの行が limit 件なら続きがある', async () => {
+    tables({ data: [mark(2), mark(1)], error: null }, { data: [postRow('p2')], error: null });
+    const page = await fetchBookmarkedPosts('u1', null, 2);
+    expect(page.posts.map((p) => p.id)).toEqual(['p2']);
+    expect(page.nextCursor).toEqual({ createdAt: mark(1).created_at, postId: 'p1' });
+  });
+
+  it('0 件なら空の配列で、posts を読まない', async () => {
+    tables({ data: [], error: null });
+    await expect(fetchBookmarkedPosts('u1')).resolves.toEqual({ posts: [], nextCursor: null });
+    expect(from).not.toHaveBeenCalledWith('posts');
+  });
+
+  it('失敗すると Error になる', async () => {
+    tables({ data: null, error: { message: 'boom' } });
+    await expect(fetchBookmarkedPosts('u1')).rejects.toThrow(
+      'ブックマークを読み込めませんでした: boom',
+    );
+    tables({ data: [mark(1)], error: null }, { data: null, error: { message: 'nope' } });
+    await expect(fetchBookmarkedPosts('u1')).rejects.toThrow('投稿を読み込めませんでした: nope');
   });
 });

@@ -4,9 +4,10 @@ import { Text, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { PostCard } from '@/features/posts/post-card';
-import { useBookmarks, useToggleBookmark } from '@/features/posts/use-posts';
+import { flattenTimeline, useBookmarks, useToggleBookmark } from '@/features/posts/use-posts';
 
-// 自分のブックマーク一覧。解除すると、取り直しのあとで一覧から消える。
+// 自分のブックマーク一覧。20 件ずつ読み、末尾までスクロールすると続きを読む。
+// 解除すると、取り直しのあとで一覧から消える。
 export default function BookmarksScreen() {
   const bookmarks = useBookmarks();
   const toggleBookmark = useToggleBookmark();
@@ -23,7 +24,8 @@ export default function BookmarksScreen() {
         <Text className="px-4 py-3 text-sm text-danger">{toggleBookmark.error.message}</Text>
       ) : null}
       <FlashList
-        data={bookmarks.data ?? []}
+        testID="bookmarks-list"
+        data={flattenTimeline(bookmarks.data)}
         keyExtractor={(post) => post.id}
         renderItem={({ item }) => (
           <PostCard
@@ -38,8 +40,18 @@ export default function BookmarksScreen() {
             onPress={(id) => router.push({ pathname: '/post/[id]', params: { id } })}
           />
         )}
-        refreshing={bookmarks.isRefetching}
+        onEndReached={() => {
+          if (bookmarks.hasNextPage && !bookmarks.isFetchingNextPage)
+            void bookmarks.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        refreshing={bookmarks.isRefetching && !bookmarks.isFetchingNextPage}
         onRefresh={() => void bookmarks.refetch()}
+        ListFooterComponent={
+          bookmarks.isFetchingNextPage ? (
+            <Text className="px-4 py-3 text-center text-muted">読み込み中…</Text>
+          ) : null
+        }
         ListEmptyComponent={
           <Text className="px-4 py-6 text-center text-muted">
             {bookmarks.isPending ? '読み込み中…' : 'ブックマークはまだありません'}

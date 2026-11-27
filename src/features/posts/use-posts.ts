@@ -25,6 +25,7 @@ import {
   removeBookmark,
   unfollowUser,
   unlikePost,
+  type BookmarkCursor,
   type Post,
   type TimelineCursor,
   type TimelinePage,
@@ -50,8 +51,8 @@ export function useTimeline(tab: TimelineTab = 'recommended') {
   });
 }
 
-// 全ページの投稿を 1 本にする。同じ id は 1 回だけ出す。
-export function flattenTimeline(data: { pages: TimelinePage[] } | undefined): Post[] {
+// 全ページの投稿を 1 本にする。同じ id は 1 回だけ出す。ブックマーク一覧のページにも使う。
+export function flattenTimeline(data: { pages: { posts: Post[] }[] } | undefined): Post[] {
   const seen = new Set<string>();
   const posts: Post[] = [];
   for (const page of data?.pages ?? []) {
@@ -432,12 +433,14 @@ export function useBookmarkedIds() {
   });
 }
 
-// 自分のブックマーク一覧 (新しい順)。
+// 自分のブックマーク一覧 (ブックマークした新しい順)。20 件ずつ読む。
 export function useBookmarks() {
   const userId = useAuthStore((state) => state.session?.user.id);
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: bookmarksKey(userId),
-    queryFn: () => fetchBookmarkedPosts(userId as string),
+    queryFn: ({ pageParam }) => fetchBookmarkedPosts(userId as string, pageParam),
+    initialPageParam: null as BookmarkCursor | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: Boolean(userId),
   });
 }
