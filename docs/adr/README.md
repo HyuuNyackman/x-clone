@@ -46,4 +46,5 @@ ADR は「その時点で、なぜそう決めたか」の記録なので、判�
 | [0034](0034-bookmarks-ids-query-and-list-screen.md)                | ブックマーク済みかは別クエリの id 一覧で持ち、一覧は専用のタブにする                                        | accepted   | 2026-11-26 |
 | [0035](0035-move-agent-work-to-orca.md)                            | エージェントの作業を Orca に移し、Actions には検査とマージだけを残す                                        | accepted   | 2026-11-27 |
 | [0036](0036-approve-plans-by-linear-project-status.md)             | エージェントの作業は Linear の Project でまとめ、Project の状態で承認する                                   | accepted   | 2026-11-28 |
-| [0037](0037-delete-closed-linear-issues-with-ops-bot.md)           | 閉じた Linear の Issue は、Orca の ops の bot が決まりに従って消す                                          | accepted   | 2026-11-28 |
+| [0037](0037-delete-closed-linear-issues-with-ops-bot.md)           | 閉じた Linear の Issue は、Obsidian に残してから Orca の ops の bot が消す                                  | accepted   | 2026-11-28 |
+| [0038](0038-plan-in-project-and-create-issues-up-to-limit.md)      | 計画は Project の説明に書き、Issue は決めた件数まで作る                                                     | accepted   | 2026-11-28 |
